@@ -52,7 +52,7 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 
 ### hostIntegrationsBrowser
 
-Generates a *microfrontendClients.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
+Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 Usage
 
@@ -90,7 +90,7 @@ Supported additionalProperties:
 
 ### hostIntegrationsMashroom
 
-Generates a *microfrontendClients.ts* file that contains functions to launch the Microfrontends within 
+Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends within 
 a [Mashroom Portal](https://www.mashroom-server.com) page. 
 Typically, the generated started would be used within another Microfrontend to create a *Composite Microfrontend*. 
 
@@ -107,9 +107,13 @@ messages.publish('topic', {});
 
 ### hostIntegrationsExpress
 
+Generates a *microfrontendStarters.ts* file and [Express.js](https://expressjs.com) based server-side code for security, proxying and SSR.
+
 TODO
 
 ### hostIntegrationsSpringBoot
+
+Generates a *microfrontendStarters.ts* file and [Spring Boot](https://spring.io/projects/spring-boot) based server-side code for security, proxying and SSR.
 
 TODO
 

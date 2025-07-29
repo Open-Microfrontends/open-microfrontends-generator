@@ -4,7 +4,7 @@ export const DEFAULT_TEMPLATE = 'renderersPlain';
 
 export const KNOWN_TEMPLATES = {
     renderersPlainJS: 'microfrontendRenderers.ts',
-    hostIntegrationsBrowser: 'microfrontendClients.ts',
-    hostIntegrationsMashroom: 'microfrontendClients.ts',
+    hostIntegrationsBrowser: 'microfrontendStarters.ts',
+    hostIntegrationsMashroom: 'microfrontendStarters.ts',
     mashroomPluginConfig: 'mashroom.json'
 };
