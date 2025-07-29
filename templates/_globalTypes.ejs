@@ -1,0 +1,8 @@
+
+type OpenMicrofrontendLifecycleHooks = {
+    readonly onRemove?: () => void | Promise<void>;
+};
+
+type Partial<T> = {
+    [P in keyof T]?: T[P];
+};

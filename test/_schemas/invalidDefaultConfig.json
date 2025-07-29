@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../schemas/open-microfrontends.json",
+  "openMicrofrontends": "1.0.0",
+  "microfrontends": [{
+    "name": "My First Microfrontend",
+    "resources": {
+      "js": ["app.js"]
+    },
+    "paths": {
+      "resourcesBase": "/"
+    },
+    "globalLaunchFunction": "startMyFirstMicrofrontend",
+    "config": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      },
+      "default": {
+      }
+    }
+  }]
+}

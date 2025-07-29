@@ -1,0 +1,14 @@
+
+<% if (def.microfrontends[i].messages && Object.keys(def.microfrontends[i].messages).length > 0) { %>
+type Microfrontend<%-i+1-%>ClientMessageBus = {
+<% Object.keys(def.microfrontends[i].messages).forEach((topic, idx) => { %>
+    <% if (def.microfrontends[i].messages[topic].subscribe) { %>
+    publish(topic: '<%-topic-%>%>', data: <%-messageSchemaTypes[idx][topic].ifName-%>): void;
+    <% } %>
+    <% if (def.microfrontends[i].messages[topic].publish) { %>
+    subscribe(topic: '<%-topic-%>%>', cb: (data: <%-messageSchemaTypes[idx][topic].ifName-%>) => void): void;
+    unsubscribe(topic: '<%-topic-%>%>', cb: (data: <%-messageSchemaTypes[idx][topic].ifName-%>) => void): void;
+    <% } %>
+<% }) %>
+};
+<% } %>

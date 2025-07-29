@@ -1,0 +1,265 @@
+{
+  "$id": "https://open-microfrontends/schemas/1-0-0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "I18NString": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z]{2}$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "HttpUrl": {
+      "type": "string",
+      "pattern": "^(\\$|http://|https://).*$"
+    },
+    "HttpOrWebSocketUrlOrRelativePath": {
+      "type": "string",
+      "pattern": "^(\\$|http://|https://|ws://|wss://|/[a-zA-Z]).*$"
+    },
+    "RelativeJsPath": {
+      "type": "string",
+      "pattern": "^[a-z].*\\.(mjs|js)$"
+    },
+    "RelativeCssPath": {
+      "type": "string",
+      "pattern": "^[a-z].*\\.css$"
+    },
+    "RelativeWebPath": {
+      "type": "string",
+      "pattern": "^/[a-zA-Z0-9-_/]*$"
+    },
+    "Roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\w+"
+      }
+    },
+    "Server": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref":"#/$defs/HttpUrl"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "Resources": {
+      "type": "object",
+      "properties": {
+        "js": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RelativeJsPath"
+          },
+          "description": "A list of JS resources required to start the Microservice"
+        },
+        "css": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RelativeCssPath"
+          },
+          "description": "A list of CSS resources that should be loaded"
+        }
+      },
+      "required": [
+        "js"
+      ],
+      "additionalProperties": false
+    },
+    "Paths": {
+      "type": "object",
+      "properties": {
+        "resourcesBase": {
+          "$ref": "#/$defs/RelativeWebPath",
+          "description": "The base path for the required resources"
+        },
+        "ssrHtml": {
+          "$ref": "#/$defs/RelativeWebPath",
+          "description": "The path to generate the initial HTML for Hybrid Rendering"
+        }
+      },
+      "required": [
+        "resourcesBase"
+      ],
+      "additionalProperties": false
+    },
+    "APIProxy": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z_][a-zA-Z0-9_]+$": {
+          "$ref": "#/$defs/HttpOrWebSocketUrlOrRelativePath"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Defines private API endpoints the framework needs to provide relative paths for"
+    },
+    "AccessControl": {
+      "type": "object",
+      "properties": {
+        "viewRoles": {
+          "$ref": "#/$defs/Roles",
+          "description": "A list of roles that grant access to this Microfrontend"
+        },
+        "apiProxyRoles": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z_][a-zA-Z0-9_]+$": {
+              "$ref": "#/$defs/Roles"
+            }
+          },
+          "additionalProperties": false,
+          "description": "A list of roles that grant access to given proxy ID"
+        },
+        "permissionRoles": {
+          "type": "object",
+          "patternProperties": {
+            "^\\w+$": {
+              "$ref": "#/$defs/Roles"
+            }
+          },
+          "additionalProperties": false,
+          "description": "A list of roles that enable the given permission ID (which will be passed to the Microfrontend)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Config": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "https://json-schema.org/draft/2020-12/schema"
+        },
+        "default": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "schema",
+        "default"
+      ],
+      "additionalProperties": false
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "publish": {
+          "type": "boolean",
+          "description": "The Microfrontend publish this message type"
+        },
+        "subscribe": {
+          "type": "boolean",
+          "description": "The Microfrontend subscribes this message type"
+        },
+        "schema": {
+          "$ref": "https://json-schema.org/draft/2020-12/schema"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Messages": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/Message"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Annotations": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Some annotations for the framework(s) consuming this spec"
+    },
+    "Microfrontend": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "$ref": "#/$defs/I18NString"
+        },
+        "description": {
+          "type": "string"
+        },
+        "resources": {
+          "$ref": "#/$defs/Resources"
+        },
+        "paths": {
+          "$ref": "#/$defs/Paths"
+        },
+        "globalLaunchFunction": {
+          "type": "string",
+          "description": "The name of the function that can be used in the browser to launch this Microfrontend"
+        },
+        "apiProxies": {
+          "$ref": "#/$defs/APIProxy"
+        },
+        "accessControl": {
+          "$ref": "#/$defs/AccessControl"
+        },
+        "config": {
+          "$ref": "#/$defs/Config"
+        },
+        "messages": {
+          "$ref": "#/$defs/Messages"
+        },
+        "annotations": {
+          "$ref": "#/$defs/Annotations"
+        }
+      },
+      "required": [
+        "name",
+        "resources",
+        "paths",
+        "globalLaunchFunction"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "openMicrofrontends": {
+      "type": "string",
+      "pattern": "^1\\.0\\.\\d+(-.+)?$"
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Server"
+      }
+    },
+    "microfrontends": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Microfrontend"
+      }
+    }
+  },
+  "required": [
+    "openMicrofrontends",
+    "microfrontends"
+  ],
+  "additionalProperties": false
+}

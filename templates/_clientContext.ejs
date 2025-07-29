@@ -1,0 +1,34 @@
+// Client context for Microfrontend: <%-def.microfrontends[i].name%>
+type Microfrontend<%-i+1-%>Context = {
+    // The unique ID of this Microfrontend instance
+    readonly id?: string;
+    // Two-letter language code (e.g., "fr")
+    readonly lang?: string;
+    readonly user?: {
+        readonly guest: boolean;
+        readonly username: string;
+        readonly displayName: string;
+        <% if (def.microfrontends[i].accessControl?.permissionRoles && Object.keys(def.microfrontends[i].accessControl.permissionRoles).length > 0) { %>
+        readonly permissions: {
+            <% Object.keys(def.microfrontends[i].accessControl.permissionRoles).forEach((permissionKey) => { %>
+            readonly '<%-permissionKey%>': boolean;
+            <% }) %>
+        };
+        <% } %>
+    },
+    <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+    readonly apiProxyPaths: {
+        <% Object.keys(def.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+        readonly '<%-proxyId%>': string;
+        <% }) %>
+    },
+    <% } %>
+    readonly config: Partial<<%-configSchemaTypes[i].ifName-%>>;
+    <% if (def.microfrontends[i].messages && Object.keys(def.microfrontends[i].messages).length > 0) { %>
+    readonly messageBus: {
+        publish(topic: string, data: object): void;
+        subscribe(topic: string, cb: (data: object) => void): void;
+        unsubscribe(topic: string, cb: (data: object) => void): void;
+    };
+    <% } %>
+}

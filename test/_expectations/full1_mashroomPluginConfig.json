@@ -1,0 +1,84 @@
+{
+    "$schema": "https://www.mashroom-server.com/schemas/mashroom-plugins.json",
+    "plugins": [
+    
+        {
+            "name": "My First Microfrontend",
+            "type": "portal-app2",
+            
+            "description": "test",
+            
+            "clientBootstrap": "startMyFirstMicrofrontend",
+            "resources": {
+    "js": [
+        "app.js"
+    ],
+    "css": [
+        "app.css"
+    ]
+},
+            "local": {
+                "resourcesRoot": "./unknown-local-not-supported"
+            },
+            "remote": {
+                
+                "ssrInitialHtmlPath": "/ssr",
+                
+                "resourcesRoot": "/"
+            },
+            "defaultConfig": {
+                
+                "title": {
+    "en": "My First Microfrontend",
+    "de": "Mein erstes Microfrontend"
+},
+                
+                
+                "category": "OpenMicroFrontendsDemo",
+                
+                
+                "defaultRestrictViewToRoles": ["role1"],
+                
+                
+                "rolePermissions": {
+                    
+                    "perm1": ["role2"]                    
+                },
+                
+                
+                "proxies": {
+                
+                    "proxy1": {
+                        "targetUri": "https://test.com/foo",
+                        
+                        "restrictToRoles": ["role1"],
+                        
+                        "sendPermissionsHeader": true
+                    },                
+                    "proxy2": {
+                        "targetUri": "ws://test2.com/bar",
+                        
+                        "sendPermissionsHeader": true
+                    }                
+                },
+                
+                
+                "metaInfo": {
+                    "openMicrofrontends": true,
+                    
+                    "MY_COCKPIT_CAPABILITIES_META": {
+    "businessEntity": "Customer",
+    "contentType": "overview"
+}                    
+                },
+                
+                "caching": {
+                    "ssrHtml": "same-config"
+                },
+                "appConfig": {
+    "customerId": "1000"
+}            }
+        }
+    
+    ]
+}

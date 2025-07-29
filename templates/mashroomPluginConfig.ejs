@@ -1,0 +1,68 @@
+{
+    "$schema": "https://www.mashroom-server.com/schemas/mashroom-plugins.json",
+    "plugins": [
+    <% for (let i = 0; i < def.microfrontends.length; i ++) { %>
+        {
+            "name": "<%-def.microfrontends[i].name%>",
+            "type": "portal-app2",
+            <% if (def.microfrontends[i].description) { %>
+            "description": <%-JSON.stringify(def.microfrontends[i].description, null, 4)-%>,
+            <% } %>
+            "clientBootstrap": "<%-def.microfrontends[i].globalLaunchFunction%>",
+            "resources": <%-JSON.stringify(def.microfrontends[i].resources, null, 4)-%>,
+            "local": {
+                "resourcesRoot": "./unknown-local-not-supported"
+            },
+            "remote": {
+                <% if (def.microfrontends[i].paths.ssrHtml) { %>
+                "ssrInitialHtmlPath": "<%-def.microfrontends[i].paths.ssrHtml-%>",
+                <% } %>
+                "resourcesRoot": "<%-def.microfrontends[i].paths.resourcesBase%>"
+            },
+            "defaultConfig": {
+                <% if (def.microfrontends[i].title) { %>
+                "title": <%-JSON.stringify(def.microfrontends[i].title, null, 4)-%>,
+                <% } %>
+                <% if (additionalProperties.mashroomCategory) { %>
+                "category": "<%-additionalProperties.mashroomCategory-%>",
+                <% } %>
+                <% if (def.microfrontends[i].accessControl?.viewRoles) { %>
+                "defaultRestrictViewToRoles": <%-JSON.stringify(def.microfrontends[i].accessControl.viewRoles)-%>,
+                <% } %>
+                <% if (def.microfrontends[i].accessControl?.permissionRoles && Object.keys(def.microfrontends[i].accessControl.permissionRoles).length > 0) { %>
+                "rolePermissions": {
+                    <% Object.keys(def.microfrontends[i].accessControl.permissionRoles).forEach((permissionKey, idx, array) => { %>
+                    "<%-permissionKey-%>": <%-JSON.stringify(def.microfrontends[i].accessControl.permissionRoles[permissionKey])-%><%-idx < array.length - 1 ? ',' : ''-%>
+                    <% }) %>
+                },
+                <% } %>
+                <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+                "proxies": {
+                <% Object.keys(def.microfrontends[i].apiProxies).forEach((proxyId, idx, array) => { %>
+                    "<%-proxyId-%>": {
+                        "targetUri": "<%-def.microfrontends[i].apiProxies[proxyId]-%>",
+                        <% if (def.microfrontends[i].accessControl?.apiProxyRoles?.[proxyId]) { %>
+                        "restrictToRoles": <%-JSON.stringify(def.microfrontends[i].accessControl.apiProxyRoles[proxyId])-%>,
+                        <% } %>
+                        "sendPermissionsHeader": true
+                    }<%-idx < array.length - 1 ? ',' : ''-%>
+                <% }) %>
+                },
+                <% } %>
+                <% if (additionalProperties.mashroomMetaInfoAnnotations) { %>
+                "metaInfo": {
+                    "openMicrofrontends": true,
+                    <% additionalProperties.mashroomMetaInfoAnnotations.split(',').forEach((annotationId, idx, array) => { %>
+                    "<%-annotationId-%>": <%-JSON.stringify(def.microfrontends[i].annotations?.[annotationId], null, 4)-%><%-idx < array.length - 1 ? ',' : ''-%>
+                    <% }) %>
+                },
+                <% } %>
+                "caching": {
+                    "ssrHtml": "same-config"
+                },
+                "appConfig": <%-JSON.stringify(def.microfrontends[i].config.default, null, 4)-%>
+            }
+        }
+    <% } %>
+    ]
+}

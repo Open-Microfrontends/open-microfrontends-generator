@@ -1,0 +1,74 @@
+
+type Microfrontend<%-i+1-%>RenderCb = (hostElement: HTMLElement, context: Microfrontend<%-i+1-%>Context) => Promise<OpenMicrofrontendLifecycleHooks>;
+
+// Render function for Microfrontend: <%-def.microfrontends[i].name%>
+export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-%>RenderCb): void {
+
+    (window as any)['<%-def.microfrontends[i].globalLaunchFunction-%>'] = async (hostElement: HTMLElement, ...otherArgs: any[]) => {
+        // Temporary Mashroom Server compatibility, until it supports OpenMicrofrontends natively
+        const enableTempMashroomComp = otherArgs.length === 2 && otherArgs[0].appId && otherArgs[0].proxyPaths;
+
+        const defaultContext: Omit<Microfrontend<%-i+1-%>Context, 'apiProxyPaths'> = {
+            id: 'default',
+            lang: 'en',
+            user: {
+                guest: true,
+                username: 'guest',
+                displayName: 'guest',
+                <% if (def.microfrontends[i].accessControl?.permissionRoles && Object.keys(def.microfrontends[i].accessControl.permissionRoles).length > 0) { %>
+                permissions: {} as any,
+                <% } %>
+            },
+            config: <%-JSON.stringify(def.microfrontends[i].config.default, null, 4)-%>,
+            <% if (def.microfrontends[i].messages) { %>
+            messageBus: {
+                publish(topic: any) { console.warn(`OpenMicrofrontends: Publish to topic ${topic} but no messageBus present!`); },
+                subscribe(topic: any) { console.warn(`OpenMicrofrontends: Subscribe to topic ${topic} but no messageBus present!`); },
+                unsubscribe(topic: any) {},
+            },
+            <% } %>
+        };
+
+        let context: Microfrontend<%-i+1-%>Context;
+        if (enableTempMashroomComp) {
+            const {appId, lang, user, proxyPaths, appConfig} = otherArgs[0];
+            const {messageBus} = otherArgs[1];
+            context = {
+                ...defaultContext,
+                id: appId,
+                lang,
+                user,
+                <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+                apiProxyPaths: proxyPaths,
+                <% } %>
+                config: appConfig,
+                <% if (def.microfrontends[i].messages) { %>
+                messageBus,
+                <% } %>
+            };
+        } else {
+            // Default
+            context = {
+                ...defaultContext,
+                ...otherArgs[0],
+            };
+        }
+
+        // Validate
+        <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+        if (!context.apiProxyPaths) {
+            throw new Error('OpenMicrofrontends: No apiProxyPaths provided!');
+        }
+        <% } -%>
+
+        console.debug('OpenMicrofrontends: Starting Microfrontend "<%-def.microfrontends[i].name-%>" with context:', context);
+        const result = await cb(hostElement, context);
+
+        if (enableTempMashroomComp) {
+            return {
+                willBeRemoved: result?.onRemove,
+            };
+        }
+        return result;
+    }
+}
