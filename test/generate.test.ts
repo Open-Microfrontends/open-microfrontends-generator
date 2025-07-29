@@ -8,7 +8,7 @@ const demoSchemaLocation = resolve(__dirname, '_schemas');
 
 describe('generate', () => {
 
-    it('generates plain render functions', async () => {
+    it('generates plain JS render functions', async () => {
         const def = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
         const model = await createGeneratorModel(def, {}, demoSchemaLocation);
         const result = await generate(model, 'renderersPlainJS');
@@ -18,24 +18,24 @@ describe('generate', () => {
         expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendRenderers.ts'), 'utf-8'));
     });
 
-    it('generates plain start functions', async () => {
+    it('generates browser host integration functions', async () => {
         const def = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
         const model = await createGeneratorModel(def, {
             shadowDOM: 'true',
         }, demoSchemaLocation);
-        const result = await generate(model, 'hostIntegrationBrowser');
+        const result = await generate(model, 'hostIntegrationsBrowser');
 
         // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendClients.ts'), result);
 
         expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendClients.ts'), 'utf-8'));
     });
 
-    it('generates mashroom start functions', async () => {
+    it('generates Mashroom host integration functions', async () => {
         const def = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
         const model = await createGeneratorModel(def, {
             shadowDOM: 'true',
         }, demoSchemaLocation);
-        const result = await generate(model, 'hostIntegrationMashroom');
+        const result = await generate(model, 'hostIntegrationsMashroom');
 
         // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendClients_mashroom.ts'), result);
 

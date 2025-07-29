@@ -50,7 +50,7 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 > This implementation contains a compatibility layer for *Mashroom Server* for demo purposes. 
 > It will be removed as soon as *Mashroom Server* supports *OpenMicrofrontends* natively.
 
-### hostIntegrationBrowser
+### hostIntegrationsBrowser
 
 Generates a *microfrontendClients.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
@@ -88,7 +88,7 @@ Supported additionalProperties:
 >   * Server-side rendering
 >   * Properly unloading a Microfrontend
 
-### hostIntegrationMashroom
+### hostIntegrationsMashroom
 
 Generates a *microfrontendClients.ts* file that contains functions to launch the Microfrontends within 
 a [Mashroom Portal](https://www.mashroom-server.com) page. 
@@ -105,11 +105,11 @@ const {id, close, messages} = await startMyFirstMicrofrontend('hostElementId', {
 messages.publish('topic', {});
 ```
 
-### hostIntegrationExpress
+### hostIntegrationsExpress
 
 TODO
 
-### hostIntegrationSpringBoot
+### hostIntegrationsSpringBoot
 
 TODO
 
