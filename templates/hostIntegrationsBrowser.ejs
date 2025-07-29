@@ -22,7 +22,7 @@
 
 // Helper
 
-function loadJsResource(url: string): Promise<void> {
+function loadJsResource(url: string, addedElements: Array<HTMLElement>): Promise<void> {
     return new Promise((resolve, reject) => {
         const scriptElem = document.createElement('script');
         scriptElem.src = url;
@@ -30,35 +30,37 @@ function loadJsResource(url: string): Promise<void> {
             scriptElem.type = 'module';
         }
         scriptElem.addEventListener('error', (error) => {
-            console.error('OpenMicrofrontends: Error loading JS resource: ', url, error);
+            console.error('[OpenMicrofrontends] Error loading JS resource: ', url, error);
             reject(error);
         });
         scriptElem.addEventListener('load', () => {
             resolve();
         });
         document.head.appendChild(scriptElem);
+        addedElements.push(scriptElem);
     });
  }
 
-function loadCssResource(url: string): void {
+function loadCssResource(url: string, addedElements: Array<HTMLElement>): void {
     const linkElem = document.createElement('link');
     linkElem.rel = 'stylesheet';
     linkElem.href = url;
     linkElem.addEventListener('error', (error) => {
-        console.error('OpenMicrofrontends: Error loading CSS resource: ', url, error);
+        console.error('[OpenMicrofrontends] Error loading CSS resource: ', url, error);
     });
     document.head.appendChild(linkElem);
+    addedElements.push(linkElem);
 }
 
 function toFullUrl(...parts: Array<string>): string {
     return parts
         .map((part) => part.endsWith('/') ? part.slice(0, -1) : part)
-        .map((part, idx) => idx > 0 && !part.startsWith('/') ? `/${part}` : part)
+        .map((part, idx) => idx > 0 && part && !part.startsWith('/') ? `/${part}` : part)
         .join('');
 }
 
 <% for (let i = 0; i < def.microfrontends.length; i ++) { -%>
     <%- include('_clientContext', {i, def, configSchemaTypes, messageSchemaTypes}) %>
     <%- include('_clientMessageBus', {i, def}) %>
-    <%- include('_startFunctionPlain', {i, def, safeMicrofrontendNames, additionalProperties}) %>
+    <%- include('_startFunctionBrowser', {i, def, safeMicrofrontendNames, additionalProperties}) %>
 <% } -%>

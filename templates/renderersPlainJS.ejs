@@ -22,5 +22,5 @@
 
 <% for (let i = 0; i < def.microfrontends.length; i ++) { -%>
 <%- include('_renderContext', {i, def, configSchemaTypes, messageSchemaTypes}) %>
-<%- include('_renderFunctionPlain', {i, def, safeMicrofrontendNames}) %>
+<%- include('_renderFunctionPlainJS', {i, def, safeMicrofrontendNames}) %>
 <% } -%>

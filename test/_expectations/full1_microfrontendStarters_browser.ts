@@ -29,7 +29,7 @@ type Partial<T> = {
 
 // Helper
 
-function loadJsResource(url: string): Promise<void> {
+function loadJsResource(url: string, addedElements: Array<HTMLElement>): Promise<void> {
     return new Promise((resolve, reject) => {
         const scriptElem = document.createElement('script');
         scriptElem.src = url;
@@ -37,30 +37,32 @@ function loadJsResource(url: string): Promise<void> {
             scriptElem.type = 'module';
         }
         scriptElem.addEventListener('error', (error) => {
-            console.error('OpenMicrofrontends: Error loading JS resource: ', url, error);
+            console.error('[OpenMicrofrontends] Error loading JS resource: ', url, error);
             reject(error);
         });
         scriptElem.addEventListener('load', () => {
             resolve();
         });
         document.head.appendChild(scriptElem);
+        addedElements.push(scriptElem);
     });
  }
 
-function loadCssResource(url: string): void {
+function loadCssResource(url: string, addedElements: Array<HTMLElement>): void {
     const linkElem = document.createElement('link');
     linkElem.rel = 'stylesheet';
     linkElem.href = url;
     linkElem.addEventListener('error', (error) => {
-        console.error('OpenMicrofrontends: Error loading CSS resource: ', url, error);
+        console.error('[OpenMicrofrontends] Error loading CSS resource: ', url, error);
     });
     document.head.appendChild(linkElem);
+    addedElements.push(linkElem);
 }
 
 function toFullUrl(...parts: Array<string>): string {
     return parts
         .map((part) => part.endsWith('/') ? part.slice(0, -1) : part)
-        .map((part, idx) => idx > 0 && !part.startsWith('/') ? `/${part}` : part)
+        .map((part, idx) => idx > 0 && part && !part.startsWith('/') ? `/${part}` : part)
         .join('');
 }
 
@@ -119,34 +121,36 @@ type Microfrontend1ClientMessageBus = {
     
 // Start function for Microfrontend: My First Microfrontend
 export async function startMyFirstMicrofrontend(serverUrl: string, hostElement: HTMLElement, context: Microfrontend1Context) {
+    const addedElements: Array<HTMLElement> = [];
+
     // Load resources
     const jsPromises: Array<Promise<void>> = [
         
-        loadJsResource(toFullUrl(serverUrl, '/', 'app.js')),
+        loadJsResource(toFullUrl(serverUrl, '/', 'app.js'), addedElements),
         
     ];
     
     
-    loadCssResource(toFullUrl(serverUrl, '/', 'app.css'));
+    loadCssResource(toFullUrl(serverUrl, '/', 'app.css'), addedElements);
     
     
 
     try {
         await Promise.all(jsPromises);
     } catch (e) {
-        console.error('OpenMicrofrontends: Loading resources of Microfrontend "My First Microfrontend" failed!', e);
+        console.error('[OpenMicrofrontends] Loading resources of Microfrontend "My First Microfrontend" failed!', e);
         return;
     }
 
     // Start Microfrontend
     const renderFunction = (window as any)['startMyFirstMicrofrontend'];
     if (!renderFunction) {
-        console.error('OpenMicrofrontends: Render function of Microfrontend "My First Microfrontend" not found!');
+        console.error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
         return;
     }
 
     
-    console.info('OpenMicrofrontends: Using Shadow DOM for Microfrontend "My First Microfrontend"');
+    console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "My First Microfrontend"');
     hostElement = hostElement.attachShadow({ mode: "open" }).getRootNode() as HTMLElement;
     
 
@@ -154,7 +158,9 @@ export async function startMyFirstMicrofrontend(serverUrl: string, hostElement: 
 
     return {
         close: async () => {
+            console.info('[OpenMicrofrontends] Closing Microfrontend "My First Microfrontend"');
             await lifecycleHooks?.onRemove();
+            addedElements.forEach((elem) => elem.remove());
             hostElement.innerHTML = '';
         },
         

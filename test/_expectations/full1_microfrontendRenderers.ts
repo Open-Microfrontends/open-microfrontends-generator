@@ -96,8 +96,8 @@ export function onRenderMyFirstMicrofrontend(cb: Microfrontend1RenderCb): void {
 },
             
             messageBus: {
-                publish(topic: any) { console.warn(`OpenMicrofrontends: Publish to topic ${topic} but no messageBus present!`); },
-                subscribe(topic: any) { console.warn(`OpenMicrofrontends: Subscribe to topic ${topic} but no messageBus present!`); },
+                publish(topic: any) { console.warn(`[OpenMicrofrontends] Publish to topic ${topic} but no messageBus present!`); },
+                subscribe(topic: any) { console.warn(`[OpenMicrofrontends] Subscribe to topic ${topic} but no messageBus present!`); },
                 unsubscribe(topic: any) {},
             },
             
@@ -131,10 +131,10 @@ export function onRenderMyFirstMicrofrontend(cb: Microfrontend1RenderCb): void {
         // Validate
         
         if (!context.apiProxyPaths) {
-            throw new Error('OpenMicrofrontends: No apiProxyPaths provided!');
+            throw new Error('[OpenMicrofrontends] No apiProxyPaths provided!');
         }
         
-        console.debug('OpenMicrofrontends: Starting Microfrontend "My First Microfrontend" with context:', context);
+        console.debug('[OpenMicrofrontends] Starting Microfrontend "My First Microfrontend" with context:', context);
         const result = await cb(hostElement, context);
 
         if (enableTempMashroomComp) {

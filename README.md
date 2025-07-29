@@ -85,11 +85,11 @@ Supported additionalProperties:
 | shadowDOM                   | Set this to true if the Microfrontend shall be started in a *Shadow DOM* (isolated)   |
 
 > [!IMPORTANT]
-> This client does not support:
+> This host integration does not support:
 >   * API proxies
 >   * Any kind of security
 >   * Server-side rendering
->   * Properly unloading a Microfrontend
+
 
 ### hostIntegrationsMashroom
 

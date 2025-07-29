@@ -25,9 +25,9 @@ describe('generate', () => {
         }, demoSchemaLocation);
         const result = await generate(model, 'hostIntegrationsBrowser');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendClients.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendClients.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), 'utf-8'));
     });
 
     it('generates Mashroom host integration functions', async () => {
@@ -37,9 +37,9 @@ describe('generate', () => {
         }, demoSchemaLocation);
         const result = await generate(model, 'hostIntegrationsMashroom');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendClients_mashroom.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_mashroom.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendClients_mashroom.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_mashroom.ts'), 'utf-8'));
     });
 
     it('generates a mashroomPluginConfig', async () => {

@@ -49,7 +49,7 @@ type Microfrontend1ClientMessageBus = {
 export async function startMyFirstMicrofrontend(hostElementId: string, overrideConfig?: Partial<Microfrontend1Config>) {
     const clientServices = (window as any).MashroomPortalServices as MashroomPortalClientServices | undefined;
     if (!clientServices) {
-        throw new Error('OpenMicrofrontends: Mashroom Portal not available!');
+        throw new Error('[OpenMicrofrontends] Mashroom Portal not available!');
     }
 
     const portalApp = await clientServices.portalAppService.loadApp(hostElementId, 'My First Microfrontend', undefined, undefined, overrideConfig);
