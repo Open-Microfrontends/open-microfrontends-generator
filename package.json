@@ -1,5 +1,5 @@
 {
-  "name": "@open-microfrontends/open-microfrontends-generator",
+  "name": "@open-microfrontends/generator",
   "description": "OpenMicrofrontends Generator (OMG)",
   "version": "1.0.0",
   "homepage": "https://www.open-microfrontends.org",
