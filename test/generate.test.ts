@@ -23,19 +23,19 @@ describe('generate', () => {
         const model = await createGeneratorModel(def, {
             shadowDOM: 'true',
         }, demoSchemaLocation);
-        const result = await generate(model, 'hostIntegrationsBrowser');
+        const result = await generate(model, 'startersBrowser');
 
         // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), result);
 
         expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), 'utf-8'));
     });
 
-    it('generates Mashroom host integration functions', async () => {
+    it('generates Mashroom starter functions', async () => {
         const def = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
         const model = await createGeneratorModel(def, {
             shadowDOM: 'true',
         }, demoSchemaLocation);
-        const result = await generate(model, 'hostIntegrationsMashroom');
+        const result = await generate(model, 'startersMashroom');
 
         // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_mashroom.ts'), result);
 

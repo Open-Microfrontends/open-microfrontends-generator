@@ -28,6 +28,13 @@ Options:
 
 ## Templates
 
+ * [renderersPlainJS](#renderersPlainJS)
+ * [startersBrowser](#startersBrowser)
+ * [startersMashroom](#startersMashroom)
+ * [hostIntegrationsExpress](#hostIntegrationsExpress) 
+ * [hostIntegrationsSpringBoot](#hostIntegrationsSpringBoot) 
+ * [mashroomPluginConfig](#mashroomPluginConfig)
+
 ### renderersPlainJS
 
 Generates a *microfrontendRenderers.ts* file that contains render functions that need to be implemented.
@@ -53,7 +60,7 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 > This implementation contains a compatibility layer for *Mashroom Server* for demo purposes. 
 > It will be removed as soon as *Mashroom Server* supports *OpenMicrofrontends* natively.
 
-### hostIntegrationsBrowser
+### startersBrowser
 
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
@@ -90,12 +97,16 @@ Supported additionalProperties:
 >   * Any kind of security
 >   * Server-side rendering
 
-
-### hostIntegrationsMashroom
+### startersMashroom
 
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends within 
 a [Mashroom Portal](https://www.mashroom-server.com) page. 
-Typically, the generated started would be used within another Microfrontend to create a *Composite Microfrontend*. 
+
+> [!NOTE]
+> Mashroom Server can run OpenMicrofrontends automatically, 
+> these launchers are only intended to be used within *Composite Microfrontends"
+> to start other (embedded) Microfrontends in a type-safe manner.
+ 
 
 ```ts
 import {startMyFirstMicrofrontend} from './_generated/microfrontendClients';
@@ -110,13 +121,13 @@ messages.publish('topic', {});
 
 ### hostIntegrationsExpress
 
-Generates a *microfrontendStarters.ts* file and [Express.js](https://expressjs.com) based server-side code for security, proxying and SSR.
+Generates integration files for an [Express.js](https://expressjs.com) host, including server-side code for security, proxying and SSR.
 
 TODO
 
 ### hostIntegrationsSpringBoot
 
-Generates a *microfrontendStarters.ts* file and [Spring Boot](https://spring.io/projects/spring-boot) based server-side code for security, proxying and SSR.
+Generates integration files for an [Spring Boot](https://spring.io/projects/spring-boot) host, including server-side code for security, proxying and SSR.
 
 TODO
 
