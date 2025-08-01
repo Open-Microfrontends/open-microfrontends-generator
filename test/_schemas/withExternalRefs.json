@@ -1,62 +1,64 @@
 {
   "$schema": "../../schemas/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
-  "servers": [{
-    "url": "http://my-test-server.com",
-    "description": "Test Server"
-  }],
-  "microfrontends": [{
-    "name": "My First Microfrontend",
-    "title": {
-      "en": "My First Microfrontend",
-      "de": "Mein erstes Microfrontend"
-    },
-    "description": "test",
-    "resources": {
-      "js": ["app.js"],
-      "css": ["app.css"]
-    },
-    "paths": {
-      "resourcesBase": "/",
-      "ssrHtml": "/ssr"
-    },
-    "globalLaunchFunction": "startMyFirstMicrofrontend",
-    "apiProxies": {
-      "proxy1": "https://test.com/foo",
-      "proxy2": "ws://test2.com/bar"
-    },
-    "config": {
-      "schema": {
-        "type": "object",
-        "properties": {
-          "customerId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "customerId"
-        ],
-        "additionalProperties": false
-      },
-      "default": {
-        "customerId": "1000"
-      }
-    },
-    "messages": {
-      "ping": {
-        "publish": true,
-        "subscribe": true,
-        "schema": {
-          "$ref": "./pingMessage.json"
-        }
-      }
-    },
-    "annotations": {
-      "MY_COCKPIT_CAPABILITIES_META": {
-        "businessEntity": "Customer",
-        "contentType": "overview"
-      },
-      "MASHROOM_EXTENSION1": "foo"
+  "servers": [
+    {
+      "url": "http://my-test-server.com",
+      "description": "Test Server"
     }
-  }]
+  ],
+  "microfrontends": [
+    {
+      "name": "My First Microfrontend",
+      "title": {
+        "en": "My First Microfrontend",
+        "de": "Mein erstes Microfrontend"
+      },
+      "description": "test",
+      "resources": {
+        "js": ["app.js"],
+        "css": ["app.css"]
+      },
+      "paths": {
+        "resourcesBase": "/",
+        "ssrHtml": "/ssr"
+      },
+      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "apiProxies": {
+        "proxy1": "https://test.com/foo",
+        "proxy2": "ws://test2.com/bar"
+      },
+      "config": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "customerId": {
+              "type": "string"
+            }
+          },
+          "required": ["customerId"],
+          "additionalProperties": false
+        },
+        "default": {
+          "customerId": "1000"
+        }
+      },
+      "messages": {
+        "ping": {
+          "publish": true,
+          "subscribe": true,
+          "schema": {
+            "$ref": "./pingMessage.json"
+          }
+        }
+      },
+      "annotations": {
+        "MY_COCKPIT_CAPABILITIES_META": {
+          "businessEntity": "Customer",
+          "contentType": "overview"
+        },
+        "MASHROOM_EXTENSION1": "foo"
+      }
+    }
+  ]
 }

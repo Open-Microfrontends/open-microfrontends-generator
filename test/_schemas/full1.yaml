@@ -62,7 +62,7 @@ microfrontends:
             ping:
               const: true
           required:
-          - ping
+            - ping
     annotations:
       MY_COCKPIT_CAPABILITIES_META:
         businessEntity: Customer

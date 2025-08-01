@@ -46,7 +46,7 @@ export default [{
         '@typescript-eslint/no-unused-vars': 'warn',
         '@typescript-eslint/no-require-imports': 'off',
         '@typescript-eslint/no-namespace': 'off',
-        '@typescript-eslint/no-empty-object-type': 'off',
+        '@typescript-eslint/no-empty-object-type': 'off'
     },
 }, {
     plugins: {

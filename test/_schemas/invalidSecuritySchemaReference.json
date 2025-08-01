@@ -30,22 +30,15 @@
         "de": "Mein erstes Microfrontend"
       },
       "description": "test",
-      "frontendPermissions": [
-        "perm1",
-        "perm2"
-      ],
+      "frontendPermissions": ["perm1", "perm2"],
       "security": [
         {
           "BasicAuth": []
         }
       ],
       "resources": {
-        "js": [
-          "app.js"
-        ],
-        "css": [
-          "app.css"
-        ]
+        "js": ["app.js"],
+        "css": ["app.css"]
       },
       "paths": {
         "resourcesBase": "/",
@@ -59,7 +52,8 @@
             {
               "BasicAuth": [],
               "UnknownSecuritySchema": []
-            }, {
+            },
+            {
               "ApiKeyAuth": ["foo", "bar"]
             }
           ]
@@ -74,9 +68,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "customerId"
-          ],
+          "required": ["customerId"],
           "additionalProperties": false
         },
         "default": {
