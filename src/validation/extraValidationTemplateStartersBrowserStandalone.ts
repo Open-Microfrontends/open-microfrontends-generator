@@ -8,6 +8,9 @@ const validation: TemplateExtraValidation = (def) => {
     if (microfrontend.security && Object.keys(microfrontend.security).length > 0) {
       return 'security found in definition, which are not supported!';
     }
+    if (microfrontend.paths.ssrHtml) {
+      return 'SSR route (paths.ssrHtml) found in definition, which is not supported!';
+    }
   }
 
   return null;

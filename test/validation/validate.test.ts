@@ -38,7 +38,7 @@ describe('validate', () => {
     const errors = await validate(def, demoSchemaLocation);
 
     expect(
-      errors.startsWith(`"Message Schema of Microfrontend My First Microfrontend Topic 'ping' is not valid:`)
+      errors.startsWith(`Message Schema of Microfrontend My First Microfrontend Topic 'ping' is not valid:`)
     ).toBeTruthy();
   });
 

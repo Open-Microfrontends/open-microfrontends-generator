@@ -68,7 +68,7 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 > [!IMPORTANT]
-> These starters can only be created if the definition does NOT contain any security or proxy declarations 
+> These starters can only be created if the definition does NOT contain any security, API proxy declarations or SSR routes 
 > (which would require a server component on the host)
 
 Usage

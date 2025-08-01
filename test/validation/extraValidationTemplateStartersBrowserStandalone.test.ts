@@ -54,7 +54,30 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
     expect(errors).toBe('apiProxies found in definition, which are not supported!');
   });
 
-  it('succeeds with a definition without security or API proxies', async () => {
+  it('fails if the definition contains SSR routes', async () => {
+    const def: OpenMicroFrontendsDef = {
+      openMicrofrontends: '1.0.0',
+      microfrontends: [
+        {
+          name: 'Microfrontend 1',
+          paths: {
+            resourcesBase: '/',
+            ssrHtml: '/ssr'
+          },
+          resources: {
+            js: ['index.js']
+          },
+          globalLaunchFunction: 'start'
+        }
+      ]
+    };
+
+    const errors = extraValidationTemplateStartersBrowserStandalone(def);
+
+    expect(errors).toBe('SSR route (paths.ssrHtml) found in definition, which is not supported!');
+  });
+
+  it('succeeds with a definition without security, API proxies or SSR routes', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [
