@@ -28,7 +28,7 @@ describe('validate', () => {
     const errors = await validate(def, demoSchemaLocation);
 
     expect(errors).toBe(
-      'Schema validation failed: /microfrontends/0 must have required property \'globalLaunchFunction\''
+      `Schema validation failed: /microfrontends/0 must have required property 'globalLaunchFunction'`
     );
   });
 
@@ -38,7 +38,7 @@ describe('validate', () => {
     const errors = await validate(def, demoSchemaLocation);
 
     expect(
-      errors.startsWith('Message Schema of Microfrontend My First Microfrontend Topic \'ping\' is not valid:')
+      errors.startsWith(`"Message Schema of Microfrontend My First Microfrontend Topic 'ping' is not valid:`)
     ).toBeTruthy();
   });
 
@@ -66,7 +66,7 @@ describe('validate', () => {
     const errors = await validate(def, demoSchemaLocation);
 
     expect(errors).toBe(
-      'Default config of Microfrontend My First Microfrontend is not valid: Schema validation failed:  must have required property \'customerId\''
+      `Default config of Microfrontend My First Microfrontend is not valid: Schema validation failed:  must have required property 'customerId'`
     );
   });
 
