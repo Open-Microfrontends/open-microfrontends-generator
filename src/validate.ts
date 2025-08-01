@@ -1,8 +1,8 @@
 import {isAbsolute, resolve} from 'path';
 import AJV from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
+import type {SecurityRequirement} from './generated/open-microfrontends';
 import type {OpenMicroFrontendsDef} from './types';
-import {SecurityRequirement} from "./generated/open-microfrontends";
 
 const schema = require('../schemas/open-microfrontends.json');
 
@@ -62,7 +62,7 @@ const validateSecurityRequirements = (microfrontendName: string, knownSchemes: A
             }
         }
     }
-}
+};
 
 export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<string | null> => {
     if (!def.openMicrofrontends.startsWith('1.0.')) {

@@ -3,7 +3,7 @@ import {resolve} from 'path';
 import loadYaml from '../src/loadYaml';
 import createGeneratorModel from '../src/createGeneratorModel';
 import generate from '../src/generate';
-import saveFile from "../src/saveFile";
+import saveFile from '../src/saveFile';
 
 const demoSchemaLocation = resolve(__dirname, '_schemas');
 
