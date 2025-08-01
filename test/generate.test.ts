@@ -3,6 +3,7 @@ import {resolve} from 'path';
 import loadYaml from '../src/loadYaml';
 import createGeneratorModel from '../src/createGeneratorModel';
 import generate from '../src/generate';
+import saveFile from "../src/saveFile";
 
 const demoSchemaLocation = resolve(__dirname, '_schemas');
 
@@ -18,16 +19,16 @@ describe('generate', () => {
         expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendRenderers.ts'), 'utf-8'));
     });
 
-    it('generates browser host integration functions', async () => {
+    it('generates browser standalone starter functions', async () => {
         const def = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
         const model = await createGeneratorModel(def, {
             shadowDOM: 'true',
         }, demoSchemaLocation);
-        const result = await generate(model, 'startersBrowser');
+        const result = await generate(model, 'startersBrowserStandalone');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), 'utf-8'));
     });
 
     it('generates Mashroom starter functions', async () => {

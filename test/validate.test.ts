@@ -62,4 +62,12 @@ describe('validate', () => {
 
         expect(errors).toBe('Default config of Microfrontend My First Microfrontend is not valid: Schema validation failed:  must have required property \'customerId\'');
     });
+
+    it('fails with an invalid security schema reference', async () => {
+        const def = loadJson(resolve(demoSchemaLocation, 'invalidSecuritySchemaReference.json'));
+
+        const errors = await validate(def, demoSchemaLocation);
+
+        expect(errors).toBe('Security requirement of Microfrontend My First Microfrontend is not valid: Unknown schema: UnknownSecuritySchema!');
+    });
 });

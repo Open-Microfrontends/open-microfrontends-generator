@@ -15,25 +15,10 @@ export type I18NString =
        */
       [k: string]: string;
     };
+export type Security = SecurityRequirement[];
 export type RelativeJsPath = string;
 export type RelativeCssPath = string;
-/**
- * This interface was referenced by `APIProxy`'s JSON-Schema definition
- * via the `patternProperty` "^[a-zA-Z_][a-zA-Z0-9_]+$".
- */
 export type HttpOrWebSocketUrlOrRelativePath = string;
-/**
- * A list of roles that grant access to this Microfrontend
- */
-export type Roles = string[];
-/**
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^[a-zA-Z_][a-zA-Z0-9_]+$".
- *
- * This interface was referenced by `undefined`'s JSON-Schema definition
- * via the `patternProperty` "^\w+$".
- */
-export type Roles1 = string[];
 export type CoreAndValidationSpecificationsMetaSchema = CoreVocabularyMetaSchema &
   ApplicatorVocabularyMetaSchema &
   UnevaluatedApplicatorVocabularyMetaSchema &
@@ -447,6 +432,14 @@ export type ContentVocabularyMetaSchema = {
 
 export interface HttpsOpenMicrofrontendsSchemas100 {
   $schema?: string;
+  /**
+   * Section for defining re-usable security schemes for API proxies
+   */
+  securitySchemes?: {
+    [k: string]: {
+      [k: string]: any;
+    };
+  };
   openMicrofrontends: string;
   servers?: Server[];
   microfrontends: Microfrontend[];
@@ -459,17 +452,24 @@ export interface Microfrontend {
   name: string;
   title?: I18NString;
   description?: string;
+  security?: Security;
   resources: Resources;
   paths: Paths;
   /**
-   * The name of the function that can be used in the browser to launch this Microfrontend
+   * Defines all user-permissions used within this microfrontend
+   */
+  frontendPermissions?: string[];
+  /**
+   * The name of the function that can be used in the browser to launch this microfrontend
    */
   globalLaunchFunction: string;
   apiProxies?: APIProxy;
-  accessControl?: AccessControl;
   config?: Config;
   messages?: Messages;
   annotations?: Annotations;
+}
+export interface SecurityRequirement {
+  [k: string]: string[];
 }
 export interface Resources {
   /**
@@ -495,22 +495,16 @@ export interface Paths {
  * Defines private API endpoints the framework needs to provide relative paths for
  */
 export interface APIProxy {
-  [k: string]: HttpOrWebSocketUrlOrRelativePath;
+  /**
+   * This interface was referenced by `APIProxy`'s JSON-Schema definition
+   * via the `patternProperty` "^[a-zA-Z_][a-zA-Z0-9_]+$".
+   */
+  [k: string]: HttpOrWebSocketUrlOrRelativePath | APIProxyConfig;
 }
-export interface AccessControl {
-  viewRoles?: Roles;
-  /**
-   * A list of roles that grant access to given proxy ID
-   */
-  apiProxyRoles?: {
-    [k: string]: Roles1;
-  };
-  /**
-   * A list of roles that enable the given permission ID (which will be passed to the Microfrontend)
-   */
-  permissionRoles?: {
-    [k: string]: Roles1;
-  };
+export interface APIProxyConfig {
+  url: HttpOrWebSocketUrlOrRelativePath;
+  security?: Security;
+  [k: string]: any;
 }
 export interface Config {
   schema: CoreAndValidationSpecificationsMetaSchema;

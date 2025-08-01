@@ -1,6 +1,8 @@
 import {isAbsolute, resolve} from 'path';
 import AJV from 'ajv/dist/2020';
+import addFormats from 'ajv-formats';
 import type {OpenMicroFrontendsDef} from './types';
+import {SecurityRequirement} from "./generated/open-microfrontends";
 
 const schema = require('../schemas/open-microfrontends.json');
 
@@ -29,6 +31,7 @@ const validateSubSchema = async (schema: any, defLocation: string): Promise<stri
     const ajv = new AJV({
         loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation),
     });
+    addFormats(ajv);
     try {
         await ajv.compileAsync(schema);
     } catch (e) {
@@ -39,8 +42,10 @@ const validateSubSchema = async (schema: any, defLocation: string): Promise<stri
 
 const validateSchemaCompliance = async (schema: any, data: any, defLocation: string): Promise<string | null> => {
     const ajv = new AJV({
+        strictTypes: false,
         loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation),
     });
+    addFormats(ajv);
     const compiledSchema = await ajv.compileAsync(schema);
     const valid = compiledSchema(data);
     if (!valid) {
@@ -48,6 +53,16 @@ const validateSchemaCompliance = async (schema: any, data: any, defLocation: str
     }
     return null;
 };
+
+const validateSecurityRequirements = (microfrontendName: string, knownSchemes: Array<string>, securityRequirements: Array<SecurityRequirement>): string | null => {
+    for (const securityRequirement of securityRequirements) {
+        for (const schemaName in securityRequirement) {
+            if (!knownSchemes.includes(schemaName)) {
+                return `Security requirement of Microfrontend ${microfrontendName} is not valid: Unknown schema: ${schemaName}!`;
+            }
+        }
+    }
+}
 
 export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<string | null> => {
     if (!def.openMicrofrontends.startsWith('1.0.')) {
@@ -59,6 +74,8 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
     if (schemaErrors) {
         return schemaErrors;
     }
+
+    const knownSecuritySchemes = Object.keys(def.securitySchemes ?? {});
 
     for (const microfrontend of def.microfrontends) {
         // Check sub-schemas
@@ -91,6 +108,25 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
                 const topicDef = microfrontend.messages[topic];
                 if (!topicDef.publish || !topicDef.subscribe) {
                     return `Message definition Microfrontend ${microfrontend.name} Topic '${topic}' is not valid: One of 'publish' or 'subscribe' must be defined (or both)!`;
+                }
+            }
+        }
+
+        // Check security schema references
+        if (microfrontend.security) {
+            const result = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, microfrontend.security);
+            if (result) {
+                return result;
+            }
+        }
+        if (microfrontend.apiProxies) {
+            for (const apiProxyName in microfrontend.apiProxies) {
+                const apiProxy = microfrontend.apiProxies[apiProxyName];
+                if (typeof apiProxy === 'object' && apiProxy.security) {
+                    const result = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, apiProxy.security);
+                    if (result) {
+                        return result;
+                    }
                 }
             }
         }

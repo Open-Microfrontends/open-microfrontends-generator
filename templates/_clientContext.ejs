@@ -8,9 +8,9 @@ type Microfrontend<%-i+1-%>Context = {
         readonly guest: boolean;
         readonly username: string;
         readonly displayName: string;
-        <% if (def.microfrontends[i].accessControl?.permissionRoles && Object.keys(def.microfrontends[i].accessControl.permissionRoles).length > 0) { %>
+        <% if (def.microfrontends[i].frontendPermissions && def.microfrontends[i].frontendPermissions.length > 0) { %>
         readonly permissions: {
-            <% Object.keys(def.microfrontends[i].accessControl.permissionRoles).forEach((permissionKey) => { %>
+            <% def.microfrontends[i].frontendPermissions.forEach((permissionKey) => { %>
             readonly '<%-permissionKey%>': boolean;
             <% }) %>
         };

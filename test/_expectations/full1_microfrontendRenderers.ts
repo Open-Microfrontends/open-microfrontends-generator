@@ -42,6 +42,8 @@ type Microfrontend1Context = {
             
             readonly 'perm1': boolean;
             
+            readonly 'perm2': boolean;
+            
         };
         
     },

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../schemas/open-microfrontends.json",
+  "$schema": "../../schemas/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "servers": [{
     "url": "http://my-test-server.com",
@@ -24,15 +24,6 @@
     "apiProxies": {
       "proxy1": "https://test.com/foo",
       "proxy2": "ws://test2.com/bar"
-    },
-    "accessControl": {
-      "viewRoles": ["role1"],
-      "apiProxyRoles": {
-        "proxy1": ["role1"]
-      },
-      "permissionRoles": {
-        "perm1": ["role2"]
-      }
     },
     "config": {
       "schema": {

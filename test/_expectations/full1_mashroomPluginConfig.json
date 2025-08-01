@@ -37,26 +37,34 @@
                 "category": "OpenMicroFrontendsDemo",
                 
                 
+                
                 "defaultRestrictViewToRoles": ["role1"],
                 
                 
                 "rolePermissions": {
                     
-                    "perm1": ["role2"]                    
+                    "perm1": ["role1"],                    
+                    "perm2": ["role2","Administrator"]                    
                 },
                 
                 
                 "proxies": {
                 
                     "proxy1": {
+                        
+                        
                         "targetUri": "https://test.com/foo",
+                        
                         
                         "restrictToRoles": ["role1"],
                         
                         "sendPermissionsHeader": true
                     },                
                     "proxy2": {
+                        
                         "targetUri": "ws://test2.com/bar",
+                        
+                        
                         
                         "sendPermissionsHeader": true
                     }                

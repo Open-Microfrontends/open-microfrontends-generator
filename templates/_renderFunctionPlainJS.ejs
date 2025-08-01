@@ -15,7 +15,7 @@ export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-
                 guest: true,
                 username: 'guest',
                 displayName: 'guest',
-                <% if (def.microfrontends[i].accessControl?.permissionRoles && Object.keys(def.microfrontends[i].accessControl.permissionRoles).length > 0) { %>
+                <% if (def.microfrontends[i].frontendPermissions && def.microfrontends[i].frontendPermissions.length > 0) { %>
                 permissions: {} as any,
                 <% } %>
             },

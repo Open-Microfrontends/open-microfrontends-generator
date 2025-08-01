@@ -30,11 +30,22 @@
         "de": "Mein erstes Microfrontend"
       },
       "description": "test",
-      "frontendPermissions": ["perm1", "perm2"],
-      "security": [{ "BasicAuth": [] }],
+      "frontendPermissions": [
+        "perm1",
+        "perm2"
+      ],
+      "security": [
+        {
+          "BasicAuth": []
+        }
+      ],
       "resources": {
-        "js": ["app.js"],
-        "css": ["app.css"]
+        "js": [
+          "app.js"
+        ],
+        "css": [
+          "app.css"
+        ]
       },
       "paths": {
         "resourcesBase": "/",
@@ -44,7 +55,14 @@
       "apiProxies": {
         "proxy1": {
           "url": "https://test.com/foo",
-          "security": [{ "ApiKeyAuth": [] }]
+          "security": [
+            {
+              "BasicAuth": [],
+              "UnknownSecuritySchema": []
+            }, {
+              "ApiKeyAuth": ["foo", "bar"]
+            }
+          ]
         },
         "proxy2": "ws://test2.com/bar"
       },
@@ -56,41 +74,13 @@
               "type": "string"
             }
           },
-          "required": ["customerId"],
+          "required": [
+            "customerId"
+          ],
           "additionalProperties": false
         },
         "default": {
           "customerId": "1000"
-        }
-      },
-      "messages": {
-        "ping": {
-          "publish": true,
-          "subscribe": true,
-          "schema": {
-            "$id": "https://my-company.com/messages/ping",
-            "type": "object",
-            "properties": {
-              "ping": {
-                "const": true
-              }
-            },
-            "required": ["ping"]
-          }
-        }
-      },
-      "annotations": {
-        "MY_COCKPIT_CAPABILITIES_META": {
-          "businessEntity": "Customer",
-          "contentType": "overview"
-        },
-        "MASHROOM_FRONTEND_PERMISSIONS_MAPPING": {
-          "perm1": ["role1"],
-          "perm2": ["role2", "Administrator"]
-        },
-        "MASHROOM_VIEW_ROLES": ["role1"],
-        "MASHROOM_PROXY_ACCESS_ROLES": {
-          "proxy1": ["role1"]
         }
       }
     }
