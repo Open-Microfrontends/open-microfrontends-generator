@@ -50,6 +50,10 @@ const validateSchemaCompliance = async (schema: any, data: any, defLocation: str
 };
 
 export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<string | null> => {
+    if (!def.openMicrofrontends.startsWith('1.0.')) {
+        return `This Generator version only supports OpenMicrofrontends version 1.0.x`;
+    }
+
     // Basic schema compliance
     const schemaErrors = await validateSchemaCompliance(schema, def, defLocation);
     if (schemaErrors) {
