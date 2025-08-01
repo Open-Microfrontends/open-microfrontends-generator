@@ -1,11 +1,11 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
-import loadYaml from '../src/loadYaml';
-import createGeneratorModel from '../src/createGeneratorModel';
-import generate from '../src/generate';
-import saveFile from '../src/saveFile';
+import createGeneratorModel from '../../src/generation/createGeneratorModel';
+import generate from '../../src/generation/generate';
+import loadYaml from '../../src/utils/loadYaml';
+import saveFile from '../../src/utils/saveFile';
 
-const demoSchemaLocation = resolve(__dirname, '_schemas');
+const demoSchemaLocation = resolve(__dirname, '..', '_schemas');
 
 describe('generate', () => {
 
@@ -14,9 +14,9 @@ describe('generate', () => {
         const model = await createGeneratorModel(def, {}, demoSchemaLocation);
         const result = await generate(model, 'renderersPlainJS');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendRenderers.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendRenderers.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendRenderers.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '..', '_expectations', 'full1_microfrontendRenderers.ts'), 'utf-8'));
     });
 
     it('generates browser standalone starter functions', async () => {
@@ -26,9 +26,9 @@ describe('generate', () => {
         }, demoSchemaLocation);
         const result = await generate(model, 'startersBrowserStandalone');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendStarters_browser_standalone.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), 'utf-8'));
     });
 
     it('generates Mashroom starter functions', async () => {
@@ -38,9 +38,9 @@ describe('generate', () => {
         }, demoSchemaLocation);
         const result = await generate(model, 'startersMashroom');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_mashroom.ts'), result);
+        // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendStarters_mashroom.ts'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_microfrontendStarters_mashroom.ts'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '..', '_expectations', 'full1_microfrontendStarters_mashroom.ts'), 'utf-8'));
     });
 
     it('generates a mashroomPluginConfig', async () => {
@@ -51,9 +51,9 @@ describe('generate', () => {
         }, demoSchemaLocation);
         const result = await generate(model, 'mashroomPluginConfig');
 
-        // await saveFile(resolve(__dirname, '_expectations', 'full1_mashroomPluginConfig.json'), result);
+        // await saveFile(resolve(__dirname, '..', '_expectations', 'full1_mashroomPluginConfig.json'), result);
 
-        expect(result).toBe(readFileSync(resolve(__dirname, '_expectations', 'full1_mashroomPluginConfig.json'), 'utf-8'));
+        expect(result).toBe(readFileSync(resolve(__dirname, '..', '_expectations', 'full1_mashroomPluginConfig.json'), 'utf-8'));
     });
 
 });

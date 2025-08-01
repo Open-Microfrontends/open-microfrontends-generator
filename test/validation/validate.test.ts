@@ -1,9 +1,9 @@
 import {resolve} from 'path';
-import loadJson from '../src/loadJson';
-import loadYaml from '../src/loadYaml';
-import validate from '../src/validate';
+import loadJson from '../../src/utils/loadJson';
+import loadYaml from '../../src/utils/loadYaml';
+import validate from '../../src/validation/validate';
 
-const demoSchemaLocation = resolve(__dirname, '_schemas');
+const demoSchemaLocation = resolve(__dirname, '..', '_schemas');
 
 describe('validate', () => {
 

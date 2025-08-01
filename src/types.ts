@@ -14,3 +14,12 @@ export type GeneratorModel = {
     readonly messageSchemaTypes: Array<Record<string, GeneratorModelTsTypeRef>>;
     readonly additionalProperties: Record<string, string>;
 }
+
+export type TemplateExtraValidation = (def: OpenMicroFrontendsDef) => string | null;
+
+export type TemplateConfig = {
+  readonly extraValidation?: TemplateExtraValidation;
+  readonly templateFileToTargetFiles: {
+      [ejsTemplate: string]: string;
+  }
+};

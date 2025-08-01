@@ -60,6 +60,7 @@
                 <% if (additionalProperties.mashroomMetaInfoAnnotations) { %>
                 "metaInfo": {
                     "openMicrofrontends": true,
+                    "openMicrofrontendsVersion": "<%-def.openMicrofrontends-%>",
                     <% additionalProperties.mashroomMetaInfoAnnotations.split(',').forEach((annotationId, idx, array) => { %>
                     "<%-annotationId-%>": <%-JSON.stringify(def.microfrontends[i].annotations?.[annotationId], null, 4)-%><%-idx < array.length - 1 ? ',' : ''-%>
                     <% }) %>

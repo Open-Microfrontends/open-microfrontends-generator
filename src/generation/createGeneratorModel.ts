@@ -1,5 +1,5 @@
 import {compile as jsonToTs} from 'json-schema-to-typescript';
-import type {GeneratorModel, GeneratorModelTsTypeRef, OpenMicroFrontendsDef} from './types';
+import type {GeneratorModel, GeneratorModelTsTypeRef, OpenMicroFrontendsDef} from '../types';
 
 export const schemaToTs = async (schema: any, ifName: string, defLocation: string): Promise<string> => {
     let firstSchemaProcessed = false;

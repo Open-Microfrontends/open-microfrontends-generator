@@ -1,11 +1,3 @@
 
 export const DEFAULT_OUT_FOLDER = './_open-microfrontends-generated';
 export const DEFAULT_TEMPLATE = 'renderersPlain';
-
-export const KNOWN_TEMPLATES = {
-    renderersPlainJS: 'microfrontendRenderers.ts',
-    startersBrowserStandalone: 'microfrontendStarters.ts',
-    startersBrowserFull: 'microfrontendStarters.ts',
-    startersMashroom: 'microfrontendStarters.ts',
-    mashroomPluginConfig: 'mashroom.json'
-};

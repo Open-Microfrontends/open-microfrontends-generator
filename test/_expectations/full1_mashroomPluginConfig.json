@@ -73,6 +73,7 @@
                 
                 "metaInfo": {
                     "openMicrofrontends": true,
+                    "openMicrofrontendsVersion": "1.0.0",
                     
                     "MY_COCKPIT_CAPABILITIES_META": {
     "businessEntity": "Customer",

@@ -1,10 +1,10 @@
 import {isAbsolute, resolve} from 'path';
 import AJV from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
-import type {SecurityRequirement} from './generated/open-microfrontends';
-import type {OpenMicroFrontendsDef} from './types';
+import type {SecurityRequirement} from '../generated/open-microfrontends';
+import type {OpenMicroFrontendsDef} from '../types';
 
-const schema = require('../schemas/open-microfrontends.json');
+const schema = require('../../schemas/open-microfrontends.json');
 
 const loadExternalSchema = async (uri: string, defLocation: string): Promise<any> => {
     if (uri.startsWith('https://json-schema.org/')) {

@@ -1,9 +1,9 @@
 import {resolve} from 'path';
-import loadYaml from '../src/loadYaml';
-import loadJson from '../src/loadJson';
-import createGeneratorModel from '../src/createGeneratorModel';
+import loadYaml from '../../src/utils/loadYaml';
+import loadJson from '../../src/utils/loadJson';
+import createGeneratorModel from '../../src/generation/createGeneratorModel';
 
-const demoSchemaLocation = resolve(__dirname, '_schemas');
+const demoSchemaLocation = resolve(__dirname, '..', '_schemas');
 
 describe('createGeneratorModel', () => {
 

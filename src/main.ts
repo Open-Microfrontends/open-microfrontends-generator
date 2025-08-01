@@ -1,13 +1,14 @@
 import {existsSync} from 'fs';
 import {dirname, extname, isAbsolute, resolve} from 'path';
 import colors from 'colors';
-import {DEFAULT_OUT_FOLDER, DEFAULT_TEMPLATE, KNOWN_TEMPLATES} from './constants';
-import validate from './validate';
-import loadJson from './loadJson';
-import loadYaml from './loadYaml';
-import createGeneratorModel from './createGeneratorModel';
-import generate from './generate';
-import saveFile from './saveFile';
+import {DEFAULT_OUT_FOLDER, DEFAULT_TEMPLATE} from './constants';
+import TemplateConfig from './templateConfig';
+import validate from './validation/validate';
+import createGeneratorModel from './generation/createGeneratorModel';
+import generate from './generation/generate';
+import saveFile from './utils/saveFile';
+import loadJson from './utils/loadJson';
+import loadYaml from './utils/loadYaml';
 
 export default async (definitionFile: string, outFolder = DEFAULT_OUT_FOLDER, templates = DEFAULT_TEMPLATE, additionalProperties?: string | undefined, validationOnly = false) => {
     const microfrontendDefinitionPath = isAbsolute(definitionFile) ? definitionFile : resolve(process.cwd(), definitionFile);
@@ -54,7 +55,7 @@ export default async (definitionFile: string, outFolder = DEFAULT_OUT_FOLDER, te
     // Generation
 
     for (const templateName of templateNames) {
-        if (!KNOWN_TEMPLATES[templateName]) {
+        if (!TemplateConfig[templateName]) {
             console.error(colors.red(`OMG: Unknown template: ${templateName}`));
             process.exit(1);
         }
@@ -73,11 +74,24 @@ export default async (definitionFile: string, outFolder = DEFAULT_OUT_FOLDER, te
 
     for (const templateName of templateNames) {
         console.info('OMG: Generating template:', templateName);
+        const templateConfig = TemplateConfig[templateName];
+
+        if (templateConfig.extraValidation) {
+            const validationErrors = templateConfig.extraValidation(microfrontendDefinition);
+            if (validationErrors) {
+                console.error(colors.red(`OMG: Generation of template ${templateName} failed: ${validationErrors}`));
+                process.exit(1);
+            }
+        }
+
         try {
-            const result = await generate(model, templateName as any);
-            const targetFile = resolve(absoluteOutFolder, KNOWN_TEMPLATES[templateName]);
-            await saveFile(targetFile, result);
-            console.info(colors.green(`OMG: Saved: ${targetFile}`));
+            for (const ejsTemplate of Object.keys(templateConfig.templateFileToTargetFiles)) {
+                const targetFileName = templateConfig.templateFileToTargetFiles[ejsTemplate];
+                const result = await generate(model, ejsTemplate);
+                const targetFile = resolve(absoluteOutFolder, targetFileName);
+                await saveFile(targetFile, result);
+                console.info(colors.green(`OMG: Saved: ${targetFile}`));
+            }
         } catch (e) {
             console.error(colors.red(`OMG: Generation of template ${templateName} failed!`), e);
         }
