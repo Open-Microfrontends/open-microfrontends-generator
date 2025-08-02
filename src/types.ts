@@ -8,7 +8,7 @@ export type GeneratorModelTsTypeRef = {
 };
 
 export type GeneratorModel = {
-  readonly def: OpenMicroFrontendsDef;
+  readonly spec: OpenMicroFrontendsDef;
   readonly safeMicrofrontendNames: Array<string>;
   readonly configSchemaTypes: Array<GeneratorModelTsTypeRef>;
   readonly messageSchemaTypes: Array<Record<string, GeneratorModelTsTypeRef>>;

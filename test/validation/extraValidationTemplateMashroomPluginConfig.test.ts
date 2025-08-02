@@ -2,7 +2,7 @@ import extraValidationTemplateMashroomPluginConfig from '../../src/validation/ex
 import type { OpenMicroFrontendsDef } from '../../src/types';
 
 describe('extraValidationTemplateMashroomPluginConfig', () => {
-  it('fails if the definition contains frontendPermissions but no role mapping is present', async () => {
+  it('fails if the spec contains frontendPermissions but no role mapping is present', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [
@@ -22,12 +22,10 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
 
     const errors = extraValidationTemplateMashroomPluginConfig(def);
 
-    expect(errors).toBe(
-      'frontendPermissions found in definition but no annotation MASHROOM_FRONTEND_PERMISSIONS_MAPPING!'
-    );
+    expect(errors).toBe('frontendPermissions found in spec but no annotation MASHROOM_FRONTEND_PERMISSIONS_MAPPING!');
   });
 
-  it('succeeds if the definition contains frontendPermissions abd a role mapping is present', async () => {
+  it('succeeds if the spec contains frontendPermissions abd a role mapping is present', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [

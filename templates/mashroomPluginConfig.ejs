@@ -1,56 +1,56 @@
 {
     "$schema": "https://www.mashroom-server.com/schemas/mashroom-plugins.json",
     "plugins": [
-    <% for (let i = 0; i < def.microfrontends.length; i ++) { %>
+    <% for (let i = 0; i < spec.microfrontends.length; i ++) { %>
         {
-            "name": "<%-def.microfrontends[i].name%>",
+            "name": "<%-spec.microfrontends[i].name%>",
             "type": "portal-app2",
-            <% if (def.microfrontends[i].description) { %>
-            "description": <%-JSON.stringify(def.microfrontends[i].description, null, 4)-%>,
+            <% if (spec.microfrontends[i].description) { %>
+            "description": <%-JSON.stringify(spec.microfrontends[i].description, null, 4)-%>,
             <% } %>
-            "clientBootstrap": "<%-def.microfrontends[i].globalLaunchFunction%>",
-            "resources": <%-JSON.stringify(def.microfrontends[i].resources, null, 4)-%>,
+            "clientBootstrap": "<%-spec.microfrontends[i].globalLaunchFunction%>",
+            "resources": <%-JSON.stringify(spec.microfrontends[i].resources, null, 4)-%>,
             "local": {
                 "resourcesRoot": "./unknown-local-not-supported"
             },
             "remote": {
-                <% if (def.microfrontends[i].paths.ssrHtml) { %>
-                "ssrInitialHtmlPath": "<%-def.microfrontends[i].paths.ssrHtml-%>",
+                <% if (spec.microfrontends[i].paths.ssrHtml) { %>
+                "ssrInitialHtmlPath": "<%-spec.microfrontends[i].paths.ssrHtml-%>",
                 <% } %>
-                "resourcesRoot": "<%-def.microfrontends[i].paths.resourcesBase%>"
+                "resourcesRoot": "<%-spec.microfrontends[i].paths.resourcesBase%>"
             },
             "defaultConfig": {
-                <% if (def.microfrontends[i].title) { %>
-                "title": <%-JSON.stringify(def.microfrontends[i].title, null, 4)-%>,
+                <% if (spec.microfrontends[i].title) { %>
+                "title": <%-JSON.stringify(spec.microfrontends[i].title, null, 4)-%>,
                 <% } %>
                 <% if (additionalProperties.mashroomCategory) { %>
                 "category": "<%-additionalProperties.mashroomCategory-%>",
                 <% } %>
-                <% if (def.microfrontends[i].annotations?.['MASHROOM_CATEGORY']) { %>
-                "category": "<%-def.microfrontends[i].annotations['MASHROOM_CATEGORY']-%>",
+                <% if (spec.microfrontends[i].annotations?.['MASHROOM_CATEGORY']) { %>
+                "category": "<%-spec.microfrontends[i].annotations['MASHROOM_CATEGORY']-%>",
                 <% } %>
-                <% if (def.microfrontends[i].annotations?.['MASHROOM_VIEW_ROLES']) { %>
-                "defaultRestrictViewToRoles": <%-JSON.stringify(def.microfrontends[i].annotations['MASHROOM_VIEW_ROLES'])-%>,
+                <% if (spec.microfrontends[i].annotations?.['MASHROOM_VIEW_ROLES']) { %>
+                "defaultRestrictViewToRoles": <%-JSON.stringify(spec.microfrontends[i].annotations['MASHROOM_VIEW_ROLES'])-%>,
                 <% } %>
-                <% if (def.microfrontends[i].frontendPermissions && def.microfrontends[i].frontendPermissions.length > 0) { %>
+                <% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
                 "rolePermissions": {
-                    <% def.microfrontends[i].frontendPermissions.forEach((permissionKey, idx, array) => { %>
-                    "<%-permissionKey-%>": <%-JSON.stringify(def.microfrontends[i].annotations?.['MASHROOM_FRONTEND_PERMISSIONS_MAPPING']?.[permissionKey] ?? [])-%><%-idx < array.length - 1 ? ',' : ''-%>
+                    <% spec.microfrontends[i].frontendPermissions.forEach((permissionKey, idx, array) => { %>
+                    "<%-permissionKey-%>": <%-JSON.stringify(spec.microfrontends[i].annotations?.['MASHROOM_FRONTEND_PERMISSIONS_MAPPING']?.[permissionKey] ?? [])-%><%-idx < array.length - 1 ? ',' : ''-%>
                     <% }) %>
                 },
                 <% } %>
-                <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+                <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
                 "proxies": {
-                <% Object.keys(def.microfrontends[i].apiProxies).forEach((proxyId, idx, array) => { %>
+                <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId, idx, array) => { %>
                     "<%-proxyId-%>": {
-                        <% if (typeof def.microfrontends[i].apiProxies[proxyId] === 'string') { %>
-                        "targetUri": "<%-def.microfrontends[i].apiProxies[proxyId]-%>",
+                        <% if (typeof spec.microfrontends[i].apiProxies[proxyId] === 'string') { %>
+                        "targetUri": "<%-spec.microfrontends[i].apiProxies[proxyId]-%>",
                         <% } %>
-                        <% if (typeof def.microfrontends[i].apiProxies[proxyId] === 'object') { %>
-                        "targetUri": "<%-def.microfrontends[i].apiProxies[proxyId].url-%>",
+                        <% if (typeof spec.microfrontends[i].apiProxies[proxyId] === 'object') { %>
+                        "targetUri": "<%-spec.microfrontends[i].apiProxies[proxyId].url-%>",
                         <% } %>
-                        <% if (def.microfrontends[i].annotations?.['MASHROOM_PROXY_ACCESS_ROLES']?.[proxyId]) { %>
-                        "restrictToRoles": <%-JSON.stringify(def.microfrontends[i].annotations['MASHROOM_PROXY_ACCESS_ROLES'][proxyId])-%>,
+                        <% if (spec.microfrontends[i].annotations?.['MASHROOM_PROXY_ACCESS_ROLES']?.[proxyId]) { %>
+                        "restrictToRoles": <%-JSON.stringify(spec.microfrontends[i].annotations['MASHROOM_PROXY_ACCESS_ROLES'][proxyId])-%>,
                         <% } %>
                         "sendPermissionsHeader": true
                     }<%-idx < array.length - 1 ? ',' : ''-%>
@@ -60,16 +60,16 @@
                 <% if (additionalProperties.mashroomMetaInfoAnnotations) { %>
                 "metaInfo": {
                     "openMicrofrontends": true,
-                    "openMicrofrontendsVersion": "<%-def.openMicrofrontends-%>",
+                    "openMicrofrontendsVersion": "<%-spec.openMicrofrontends-%>",
                     <% additionalProperties.mashroomMetaInfoAnnotations.split(',').forEach((annotationId, idx, array) => { %>
-                    "<%-annotationId-%>": <%-JSON.stringify(def.microfrontends[i].annotations?.[annotationId], null, 4)-%><%-idx < array.length - 1 ? ',' : ''-%>
+                    "<%-annotationId-%>": <%-JSON.stringify(spec.microfrontends[i].annotations?.[annotationId], null, 4)-%><%-idx < array.length - 1 ? ',' : ''-%>
                     <% }) %>
                 },
                 <% } %>
                 "caching": {
                     "ssrHtml": "same-config"
                 },
-                "appConfig": <%-JSON.stringify(def.microfrontends[i].config.default, null, 4)-%>
+                "appConfig": <%-JSON.stringify(spec.microfrontends[i].config.default, null, 4)-%>
             }
         }
     <% } %>

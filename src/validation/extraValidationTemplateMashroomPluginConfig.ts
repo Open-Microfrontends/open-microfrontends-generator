@@ -8,7 +8,7 @@ const validation: TemplateExtraValidation = (def) => {
       microfrontend.frontendPermissions.length > 0 &&
       !microfrontend.annotations?.['MASHROOM_FRONTEND_PERMISSIONS_MAPPING']
     ) {
-      return 'frontendPermissions found in definition but no annotation MASHROOM_FRONTEND_PERMISSIONS_MAPPING!';
+      return 'frontendPermissions found in spec but no annotation MASHROOM_FRONTEND_PERMISSIONS_MAPPING!';
     }
 
     // Warnings

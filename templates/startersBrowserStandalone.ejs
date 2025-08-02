@@ -59,8 +59,8 @@ function toFullUrl(...parts: Array<string>): string {
         .join('');
 }
 
-<% for (let i = 0; i < def.microfrontends.length; i ++) { -%>
-    <%- include('_clientContext', {i, def, configSchemaTypes, messageSchemaTypes}) %>
-    <%- include('_clientMessageBus', {i, def}) %>
-    <%- include('_startFunctionBrowser', {i, def, safeMicrofrontendNames, additionalProperties}) %>
+<% for (let i = 0; i < spec.microfrontends.length; i ++) { -%>
+    <%- include('_clientContext', {i, spec, configSchemaTypes, messageSchemaTypes}) %>
+    <%- include('_clientMessageBus', {i, spec}) %>
+    <%- include('_startFunctionBrowser', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
 <% } -%>

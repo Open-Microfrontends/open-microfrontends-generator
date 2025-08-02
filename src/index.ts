@@ -7,7 +7,7 @@ import TemplateConfig from './templateConfig';
 
 program
   .description('OMG - OpenMicrofrontends Generator')
-  .argument('<definitionFile>', 'OpenMicrofrontends definition (yaml,json)')
+  .argument('<specFile>', 'OpenMicrofrontends spec (yaml,json)')
   .argument('[outFolder]', 'The output folder for the generated code', DEFAULT_OUT_FOLDER)
   .option(
     '-t, --templates <templates>',
@@ -18,11 +18,11 @@ program
     '-a, --additionalProperties <additionalProperties>',
     'A comma separated list of extra properties to pass to the templates (e.g., a=1,b=2)'
   )
-  .option('-v, --validationOnly', 'Only validate the given definition file');
+  .option('-v, --validationOnly', 'Only validate the given spec file and exit');
 
 program.parse();
 
-const [definitionFile, outFolder] = program.args;
+const [specFile, outFolder] = program.args;
 const { templates, additionalProperties, validationOnly } = program.opts();
 
-main(definitionFile, outFolder, templates, additionalProperties, validationOnly);
+main(specFile, outFolder, templates, additionalProperties, validationOnly);

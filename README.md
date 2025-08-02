@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub CI](https://github.com/open-microfrontends/open-microfrontends-generator/actions/workflows/ci_build.yml/badge.svg)](https://github.com/open-microfrontends/open-microfrontends-generator/actions/workflows/ci_build.yml)
 
-Generates type-safe Microfrontend render functions and host integrations from an [OpenMicrofrontends](https://www.open-microfrontends.org) definition.
+Generates type-safe Microfrontend render functions and host integrations from an [OpenMicrofrontends](https://www.open-microfrontends.org) spec.
 
 ## Usage
 
@@ -14,7 +14,7 @@ Basic usage:
 
 Arguments:
  
- * *definitionFile*: The OpenMicrofrontends definition (yaml/json)
+ * *specFile*: The OpenMicrofrontends spec (yaml/json)
  * *outFolder*: The target folder for generated code
 
 Options:
@@ -23,20 +23,20 @@ Options:
 |----------------------------|---------------------------------------------------------------------|
 | -t, --templates            | A comma separated list of templates to use                          |
 | -a, --additionalProperties | A comma separated list of extra properties to pass to the templates |
-| -v, --validationOnly       | Only validate given definition file                                 |
+| -v, --validationOnly       | Only validate given spec file and exit                              |
 | --help                     | Usage info                                                          |
 
 ## Templates
 
-| Template                                                  | Description                                                               |
-|-----------------------------------------------------------|---------------------------------------------------------------------------|
-| [renderersPlainJS](#renderersPlainJS)                     | Renderer functions for the Microfrontends server                          |
-| [startersBrowserStandalone](#startersBrowserStandalone)   | Starters for a plain HTML host                                            |
-| [startersBrowserFull](#startersBrowserFull)               | Full starters on a host with a backend (security, proxying)               |
-| [hostIntegrationsExpress](#hostIntegrationsExpress)       | Server-side integration code for a Express.js backend                     |
-| [hostIntegrationsSpringBoot](#hostIntegrationsSpringBoot) | Server-side integration code for a Spring Boot backend                    |
-| [startersMashroom](#startersMashroom)                     | Starters to be used on a Mashroom Portal page                             |
-| [mashroomPluginConfig](#mashroomPluginConfig)             | Converts the *OpenMicrofrontends* definition into a Mashroom plugin config |
+| Template                                                  | Description                                                          |
+|-----------------------------------------------------------|----------------------------------------------------------------------|
+| [renderersPlainJS](#renderersPlainJS)                     | Renderer functions for the Microfrontends server                     |
+| [startersBrowserStandalone](#startersBrowserStandalone)   | Starters for a plain HTML host                                       |
+| [startersBrowserFull](#startersBrowserFull)               | Full starters on a host with a backend (security, proxying)          |
+| [hostIntegrationsExpress](#hostIntegrationsExpress)       | Server-side integration code for a Express.js backend                |
+| [hostIntegrationsSpringBoot](#hostIntegrationsSpringBoot) | Server-side integration code for a Spring Boot backend               |
+| [startersMashroom](#startersMashroom)                     | Starters to be used on a Mashroom Portal page                        |
+| [mashroomPluginConfig](#mashroomPluginConfig)             | Converts the *OpenMicrofrontends* spec into a Mashroom plugin config |
 
 ### renderersPlainJS
 
@@ -60,7 +60,7 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 ```
 
 > [!NOTE]
-> This implementation contains a compatibility layer for *Mashroom Server* for demo purposes. 
+> This template generates a compatibility layer for *Mashroom Server*.
 > It will be removed as soon as *Mashroom Server* supports *OpenMicrofrontends* natively (with 3.0).
 
 ### startersBrowserStandalone
@@ -68,8 +68,9 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 > [!IMPORTANT]
-> These starters can only be created if the definition does NOT contain any security, API proxy declarations or SSR routes 
-> (which would require a server component on the host)
+> This template does not fully support the OpenMicrofrontends spec, so you should only use it for demo/test purposes.
+> In particular it does not support security, API proxy declarations or SSR.
+> Also, the generated starters do not do any cache busting if the version of the Microfrontend changes.
 
 Usage
 
@@ -125,8 +126,8 @@ Generates a *microfrontendStarters.ts* file that contains functions to launch th
 a [Mashroom Portal](https://www.mashroom-server.com) page.
 
 > [!NOTE]
-> Mashroom Server start OpenMicrofrontends automatically,
-> these launchers are only intended to be used within *Composite Microfrontends"
+> Mashroom Server can launch any OpenMicrofrontends compliant Microfrontend out-of-the-box.
+> These launchers are only intended to be used within *Composite Microfrontends"
 > to start other (embedded) Microfrontends in a type-safe manner.
 
 ```ts
@@ -148,17 +149,17 @@ The generated mashroom.json file and the package.json file of your Microfrontend
 *Mashroom* can automatically load it.
 
 > [!NOTE]
-> Mashroom Server > 3.0 can directly process an exposed *microfrontends.yaml* file, 
-> so this is no longer necessary.
+> *Mashroom Server* > 3.0 can directly process an exposed *microfrontends.yaml* file, 
+> so, generating a plugin config will no longer be necessary.
 
-Supported *annotations* in the *OpenMicrofrontends* definition:
+Supported *annotations* in the *OpenMicrofrontends* spec:
 
-| Annotation                            | Description                                                                                                                                      |
-|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| MASHROOM_CATEGORY                     | The *category* where the Microfrontend should appear                                                                                             |
-| MASHROOM_FRONTEND_PERMISSIONS_MAPPING | A mapping of *frontendPermissions* to Mashroom roles. This is **required** if *frontendPermissions* are declared in the Microfrontend definiton. |
-| MASHROOM_VIEW_ROLES                   | An optional list of roles which are permitted to see the Microfrontend in the Mashroom Portal                                                    |
-| MASHROOM_PROXY_ACCESS_ROLES           | An optional mapping of the proxy ID to roles which are allowed to access it. This is typically not necessary if the API is protected somehow.    |
+| Annotation                            | Description                                                                                                                                   |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| MASHROOM_CATEGORY                     | The *category* where the Microfrontend should appear                                                                                          |
+| MASHROOM_FRONTEND_PERMISSIONS_MAPPING | A mapping of *frontendPermissions* to Mashroom roles. This is **required** if *frontendPermissions* are declared in the Microfrontend spec.   |
+| MASHROOM_VIEW_ROLES                   | An optional list of roles which are permitted to see the Microfrontend in the Mashroom Portal                                                 |
+| MASHROOM_PROXY_ACCESS_ROLES           | An optional mapping of the proxy ID to roles which are allowed to access it. This is typically not necessary if the API is protected somehow. |
 
 Supported additionalProperties:
 

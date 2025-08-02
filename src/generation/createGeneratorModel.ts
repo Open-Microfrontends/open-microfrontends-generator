@@ -17,7 +17,7 @@ export const schemaToTs = async (schema: any, ifName: string, defLocation: strin
 };
 
 export default async (
-  def: OpenMicroFrontendsDef,
+  spec: OpenMicroFrontendsDef,
   additionalProperties: Record<string, string>,
   defLocation: string
 ): Promise<GeneratorModel> => {
@@ -25,8 +25,8 @@ export default async (
   const configSchemaTypes: Array<GeneratorModelTsTypeRef> = [];
   const messageSchemaTypes: Array<Record<string, GeneratorModelTsTypeRef>> = [];
 
-  for (let i = 0; i < def.microfrontends.length; i++) {
-    const microfrontend = def.microfrontends[i];
+  for (let i = 0; i < spec.microfrontends.length; i++) {
+    const microfrontend = spec.microfrontends[i];
     const safeName = microfrontend.name
       .split(' ')
       .map((s) => s.replace(/[^a-zA-Z0-9]/g, '_'))
@@ -54,7 +54,7 @@ export default async (
   }
 
   return {
-    def,
+    spec,
     safeMicrofrontendNames,
     configSchemaTypes,
     messageSchemaTypes,

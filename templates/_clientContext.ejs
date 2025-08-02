@@ -1,4 +1,4 @@
-// Client context for Microfrontend: <%-def.microfrontends[i].name%>
+// Client context for Microfrontend: <%-spec.microfrontends[i].name%>
 type Microfrontend<%-i+1-%>Context = {
     // The unique ID of this Microfrontend instance
     readonly id?: string;
@@ -8,23 +8,23 @@ type Microfrontend<%-i+1-%>Context = {
         readonly guest: boolean;
         readonly username: string;
         readonly displayName: string;
-        <% if (def.microfrontends[i].frontendPermissions && def.microfrontends[i].frontendPermissions.length > 0) { %>
+        <% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
         readonly permissions: {
-            <% def.microfrontends[i].frontendPermissions.forEach((permissionKey) => { %>
+            <% spec.microfrontends[i].frontendPermissions.forEach((permissionKey) => { %>
             readonly '<%-permissionKey%>': boolean;
             <% }) %>
         };
         <% } %>
     },
-    <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+    <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
     readonly apiProxyPaths: {
-        <% Object.keys(def.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+        <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
         readonly '<%-proxyId%>': string;
         <% }) %>
     },
     <% } %>
     readonly config: Partial<<%-configSchemaTypes[i].ifName-%>>;
-    <% if (def.microfrontends[i].messages && Object.keys(def.microfrontends[i].messages).length > 0) { %>
+    <% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
     readonly messageBus: {
         publish(topic: string, data: object): void;
         subscribe(topic: string, cb: (data: object) => void): void;

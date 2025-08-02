@@ -22,8 +22,8 @@ import {MashroomPortalClientServices} from '@mashroom/mashroom-portal/type-defin
 
 <%- include('_globalTypes') %>
 
-<% for (let i = 0; i < def.microfrontends.length; i ++) { -%>
-    <%- include('_clientMessageBus', {i, def}) %>
-    <%- include('_startFunctionMashroom', {i, def, safeMicrofrontendNames, additionalProperties}) %>
+<% for (let i = 0; i < spec.microfrontends.length; i ++) { -%>
+    <%- include('_clientMessageBus', {i, spec}) %>
+    <%- include('_startFunctionMashroom', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
 <% } -%>
 

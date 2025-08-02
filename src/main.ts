@@ -11,17 +11,15 @@ import loadJson from './utils/loadJson';
 import loadYaml from './utils/loadYaml';
 
 export default async (
-  definitionFile: string,
+  specFile: string,
   outFolder = DEFAULT_OUT_FOLDER,
   templates = DEFAULT_TEMPLATE,
   additionalProperties?: string | undefined,
   validationOnly = false
 ) => {
-  const microfrontendDefinitionPath = isAbsolute(definitionFile)
-    ? definitionFile
-    : resolve(process.cwd(), definitionFile);
-  const microfrontendDefinitionLocation = dirname(microfrontendDefinitionPath);
-  let microfrontendDefinition;
+  const microfrontendSpecPath = isAbsolute(specFile) ? specFile : resolve(process.cwd(), specFile);
+  const microfrontendSpecLocation = dirname(microfrontendSpecPath);
+  let microfrontendSpec;
   const absoluteOutFolder = isAbsolute(outFolder) ? outFolder : resolve(process.cwd(), outFolder);
   const templateNames = templates.split(',');
   const additionalPropertiesMap = additionalProperties
@@ -36,27 +34,27 @@ export default async (
 
   // Validation
 
-  if (!existsSync(microfrontendDefinitionPath)) {
-    console.error(colors.red(`OMG: Definition file not found: ${microfrontendDefinitionPath}`));
+  if (!existsSync(microfrontendSpecPath)) {
+    console.error(colors.red(`OMG: Spec file not found: ${microfrontendSpecPath}`));
     process.exit(1);
   }
-  if (!['.json', '.yaml', '.yml'].find((ext) => microfrontendDefinitionPath.endsWith(ext))) {
-    console.error(colors.red(`OMG: Unsupported definition file type: ${extname(microfrontendDefinitionPath)}`));
+  if (!['.json', '.yaml', '.yml'].find((ext) => microfrontendSpecPath.endsWith(ext))) {
+    console.error(colors.red(`OMG: Unsupported spec file type: ${extname(microfrontendSpecPath)}`));
     process.exit(1);
   }
 
-  if (microfrontendDefinitionPath.endsWith('.json')) {
-    microfrontendDefinition = loadJson(microfrontendDefinitionPath);
+  if (microfrontendSpecPath.endsWith('.json')) {
+    microfrontendSpec = loadJson(microfrontendSpecPath);
   } else {
-    microfrontendDefinition = loadYaml(microfrontendDefinitionPath);
+    microfrontendSpec = loadYaml(microfrontendSpecPath);
   }
 
-  const validationErrors = await validate(microfrontendDefinition, microfrontendDefinitionLocation);
+  const validationErrors = await validate(microfrontendSpec, microfrontendSpecLocation);
   if (validationErrors) {
-    console.error(colors.red(`OMG: Invalid definition file: ${validationErrors}`));
+    console.error(colors.red(`OMG: Invalid spec file: ${validationErrors}`));
     process.exit(1);
   }
-  console.info(colors.green(`OMG: Definition file valid: ${microfrontendDefinitionPath}`));
+  console.info(colors.green(`OMG: Spec file valid: ${microfrontendSpecPath}`));
 
   if (validationOnly) {
     process.exit(0);
@@ -77,11 +75,7 @@ export default async (
 
   let model;
   try {
-    model = await createGeneratorModel(
-      microfrontendDefinition,
-      additionalPropertiesMap,
-      microfrontendDefinitionLocation
-    );
+    model = await createGeneratorModel(microfrontendSpec, additionalPropertiesMap, microfrontendSpecLocation);
   } catch (e) {
     console.error(colors.red(`OMG: Creation of the template model failed!`), e);
   }
@@ -91,7 +85,7 @@ export default async (
     const templateConfig = TemplateConfig[templateName];
 
     if (templateConfig.extraValidation) {
-      const validationErrors = templateConfig.extraValidation(microfrontendDefinition);
+      const validationErrors = templateConfig.extraValidation(microfrontendSpec);
       if (validationErrors) {
         console.error(colors.red(`OMG: Generation of template ${templateName} failed: ${validationErrors}`));
         process.exit(1);

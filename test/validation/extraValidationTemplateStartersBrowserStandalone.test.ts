@@ -2,7 +2,7 @@ import extraValidationTemplateStartersBrowserStandalone from '../../src/validati
 import type { OpenMicroFrontendsDef } from '../../src/types';
 
 describe('extraValidationTemplateStartersBrowserStandalone', () => {
-  it('fails if the definition contains security', async () => {
+  it('fails if the spec contains security', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [
@@ -26,10 +26,10 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
 
-    expect(errors).toBe('security found in definition, which are not supported!');
+    expect(errors).toBe('security found in spec, which are not supported!');
   });
 
-  it('fails if the definition contains API proxies', async () => {
+  it('fails if the spec contains API proxies', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [
@@ -51,7 +51,7 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
 
-    expect(errors).toBe('apiProxies found in definition, which are not supported!');
+    expect(errors).toBe('apiProxies found in spec, which are not supported!');
   });
 
   it('fails if the definition contains SSR routes', async () => {
@@ -74,10 +74,10 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
 
-    expect(errors).toBe('SSR route (paths.ssrHtml) found in definition, which is not supported!');
+    expect(errors).toBe('SSR route (paths.ssrHtml) found in spec, which is not supported!');
   });
 
-  it('succeeds with a definition without security, API proxies or SSR routes', async () => {
+  it('succeeds with a spec without security, API proxies or SSR routes', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [

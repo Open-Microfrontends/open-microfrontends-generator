@@ -1,10 +1,10 @@
 
 type Microfrontend<%-i+1-%>RenderCb = (hostElement: HTMLElement, context: Microfrontend<%-i+1-%>Context) => Promise<OpenMicrofrontendLifecycleHooks>;
 
-// Render function for Microfrontend: <%-def.microfrontends[i].name%>
+// Render function for Microfrontend: <%-spec.microfrontends[i].name%>
 export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-%>RenderCb): void {
 
-    (window as any)['<%-def.microfrontends[i].globalLaunchFunction-%>'] = async (hostElement: HTMLElement, ...otherArgs: any[]) => {
+    (window as any)['<%-spec.microfrontends[i].globalLaunchFunction-%>'] = async (hostElement: HTMLElement, ...otherArgs: any[]) => {
         // Temporary Mashroom Server compatibility, until it supports OpenMicrofrontends natively
         const enableTempMashroomComp = otherArgs.length === 2 && otherArgs[0].appId && otherArgs[0].proxyPaths;
 
@@ -15,12 +15,12 @@ export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-
                 guest: true,
                 username: 'guest',
                 displayName: 'guest',
-                <% if (def.microfrontends[i].frontendPermissions && def.microfrontends[i].frontendPermissions.length > 0) { %>
+                <% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
                 permissions: {} as any,
                 <% } %>
             },
-            config: <%-JSON.stringify(def.microfrontends[i].config.default, null, 4)-%>,
-            <% if (def.microfrontends[i].messages) { %>
+            config: <%-JSON.stringify(spec.microfrontends[i].config.default, null, 4)-%>,
+            <% if (spec.microfrontends[i].messages) { %>
             messageBus: {
                 publish(topic: any) { console.warn(`[OpenMicrofrontends] Publish to topic ${topic} but no messageBus present!`); },
                 subscribe(topic: any) { console.warn(`[OpenMicrofrontends] Subscribe to topic ${topic} but no messageBus present!`); },
@@ -38,11 +38,11 @@ export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-
                 id: appId,
                 lang,
                 user,
-                <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+                <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
                 apiProxyPaths: proxyPaths,
                 <% } %>
                 config: appConfig,
-                <% if (def.microfrontends[i].messages) { %>
+                <% if (spec.microfrontends[i].messages) { %>
                 messageBus,
                 <% } %>
             };
@@ -55,13 +55,13 @@ export function onRender<%-safeMicrofrontendNames[i]-%>(cb: Microfrontend<%-i+1-
         }
 
         // Validate
-        <% if (def.microfrontends[i].apiProxies && Object.keys(def.microfrontends[i].apiProxies).length > 0) { %>
+        <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
         if (!context.apiProxyPaths) {
             throw new Error('[OpenMicrofrontends] No apiProxyPaths provided!');
         }
         <% } -%>
 
-        console.debug('[OpenMicrofrontends] Starting Microfrontend "<%-def.microfrontends[i].name-%>" with context:', context);
+        console.debug('[OpenMicrofrontends] Starting Microfrontend "<%-spec.microfrontends[i].name-%>" with context:', context);
         const result = await cb(hostElement, context);
 
         if (enableTempMashroomComp) {

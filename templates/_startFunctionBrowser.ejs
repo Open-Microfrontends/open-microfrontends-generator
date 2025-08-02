@@ -1,36 +1,36 @@
 
-// Start function for Microfrontend: <%-def.microfrontends[i].name%>
+// Start function for Microfrontend: <%-spec.microfrontends[i].name%>
 export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, hostElement: HTMLElement, context: Microfrontend<%-i+1-%>Context) {
     const addedElements: Array<HTMLElement> = [];
 
     // Load resources
     const jsPromises: Array<Promise<void>> = [
-        <% for (const jsResource of def.microfrontends[i].resources.js) { %>
-        loadJsResource(toFullUrl(serverUrl, '<%-def.microfrontends[i].paths.resourcesBase-%>', '<%-jsResource%>'), addedElements),
+        <% for (const jsResource of spec.microfrontends[i].resources.js) { %>
+        loadJsResource(toFullUrl(serverUrl, '<%-spec.microfrontends[i].paths.resourcesBase-%>', '<%-jsResource%>'), addedElements),
         <% } %>
     ];
-    <% if (def.microfrontends[i].resources.css) { %>
-    <% for (const cssResource of def.microfrontends[i].resources.css) { %>
-    loadCssResource(toFullUrl(serverUrl, '<%-def.microfrontends[i].paths.resourcesBase-%>', '<%-cssResource%>'), addedElements);
+    <% if (spec.microfrontends[i].resources.css) { %>
+    <% for (const cssResource of spec.microfrontends[i].resources.css) { %>
+    loadCssResource(toFullUrl(serverUrl, '<%-spec.microfrontends[i].paths.resourcesBase-%>', '<%-cssResource%>'), addedElements);
     <% } %>
     <% } %>
 
     try {
         await Promise.all(jsPromises);
     } catch (e) {
-        console.error('[OpenMicrofrontends] Loading resources of Microfrontend "<%-def.microfrontends[i].name%>" failed!', e);
+        console.error('[OpenMicrofrontends] Loading resources of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
         return;
     }
 
     // Start Microfrontend
-    const renderFunction = (window as any)['<%-def.microfrontends[i].globalLaunchFunction-%>'];
+    const renderFunction = (window as any)['<%-spec.microfrontends[i].globalLaunchFunction-%>'];
     if (!renderFunction) {
-        console.error('[OpenMicrofrontends] Render function of Microfrontend "<%-def.microfrontends[i].name%>" not found!');
+        console.error('[OpenMicrofrontends] Render function of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
         return;
     }
 
     <% if (additionalProperties.shadowDOM === 'true') { %>
-    console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "<%-def.microfrontends[i].name%>"');
+    console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "<%-spec.microfrontends[i].name%>"');
     hostElement = hostElement.attachShadow({ mode: "open" }).getRootNode() as HTMLElement;
     <% } %>
 
@@ -38,12 +38,12 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
 
     return {
         close: async () => {
-            console.info('[OpenMicrofrontends] Closing Microfrontend "<%-def.microfrontends[i].name%>"');
+            console.info('[OpenMicrofrontends] Closing Microfrontend "<%-spec.microfrontends[i].name%>"');
             await lifecycleHooks?.onRemove();
             addedElements.forEach((elem) => elem.remove());
             hostElement.innerHTML = '';
         },
-        <% if (def.microfrontends[i].messages && Object.keys(def.microfrontends[i].messages).length > 0) { %>
+        <% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
         messages: context.messageBus as Microfrontend<%-i+1-%>ClientMessageBus,
         <% } %>
     };
