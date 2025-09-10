@@ -7,10 +7,10 @@ export default async (model: GeneratorModel, ejsTemplate: string): Promise<strin
   if (!ejsTemplate.endsWith('.ejs')) {
     ejsTemplate += '.ejs';
   }
-  const templateContent = await readFile(resolve(__dirname, '..', '..', 'templates', ejsTemplate), 'utf-8');
+  const templateContent = await readFile(resolve(import.meta.dirname, '..', '..', 'templates', ejsTemplate), 'utf-8');
   return ejs.render(templateContent, model, {
     includer: (path) => ({
-      filename: resolve(__dirname, '..', '..', 'templates', `${path}.ejs`)
+      filename: resolve(import.meta.dirname, '..', '..', 'templates', `${path}.ejs`)
     })
   });
 };

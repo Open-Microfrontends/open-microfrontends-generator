@@ -1,5 +1,5 @@
 {
-  "$schema": "../../schemas/open-microfrontends.json",
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "servers": [
     {
@@ -10,20 +10,12 @@
   "microfrontends": [
     {
       "name": "My First Microfrontend",
-      "title": {
-        "en": "My First Microfrontend",
-        "de": "Mein erstes Microfrontend"
+      "assets": {
+        "initial": {
+          "js": ["app.js"]
+        }
       },
-      "description": "test",
-      "resources": {
-        "js": ["app.js"],
-        "css": ["app.css"]
-      },
-      "paths": {
-        "resourcesBase": "/",
-        "ssrHtml": "/ssr"
-      },
-      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "rendererFunctionName": "startMyFirstMicrofrontend",
       "apiProxies": {
         "proxy1": "https://test.com/foo",
         "proxy2": "ws://test2.com/bar"
@@ -48,16 +40,9 @@
           "publish": true,
           "subscribe": true,
           "schema": {
-            "$ref": "./pingMessage.json"
+            "$ref": "./pingMessage22.json"
           }
         }
-      },
-      "annotations": {
-        "MY_COCKPIT_CAPABILITIES_META": {
-          "businessEntity": "Customer",
-          "contentType": "overview"
-        },
-        "MASHROOM_EXTENSION1": "foo"
       }
     }
   ]

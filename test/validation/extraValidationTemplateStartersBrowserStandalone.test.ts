@@ -2,46 +2,19 @@ import extraValidationTemplateStartersBrowserStandalone from '../../src/validati
 import type { OpenMicroFrontendsDef } from '../../src/types';
 
 describe('extraValidationTemplateStartersBrowserStandalone', () => {
-  it('fails if the spec contains security', async () => {
-    const def: OpenMicroFrontendsDef = {
-      openMicrofrontends: '1.0.0',
-      microfrontends: [
-        {
-          name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/'
-          },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start',
-          security: [
-            {
-              basic: []
-            }
-          ]
-        }
-      ]
-    };
-
-    const errors = extraValidationTemplateStartersBrowserStandalone(def);
-
-    expect(errors).toBe('security found in spec, which are not supported!');
-  });
-
   it('fails if the spec contains API proxies', async () => {
     const def: OpenMicroFrontendsDef = {
       openMicrofrontends: '1.0.0',
       microfrontends: [
         {
           name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/'
+          assets: {
+            initial: {
+              js: ['index.js']
+            },
+            basePath: '/'
           },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start',
+          rendererFunctionName: 'startMicrofrontend1',
           apiProxies: {
             foo: 'https://bar.com/x'
           }
@@ -60,14 +33,16 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
       microfrontends: [
         {
           name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/',
-            ssrHtml: '/ssr'
+          assets: {
+            initial: {
+              js: ['index.js']
+            },
+            basePath: '/'
           },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start'
+          rendererFunctionName: 'startMicrofrontend1',
+          ssr: {
+            initialHtmlPath: '/ssr'
+          }
         }
       ]
     };
@@ -83,13 +58,13 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
       microfrontends: [
         {
           name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/'
+          assets: {
+            initial: {
+              js: ['index.js']
+            },
+            basePath: '/'
           },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start'
+          rendererFunctionName: 'startMicrofrontend1'
         }
       ]
     };

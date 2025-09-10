@@ -1,6 +1,16 @@
 {
-  "$schema": "../../schemas/open-microfrontends.json",
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
+  "info": {
+    "title": "OpenMicrofrontends Example",
+    "description": "Example definition of microfrontends for testing",
+    "version": "1.0.0",
+    "contact": {
+      "author": "OpenMicrofrontends",
+      "email": "test@test.com",
+      "organization": "OpenMicrofrontends"
+    }
+  },
   "servers": [
     {
       "url": "http://my-test-server.com",
@@ -29,18 +39,29 @@
         "en": "My First Microfrontend",
         "de": "Mein erstes Microfrontend"
       },
-      "description": "test",
-      "frontendPermissions": ["perm1", "perm2"],
-      "security": [{ "BasicAuth": [] }],
-      "resources": {
-        "js": ["app.js"],
-        "css": ["app.css"]
+      "description": "An example microfrontend that shows all the features of the OpenMicrofrontends schema",
+      "frontendPermissions": [
+        {
+          "name": "showDetails",
+          "description": "The authenticated user is permitted to see details"
+        },
+        {
+          "name": "deletePermitted",
+          "description": "The authenticated user is permitted to delete items"
+        }
+      ],
+      "assets": {
+        "basePath": "/",
+        "initial": {
+          "js": ["app.js"],
+          "css": ["app.css"]
+        },
+        "buildManifest": "package.json"
       },
-      "paths": {
-        "resourcesBase": "/",
-        "ssrHtml": "/ssr"
+      "ssr": {
+        "initialHtmlPath": "/ssr"
       },
-      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "rendererFunctionName": "startMyFirstMicrofrontend",
       "apiProxies": {
         "proxy1": {
           "url": "https://test.com/foo",
@@ -80,7 +101,7 @@
         }
       },
       "annotations": {
-        "MY_COCKPIT_CAPABILITIES_META": {
+        "MY_COCKPIT_CAPABILITIES": {
           "businessEntity": "Customer",
           "contentType": "overview"
         },

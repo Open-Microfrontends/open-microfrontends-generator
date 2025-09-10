@@ -12,13 +12,6 @@ const validation: TemplateExtraValidation = (def) => {
     }
 
     // Warnings
-    if (microfrontend.security && Object.keys(microfrontend.security).length > 0) {
-      console.warn(
-        colors.yellow(
-          `OMG: The Microfrontend requires security: Mashroom does not support that automatically, you have to add an appropriate proxy interceptor plugin manually.`
-        )
-      );
-    }
     if (microfrontend.apiProxies && Object.keys(microfrontend.apiProxies).length > 0) {
       if (
         Object.values(microfrontend.apiProxies).find(

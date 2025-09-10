@@ -1,5 +1,5 @@
 {
-  "$schema": "../../schemas/open-microfrontends.json",
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "servers": [
     {
@@ -30,21 +30,20 @@
         "de": "Mein erstes Microfrontend"
       },
       "description": "test",
-      "frontendPermissions": ["perm1", "perm2"],
-      "security": [
+      "frontendPermissions": [
         {
-          "BasicAuth": []
+          "name": "perm1"
+        },
+        {
+          "name": "perm2"
         }
       ],
-      "resources": {
-        "js": ["app.js"],
-        "css": ["app.css"]
+      "assets": {
+        "initial": {
+          "js": ["app.js"]
+        }
       },
-      "paths": {
-        "resourcesBase": "/",
-        "ssrHtml": "/ssr"
-      },
-      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "rendererFunctionName": "startMyFirstMicrofrontend",
       "apiProxies": {
         "proxy1": {
           "url": "https://test.com/foo",

@@ -8,14 +8,21 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
       microfrontends: [
         {
           name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/'
+          assets: {
+            initial: {
+              js: ['index.js']
+            },
+            basePath: '/'
           },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start',
-          frontendPermissions: ['perm1', 'perm2']
+          rendererFunctionName: 'startMicrofrontend1',
+          frontendPermissions: [
+            {
+              name: 'perm1'
+            },
+            {
+              name: 'perm2'
+            }
+          ]
         }
       ]
     };
@@ -31,18 +38,13 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
       microfrontends: [
         {
           name: 'Microfrontend 1',
-          paths: {
-            resourcesBase: '/'
+          assets: {
+            initial: {
+              js: ['index.js']
+            },
+            basePath: '/'
           },
-          resources: {
-            js: ['index.js']
-          },
-          globalLaunchFunction: 'start',
-          security: [
-            {
-              basic: []
-            }
-          ],
+          rendererFunctionName: 'startMicrofrontend1',
           apiProxies: {
             test: {
               url: 'http://foo.bar/x',
@@ -53,7 +55,14 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
               ]
             }
           },
-          frontendPermissions: ['perm1', 'perm2'],
+          frontendPermissions: [
+            {
+              name: 'perm1'
+            },
+            {
+              name: 'perm2'
+            }
+          ],
           annotations: {
             MASHROOM_FRONTEND_PERMISSIONS_MAPPING: {
               perm1: ['role1'],

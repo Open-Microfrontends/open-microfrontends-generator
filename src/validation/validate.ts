@@ -1,10 +1,9 @@
 import { isAbsolute, resolve } from 'path';
+import { readFile } from 'fs/promises';
 import AJV from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
-import type { SecurityRequirement } from '../generated/open-microfrontends';
+import type { SecurityRequirement } from '@open-microfrontends/types/OpenMicrofrontendDescription';
 import type { OpenMicroFrontendsDef } from '../types';
-
-const schema = require('../../schemas/open-microfrontends.json');
 
 const loadExternalSchema = async (uri: string, defLocation: string): Promise<any> => {
   if (uri.startsWith('https://json-schema.org/')) {
@@ -15,11 +14,14 @@ const loadExternalSchema = async (uri: string, defLocation: string): Promise<any
     const response = await fetch(uri);
     schema = response.json();
   } else {
-    if (isAbsolute(uri)) {
-      schema = require(uri);
-    } else {
-      schema = require(resolve(defLocation, uri));
+    if (uri.startsWith('file:')) {
+      uri = uri.replace('file://', '');
     }
+    if (!isAbsolute(uri)) {
+      uri = resolve(defLocation, uri);
+    }
+    const jsonContent = await readFile(uri, 'utf-8');
+    schema = JSON.parse(jsonContent);
   }
   // We only can validate against https://json-schema.org/draft/2020-12/schema at the moment,
   // so, we remove the $schema property if it exists
@@ -46,6 +48,8 @@ const validateSchemaCompliance = async (schema: any, data: any, defLocation: str
     loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation)
   });
   addFormats(ajv);
+  console.info('!!!!', schema);
+
   const compiledSchema = await ajv.compileAsync(schema);
   const valid = compiledSchema(data);
   if (!valid) {
@@ -72,6 +76,9 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
   if (!def.openMicrofrontends.startsWith('1.0.')) {
     return `This Generator version only supports OpenMicrofrontends version 1.0.x`;
   }
+
+  const schemaPath = import.meta.resolve('@open-microfrontends/schemas/open-microfrontends.json');
+  const schema = await loadExternalSchema(schemaPath, defLocation);
 
   // Basic schema compliance
   const schemaErrors = await validateSchemaCompliance(schema, def, defLocation);
@@ -121,12 +128,6 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
     }
 
     // Check security schema references
-    if (microfrontend.security) {
-      const result = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, microfrontend.security);
-      if (result) {
-        return result;
-      }
-    }
     if (microfrontend.apiProxies) {
       for (const apiProxyName in microfrontend.apiProxies) {
         const apiProxy = microfrontend.apiProxies[apiProxyName];

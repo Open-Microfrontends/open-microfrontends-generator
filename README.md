@@ -28,15 +28,15 @@ Options:
 
 ## Templates
 
-| Template                                                  | Description                                                          |
-|-----------------------------------------------------------|----------------------------------------------------------------------|
-| [renderersPlainJS](#renderersPlainJS)                     | Renderer functions for the Microfrontends server                     |
-| [startersBrowserStandalone](#startersBrowserStandalone)   | Starters for a plain HTML host                                       |
-| [startersBrowserFull](#startersBrowserFull)               | Full starters on a host with a backend (security, proxying)          |
-| [hostIntegrationsExpress](#hostIntegrationsExpress)       | Server-side integration code for a Express.js backend                |
-| [hostIntegrationsSpringBoot](#hostIntegrationsSpringBoot) | Server-side integration code for a Spring Boot backend               |
-| [startersMashroom](#startersMashroom)                     | Starters to be used on a Mashroom Portal page                        |
-| [mashroomPluginConfig](#mashroomPluginConfig)             | Converts the *OpenMicrofrontends* spec into a Mashroom plugin config |
+| Template                                                | Description                                                          |
+|---------------------------------------------------------|----------------------------------------------------------------------|
+| [renderersPlainJS](#renderersPlainJS)                   | Renderer functions for the Microfrontends server                     |
+| [startersBrowserStandalone](#startersBrowserStandalone) | Starters for a plain HTML host                                       |
+| [startersBrowserFull](#startersBrowserFull)             | Full starters on a host with a backend (security, proxying)          |
+| [hostIntegrationsExpress](#hostIntegrationsNodeJs)      | Server-side integration code for a Express.js backend                |
+| [hostIntegrationsSpringBoot](#hostIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
+| [startersMashroom](#startersMashroom)                   | Starters to be used on a Mashroom Portal page                        |
+| [mashroomPluginConfig](#mashroomPluginConfig)           | Converts the *OpenMicrofrontends* spec into a Mashroom plugin config |
 
 ### renderersPlainJS
 
@@ -108,15 +108,15 @@ This template requires the backend code from one of the *hostIntegrationsXXX* te
 
 TODO
 
-### hostIntegrationsExpress
+### hostIntegrationsNodeJs
 
-Generates integration files for an [Express.js](https://expressjs.com) host, including server-side code for security, proxying and SSR.
+Generates integration files for Node.js-based Host Application, including server-side code for security, proxying and SSR.
 
 TODO
 
-### hostIntegrationsSpringBoot
+### hostIntegrationsJava
 
-Generates integration files for an [Spring Boot](https://spring.io/projects/spring-boot) host, including server-side code for security, proxying and SSR.
+Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
 
 TODO
 

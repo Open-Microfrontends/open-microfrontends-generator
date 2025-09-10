@@ -1,0 +1,15 @@
+{
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
+  "openMicrofrontends": "1.0.0",
+  "microfrontends": [
+    {
+      "name": "My First Microfrontend",
+      "assets": {
+        "initial": {
+          "js": ["app.js"]
+        }
+      },
+      "rendererFunctionName": "startMyFirstMicrofrontend"
+    }
+  ]
+}

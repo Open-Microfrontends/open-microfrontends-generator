@@ -1,28 +1,29 @@
 {
-  "$schema": "../../schemas/open-microfrontends.json",
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "microfrontends": [
     {
       "name": "My First Microfrontend",
-      "resources": {
-        "js": ["app.js"]
+      "assets": {
+        "initial": {
+          "js": ["app.js"]
+        }
       },
-      "paths": {
-        "resourcesBase": "/"
-      },
-      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "rendererFunctionName": "startMyFirstMicrofrontend",
       "config": {
         "schema": {
           "type": "object",
           "properties": {
             "customerId": {
-              "type": "string"
+              "typex": "string"
             }
           },
           "required": ["customerId"],
           "additionalProperties": false
         },
-        "default": {}
+        "default": {
+          "customerId": "1000"
+        }
       }
     }
   ]
