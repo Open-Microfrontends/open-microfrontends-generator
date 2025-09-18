@@ -18,8 +18,6 @@
     <% }) -%>
 <% } -%>
 
-<%- include('_globalTypes') %>
-
 <% for (let i = 0; i < spec.microfrontends.length; i ++) { -%>
 <%- include('_renderContext', {i, spec, configSchemaTypes, messageSchemaTypes}) %>
 <%- include('_renderFunctionPlainJS', {i, spec, safeMicrofrontendNames}) %>

@@ -48,7 +48,6 @@ const validateSchemaCompliance = async (schema: any, data: any, defLocation: str
     loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation)
   });
   addFormats(ajv);
-  console.info('!!!!', schema);
 
   const compiledSchema = await ajv.compileAsync(schema);
   const valid = compiledSchema(data);

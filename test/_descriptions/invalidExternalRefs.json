@@ -11,8 +11,8 @@
     {
       "name": "My First Microfrontend",
       "assets": {
-        "initial": {
-          "js": ["app.js"]
+        "js": {
+          "initial": ["app.js"]
         }
       },
       "rendererFunctionName": "startMyFirstMicrofrontend",

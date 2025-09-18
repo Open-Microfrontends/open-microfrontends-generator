@@ -9,10 +9,10 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
         {
           name: 'Microfrontend 1',
           assets: {
-            initial: {
-              js: ['index.js']
+            basePath: '/',
+            js: {
+              initial: ['index.js']
             },
-            basePath: '/'
           },
           rendererFunctionName: 'startMicrofrontend1',
           frontendPermissions: [
@@ -39,10 +39,10 @@ describe('extraValidationTemplateMashroomPluginConfig', () => {
         {
           name: 'Microfrontend 1',
           assets: {
-            initial: {
-              js: ['index.js']
+            basePath: '/',
+            js: {
+              initial: ['index.js']
             },
-            basePath: '/'
           },
           rendererFunctionName: 'startMicrofrontend1',
           apiProxies: {

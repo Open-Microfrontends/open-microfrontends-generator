@@ -1,4 +1,4 @@
-'$schema': '../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json'
+$schema: '../../json/open-microfrontends.json'
 openMicrofrontends: 1.0.0
 info:
   title: OpenMicrofrontends Example
@@ -9,82 +9,71 @@ info:
     email: test@test.com
     organization: OpenMicrofrontends
 servers:
-  - url: http://my-test-server.com
-    description: Test Server
+- url: http://my-test-server.com
+  description: Test Server
 securitySchemes:
-  BasicAuth:
-    type: http
-    scheme: basic
-  BearerAuth:
-    type: http
-    scheme: bearer
   ApiKeyAuth:
     type: apiKey
     in: header
     name: X-API-Key
 microfrontends:
-  - name: My First Microfrontend
-    title:
-      en: My First Microfrontend
-      de: Mein erstes Microfrontend
-    description: An example microfrontend that shows all the features of the OpenMicrofrontends schema
-    frontendPermissions:
-      - name: showDetails
-        description: The authenticated user is permitted to see details
-      - name: deletePermitted
-        description: The authenticated user is permitted to delete items
-    assets:
-      basePath: /
+- name: My First Microfrontend
+  title:
+    en: My First Microfrontend
+    de: Mein erstes Microfrontend
+  description: An example microfrontend that shows all the features of the OpenMicrofrontends schema
+  frontendPermissions:
+  - name: showDetails
+    description: The authenticated user is permitted to see details
+  - name: deletePermitted
+    description: The authenticated user is permitted to delete items
+  assets:
+    basePath: /
+    buildManifest: build.yaml
+    js:
       initial:
-        js:
-          - app.js
-        css:
-          - app.css
-      buildManifest: build.yaml
-    ssr:
-      initialHtmlPath: /ssr
-    rendererFunctionName: startMyFirstMicrofrontend
-    apiProxies:
-      proxy1:
-        url: https://test.com/foo
-        security:
-          - ApiKeyAuth: []
-      proxy2: ws://test2.com/bar
-    config:
+      - Microfrontend.js
+      moduleSystem: ESM
+      importMap:
+        imports:
+          react: https://ga.jspm.io/npm:react@19.1.1/index.js
+          react-dom: https://ga.jspm.io/npm:react-dom@19.1.1/index.js
+          react-dom/client: https://ga.jspm.io/npm:react-dom@19.1.1/client.js
+    css:
+    - styles.css
+  ssr:
+    initialHtmlPath: /ssr
+  rendererFunctionName: startMyFirstMicrofrontend
+  apiProxies:
+    proxy1:
+      url: https://test.com/foo
+      security:
+      - ApiKeyAuth: []
+    proxy2: ws://test2.com/bar
+  config:
+    schema:
+      type: object
+      properties:
+        customerId:
+          type: string
+      required:
+      - customerId
+      additionalProperties: false
+    default:
+      customerId: '1000'
+  messages:
+    ping:
+      publish: true
+      subscribe: true
       schema:
+        '$id': https://my-company.com/messages/ping
         type: object
         properties:
-          customerId:
-            type: string
+          ping:
+            const: true
         required:
-          - customerId
-        additionalProperties: false
-      default:
-        customerId: '1000'
-    messages:
-      ping:
-        publish: true
-        subscribe: true
-        schema:
-          '$id': https://my-company.com/messages/ping
-          type: object
-          properties:
-            ping:
-              const: true
-          required:
-            - ping
-    annotations:
-      MY_COCKPIT_CAPABILITIES:
-        businessEntity: Customer
-        contentType: overview
-      MASHROOM_FRONTEND_PERMISSIONS_MAPPING:
-        perm1:
-          - role1
-        perm2:
-          - role2
-          - Administrator
-      MASHROOM_VIEW_ROLES:
-        - role1
-      MASHROOM_PROXY_ACCESS_ROLES:
-        proxy1:
-          - role1
+        - ping
+  annotations:
+    MY_COCKPIT_CAPABILITIES:
+      businessEntity: Customer
+      contentType: overview

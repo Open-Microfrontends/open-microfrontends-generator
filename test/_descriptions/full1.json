@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
+  "$schema": "../../json/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "info": {
     "title": "OpenMicrofrontends Example",
@@ -18,14 +18,6 @@
     }
   ],
   "securitySchemes": {
-    "BasicAuth": {
-      "type": "http",
-      "scheme": "basic"
-    },
-    "BearerAuth": {
-      "type": "http",
-      "scheme": "bearer"
-    },
     "ApiKeyAuth": {
       "type": "apiKey",
       "in": "header",
@@ -52,11 +44,19 @@
       ],
       "assets": {
         "basePath": "/",
-        "initial": {
-          "js": ["app.js"],
-          "css": ["app.css"]
+        "buildManifest": "build.yaml",
+        "js": {
+          "initial": ["Microfrontend.js"],
+          "moduleSystem": "ESM",
+          "importMap": {
+            "imports": {
+              "react": "https://ga.jspm.io/npm:react@19.1.1/index.js",
+              "react-dom": "https://ga.jspm.io/npm:react-dom@19.1.1/index.js",
+              "react-dom/client": "https://ga.jspm.io/npm:react-dom@19.1.1/client.js"
+            }
+          }
         },
-        "buildManifest": "package.json"
+        "css": ["styles.css"]
       },
       "ssr": {
         "initialHtmlPath": "/ssr"
@@ -104,14 +104,6 @@
         "MY_COCKPIT_CAPABILITIES": {
           "businessEntity": "Customer",
           "contentType": "overview"
-        },
-        "MASHROOM_FRONTEND_PERMISSIONS_MAPPING": {
-          "perm1": ["role1"],
-          "perm2": ["role2", "Administrator"]
-        },
-        "MASHROOM_VIEW_ROLES": ["role1"],
-        "MASHROOM_PROXY_ACCESS_ROLES": {
-          "proxy1": ["role1"]
         }
       }
     }
