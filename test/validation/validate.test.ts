@@ -6,7 +6,7 @@ import validate from '../../src/validation/validate';
 const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptions');
 
 describe('validate', () => {
-  it('succeeds with a valid yaml spec file', async () => {
+  it('succeeds with a valid yaml declaration file', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
 
     const errors = await validate(def, demoDescriptionsLocation);
@@ -14,7 +14,7 @@ describe('validate', () => {
     expect(errors).toBeFalsy();
   });
 
-  it('succeeds with a valid json spec file with external schema references', async () => {
+  it('succeeds with a valid json declaration file with external schema references', async () => {
     const def = loadJson(resolve(demoDescriptionsLocation, 'withExternalRefs.json'));
 
     const errors = await validate(def, demoDescriptionsLocation);
@@ -22,7 +22,7 @@ describe('validate', () => {
     expect(errors).toBeFalsy();
   });
 
-  it('fails if the spec file is not schema compliant', async () => {
+  it('fails if the declaration file is not schema compliant', async () => {
     const def = loadJson(resolve(demoDescriptionsLocation, 'invalid.json'));
 
     const errors = await validate(def, demoDescriptionsLocation);

@@ -1,11 +1,10 @@
 import extraValidationTemplateStartersBrowserStandalone from './validation/extraValidationTemplateStartersBrowserStandalone';
-import extraValidationTemplateMashroomPluginConfig from './validation/extraValidationTemplateMashroomPluginConfig';
 import type { TemplateConfig } from './types';
 
 const config: Record<string, TemplateConfig> = {
   renderersPlainJS: {
     templateFileToTargetFiles: {
-      'renderersPlainJS.ejs': 'microfrontendRenderers.ts'
+      'renderer.ejs': 'microfrontendRenderers.ts'
     }
   },
   startersBrowserStandalone: {
@@ -19,25 +18,14 @@ const config: Record<string, TemplateConfig> = {
       // TODO
     }
   },
-  hostIntegrationsExpress: {
+  hostIntegrationsNodeJs: {
     templateFileToTargetFiles: {
       // TODO
     }
   },
-  hostIntegrationsSpringBoot: {
+  hostIntegrationsJava: {
     templateFileToTargetFiles: {
       // TODO
-    }
-  },
-  startersMashroom: {
-    templateFileToTargetFiles: {
-      'startersMashroom.ejs': 'microfrontendStarters.ts'
-    }
-  },
-  mashroomPluginConfig: {
-    extraValidation: extraValidationTemplateMashroomPluginConfig,
-    templateFileToTargetFiles: {
-      'mashroomPluginConfig.ejs': 'mashroom.json'
     }
   }
 };

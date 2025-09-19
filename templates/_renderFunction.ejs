@@ -1,0 +1,51 @@
+
+
+/* --- Microfrontend <%- i+1 -%> --- */
+
+/* Type Parameters */
+
+<% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
+    type Microfrontend<%-i+1 -%>Permissions = {
+    <% spec.microfrontends[i].frontendPermissions.forEach((permission) => { %>
+    readonly '<%-permission.name%>': boolean;
+    <% }) %>
+    };
+<% } else { %>
+    type Microfrontend<%-i+1 %>Permissions = undefined;
+<%  } %>
+
+<% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
+    type Microfrontend<%-i+1 %>ApiProxyPaths = {
+    <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+    readonly '<%-proxyId%>': string;
+    <% }) %>
+    };
+<% } else { %>
+    type Microfrontend<%-i+1 %>ApiProxyPaths = undefined;
+<%  } %>
+
+<% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
+    type Microfrontend<%-i+1 %>MessagesPublish = {
+    <% Object.keys(spec.microfrontends[i].messages).forEach((topic, idx) => { %>
+        <% if (spec.microfrontends[i].messages[topic].publish) { %>
+        '<%-topic-%>%>': <%-messageSchemaTypes[idx][topic].ifName-%>;
+        <% } %>
+    <% }); %>
+    }
+    type Microfrontend<%-i+1 %>MessagesSubscribe = {
+    <% Object.keys(spec.microfrontends[i].messages).forEach((topic, idx) => { %>
+        <% if (spec.microfrontends[i].messages[topic].subscribe) { %>
+        '<%-topic-%>%>': <%-messageSchemaTypes[idx][topic].ifName-%>;
+        <% } %>
+    <% }); %>
+    }
+<% } else { %>
+    type Microfrontend<%-i+1 %>MessagesPublish = undefined;
+    type Microfrontend<%-i+1 %>MessagesSubscribe = undefined;
+<%  } %>
+
+/* Render Function */
+
+export type Microfrontend<%-i+1%>RenderFunction = OpenMicrofrontendsRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions, Microfrontend<%-i+1%>ApiProxyPaths, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
+
+export const Microfrontend<%-i+1%>RenderFunctionName = '<%-spec.microfrontends[i].rendererFunctionName%>';

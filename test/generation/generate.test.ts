@@ -11,9 +11,9 @@ describe('generate', () => {
   it('generates plain JS render functions', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
-    const result = await generate(model, 'renderersPlainJS');
+    const result = await generate(model, 'renderers');
 
-    // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendRenderers.ts'), result);
+    // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendRenderers.ts'), result);
 
     expect(result).toBe(
       readFileSync(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendRenderers.ts'), 'utf-8')
@@ -31,7 +31,7 @@ describe('generate', () => {
     );
     const result = await generate(model, 'startersBrowserStandalone');
 
-    // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendStarters_browser_standalone.ts'), result);
+    // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), result);
 
     expect(result).toBe(
       readFileSync(
@@ -41,43 +41,41 @@ describe('generate', () => {
     );
   });
 
-  it('generates Mashroom starter functions', async () => {
-    const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
-    const model = await createGeneratorModel(
-      def,
-      {
-        shadowDOM: 'true'
-      },
-      demoDescriptionsLocation
-    );
-    const result = await generate(model, 'startersMashroom');
+  it('generates browser standalone starter functions for ESM modules', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_ESM.yaml'));
+    const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
+    const result = await generate(model, 'startersBrowserStandalone');
 
-    // await saveFile(resolve(__dirname, '_expectations', '..', 'full1_microfrontendStarters_mashroom.ts'), result);
+    // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_ESM.ts'), result);
 
     expect(result).toBe(
       readFileSync(
-        resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_mashroom.ts'),
+        resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_ESM.ts'),
         'utf-8'
       )
     );
   });
 
-  it('generates a mashroomPluginConfig', async () => {
-    const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
-    const model = await createGeneratorModel(
-      def,
-      {
-        mashroomCategory: 'OpenMicroFrontendsDemo',
-        mashroomMetaInfoAnnotations: 'MY_COCKPIT_CAPABILITIES_META'
-      },
-      demoDescriptionsLocation
-    );
-    const result = await generate(model, 'mashroomPluginConfig');
+  it('generates browser standalone starter functions for SystemJS modules', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_SystemJS.yaml'));
+    const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
+    const result = await generate(model, 'startersBrowserStandalone');
 
-    // await saveFile(resolve(__dirname, '..', '_expectations', 'full1_mashroomPluginConfig.json'), result);
+    await saveFile(
+      resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_SystemJS.ts'),
+      result
+    );
 
     expect(result).toBe(
-      readFileSync(resolve(import.meta.dirname, '..', '_expectations', 'full1_mashroomPluginConfig.json'), 'utf-8')
+      readFileSync(
+        resolve(
+          import.meta.dirname,
+          '..',
+          '_expectations',
+          'full1_microfrontendStarters_browser_standalone_SystemJS.ts'
+        ),
+        'utf-8'
+      )
     );
   });
 });

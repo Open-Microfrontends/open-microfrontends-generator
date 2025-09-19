@@ -30,13 +30,13 @@ Options:
 
 | Template                                                | Description                                                          |
 |---------------------------------------------------------|----------------------------------------------------------------------|
-| [renderersPlainJS](#renderersPlainJS)                   | Renderer functions for the Microfrontends server                     |
+| [renderers](#renderers)                                 | Renderer functions for the Microfrontends server                     |
 | [startersBrowserStandalone](#startersBrowserStandalone) | Starters for a plain HTML host                                       |
 | [startersBrowserFull](#startersBrowserFull)             | Full starters on a host with a backend (security, proxying)          |
-| [hostIntegrationsExpress](#hostIntegrationsNodeJs)      | Server-side integration code for a Express.js backend                |
-| [hostIntegrationsSpringBoot](#hostIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
+| [hostIntegrationsNodeJs](#hostIntegrationsNodeJs)      | Server-side integration code for a Express.js backend                |
+| [hostIntegrationsJava](#hostIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
 
-### renderersPlainJS
+### renderers
 
 Generates a *microfrontendRenderers.ts* file that contains render functions that need to be implemented.
 The generated code is plain JavaScript and does depend on any libraries.

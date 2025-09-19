@@ -8,29 +8,6 @@ import type { OpenMicrofrontendsClientContext } from "@open-microfrontends/types
 
 // Helper
 
-function addJsScriptTag(
-  url: string,
-  addedElements: Array<HTMLElement>,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const scriptElem = document.createElement("script");
-    scriptElem.src = url;
-    scriptElem.addEventListener("error", (error) => {
-      console.error(
-        "[OpenMicrofrontends] Error loading JS resource: ",
-        url,
-        error,
-      );
-      reject(error);
-    });
-    scriptElem.addEventListener("load", () => {
-      resolve();
-    });
-    document.head.appendChild(scriptElem);
-    addedElements.push(scriptElem);
-  });
-}
-
 function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
   const linkElem = document.createElement("link");
   linkElem.rel = "stylesheet";
@@ -53,6 +30,18 @@ function toFullUrl(...parts: Array<string>): string {
       idx > 0 && part && !part.startsWith("/") ? `/${part}` : part,
     )
     .join("");
+}
+
+declare var System: any;
+
+function installSystemJSImportMap(
+  initialModules: Array<string>,
+  importMap: any,
+) {
+  if (!importMap.imports) {
+    return;
+  }
+  const currentImportMap = System.getImportMap();
 }
 
 /* TypeScript type from Schemas */
@@ -118,10 +107,35 @@ export async function startMyFirstMicrofrontend(
 
   const jsUrls = [toFullUrl(serverUrl, "/", "Microfrontend.js")];
 
-  // Load JS assets consecutively (no modules)
+  // Load initial modules consecutively (SystemJS)
+  if (typeof System === "undefined") {
+    console.error(
+      '[OpenMicrofrontends] Microfrontend "My First Microfrontend" requires SystemJS but is not available!',
+    );
+    return;
+  }
+  const moduleUrls = [toFullUrl(serverUrl, "/", "Microfrontend.js")];
+
+  installSystemJSImportMap(
+    moduleUrls,
+    JSON.stringify({
+      imports: {
+        react: "https://ga.system.jspm.io/npm:react@19.1.1/index.js",
+        "react-dom": "https://ga.system.jspm.io/npm:react-dom@19.1.1/index.js",
+        "react-dom/client":
+          "https://ga.system.jspm.io/npm:react-dom@19.1.1/client.js",
+        scheduler: "https://ga.system.jspm.io/npm:scheduler@0.26.0/index.js",
+        process: "https://ga.system.jspm.io/npm:process@0.11.10/browser.js",
+      },
+    }),
+  );
+
   try {
     for (const jsUrl of jsUrls) {
-      await addJsScriptTag(jsUrl, addedElements);
+      const module = await System.import(jsUrl);
+      if (module) {
+        exportedModules.push(module);
+      }
     }
   } catch (e) {
     console.error(
@@ -142,13 +156,6 @@ export async function startMyFirstMicrofrontend(
     );
     return;
   }
-
-  console.info(
-    '[OpenMicrofrontends] Using Shadow DOM for Microfrontend "My First Microfrontend"',
-  );
-  hostElement = hostElement
-    .attachShadow({ mode: "open" })
-    .getRootNode() as HTMLElement;
 
   const contextWithDefaultConfig = {
     ...context,

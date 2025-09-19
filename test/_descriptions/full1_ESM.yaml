@@ -33,6 +33,7 @@ microfrontends:
       js:
         initial:
           - Microfrontend.js
+        moduleSystem: ESM
       css:
         - styles.css
     ssr:

@@ -95,8 +95,8 @@ export default async (
     try {
       for (const ejsTemplate of Object.keys(templateConfig.templateFileToTargetFiles)) {
         const targetFileName = templateConfig.templateFileToTargetFiles[ejsTemplate];
-        const result = await generate(model, ejsTemplate);
         const targetFile = resolve(absoluteOutFolder, targetFileName);
+        const result = await generate(model, ejsTemplate);
         await saveFile(targetFile, result);
         console.info(colors.green(`OMG: Saved: ${targetFile}`));
       }
