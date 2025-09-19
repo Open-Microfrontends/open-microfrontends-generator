@@ -61,10 +61,10 @@ describe('generate', () => {
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
     const result = await generate(model, 'startersBrowserStandalone');
 
-    await saveFile(
-      resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_SystemJS.ts'),
-      result
-    );
+    // await saveFile(
+    //   resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_SystemJS.ts'),
+    // result
+    // );
 
     expect(result).toBe(
       readFileSync(
