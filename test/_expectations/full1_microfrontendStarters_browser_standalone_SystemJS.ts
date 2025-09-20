@@ -42,6 +42,27 @@ function installSystemJSImportMap(
     return;
   }
   const currentImportMap = System.getImportMap();
+  const newImportMap = { imports: {}, scopes: {} };
+  for (const _import in importMap.imports) {
+    if (!currentImportMap.imports[_import]) {
+      newImportMap.imports[_import] = importMap.imports[_import];
+    } else if (
+      currentImportMap.imports[_import] !== importMap.imports[_import]
+    ) {
+      // Conflicting import map entries
+      initialModules.forEach((moduleUrl) => {
+        if (!(moduleUrl in newImportMap.scopes)) {
+          newImportMap.scopes[moduleUrl] = {};
+        }
+        newImportMap.scopes[moduleUrl][_import] = importMap.imports[_import];
+        // Also make sure conflicting entries only load modules from "their" import map
+        newImportMap.scopes[importMap.imports[_import]] = {
+          ...importMap.imports,
+        };
+      });
+    }
+  }
+  System.addImportMap(newImportMap);
 }
 
 /* TypeScript type from Schemas */
@@ -116,19 +137,12 @@ export async function startMyFirstMicrofrontend(
   }
   const moduleUrls = [toFullUrl(serverUrl, "/", "Microfrontend.js")];
 
-  installSystemJSImportMap(
-    moduleUrls,
-    JSON.stringify({
-      imports: {
-        react: "https://ga.system.jspm.io/npm:react@19.1.1/index.js",
-        "react-dom": "https://ga.system.jspm.io/npm:react-dom@19.1.1/index.js",
-        "react-dom/client":
-          "https://ga.system.jspm.io/npm:react-dom@19.1.1/client.js",
-        scheduler: "https://ga.system.jspm.io/npm:scheduler@0.26.0/index.js",
-        process: "https://ga.system.jspm.io/npm:process@0.11.10/browser.js",
-      },
-    }),
-  );
+  installSystemJSImportMap(moduleUrls, {
+    imports: {
+      module1: "http://localhost:12345/module1.js",
+      module2: "http://localhost:12345/module2.js",
+    },
+  });
 
   try {
     for (const jsUrl of jsUrls) {

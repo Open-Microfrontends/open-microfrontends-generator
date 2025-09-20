@@ -45,7 +45,24 @@ function installSystemJSImportMap(initialModules: Array<string>, importMap: any)
         return;
     }
     const currentImportMap = System.getImportMap();
-
-
+    const newImportMap = { imports: {}, scopes: {} };
+    for (const _import in importMap.imports) {
+        if (!currentImportMap.imports[_import]) {
+            newImportMap.imports[_import] = importMap.imports[_import];
+        } else if (currentImportMap.imports[_import] !== importMap.imports[_import]) {
+            // Conflicting import map entries
+            initialModules.forEach((moduleUrl) => {
+                if (!(moduleUrl in newImportMap.scopes)) {
+                    newImportMap.scopes[moduleUrl] = {};
+                }
+                newImportMap.scopes[moduleUrl][_import] = importMap.imports[_import];
+                // Also make sure conflicting entries only load modules from "their" import map
+                newImportMap.scopes[importMap.imports[_import]] = {
+                    ...importMap.imports,
+                }
+            });
+        }
+    }
+    System.addImportMap(newImportMap);
 }
 <% } %>

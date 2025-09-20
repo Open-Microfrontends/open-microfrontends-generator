@@ -96,7 +96,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
             <% } %>
         ];
         <% if (spec.microfrontends[i].assets.js.importMap) { %>
-            installSystemJSImportMap(moduleUrls, JSON.stringify(<%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>));
+            installSystemJSImportMap(moduleUrls, <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>);
         <% } %>
         try {
             for (const jsUrl of jsUrls) {
