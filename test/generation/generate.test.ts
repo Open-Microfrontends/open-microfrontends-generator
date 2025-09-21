@@ -11,7 +11,7 @@ describe('generate', () => {
   it('generates plain JS render functions', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
-    const result = await generate(model, 'renderers');
+    const result = await generate(model, 'renderers', import.meta.dirname);
 
     // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendRenderers.ts'), result);
 
@@ -29,9 +29,12 @@ describe('generate', () => {
       },
       demoDescriptionsLocation
     );
-    const result = await generate(model, 'startersBrowserStandalone');
+    const result = await generate(model, 'startersBrowserStandalone', import.meta.dirname);
 
-    // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'), result);
+    // await saveFile(
+    //   resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone.ts'),
+    //   result
+    // );
 
     expect(result).toBe(
       readFileSync(
@@ -44,9 +47,12 @@ describe('generate', () => {
   it('generates browser standalone starter functions for ESM modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_ESM.yaml'));
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
-    const result = await generate(model, 'startersBrowserStandalone');
+    const result = await generate(model, 'startersBrowserStandalone', import.meta.dirname);
 
-    // await saveFile(resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_ESM.ts'), result);
+    // await saveFile(
+    //   resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_ESM.ts'),
+    //   result
+    // );
 
     expect(result).toBe(
       readFileSync(
@@ -59,11 +65,11 @@ describe('generate', () => {
   it('generates browser standalone starter functions for SystemJS modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_SystemJS.yaml'));
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
-    const result = await generate(model, 'startersBrowserStandalone');
+    const result = await generate(model, 'startersBrowserStandalone', import.meta.dirname);
 
     // await saveFile(
     //   resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_SystemJS.ts'),
-    // result
+    //   result
     // );
 
     expect(result).toBe(

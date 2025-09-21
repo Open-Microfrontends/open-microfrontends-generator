@@ -22,9 +22,6 @@ export default [{
     },
     rules: {
         ...js.configs.recommended.rules,
-        quotes: ['error', 'single', { allowTemplateLiterals: true }],
-        'quote-props': ['error', 'as-needed'],
-        semi: ['error', 'always'],
         'prefer-template': 'error',
         'prefer-object-spread': 'error',
         'no-unused-vars': 'warn',

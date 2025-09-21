@@ -4,7 +4,7 @@ import ejs from 'ejs';
 import prettify from './prettify';
 import type { GeneratorModel } from '../types';
 
-export default async (model: GeneratorModel, ejsTemplate: string): Promise<string> => {
+export default async (model: GeneratorModel, ejsTemplate: string, targetDir: string): Promise<string> => {
   if (!ejsTemplate.endsWith('.ejs')) {
     ejsTemplate += '.ejs';
   }
@@ -15,5 +15,5 @@ export default async (model: GeneratorModel, ejsTemplate: string): Promise<strin
     })
   });
 
-  return prettify(sourceCode);
+  return prettify(sourceCode, targetDir);
 };
