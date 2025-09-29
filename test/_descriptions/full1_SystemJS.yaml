@@ -1,0 +1,78 @@
+$schema: '../../json/open-microfrontends.json'
+openMicrofrontends: 1.0.0
+info:
+  title: OpenMicrofrontends Example
+  description: Example definition of microfrontends for testing
+  version: 1.0.0
+  contact:
+    author: OpenMicrofrontends
+    email: test@test.com
+    organization: OpenMicrofrontends
+servers:
+  - url: http://my-test-server.com
+    description: Test Server
+securitySchemes:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-Key
+microfrontends:
+  - name: My First Microfrontend
+    title:
+      en: My First Microfrontend
+      de: Mein erstes Microfrontend
+    description: An example microfrontend that shows all the features of the OpenMicrofrontends schema
+    frontendPermissions:
+      - name: showDetails
+        description: The authenticated user is permitted to see details
+      - name: deletePermitted
+        description: The authenticated user is permitted to delete items
+    assets:
+      basePath: /
+      buildManifest: build.yaml
+      js:
+        initial:
+          - Microfrontend.js
+        moduleSystem: SystemJS
+        importMap:
+          imports:
+            module1: http://localhost:12345/module1.js
+            module2: http://localhost:12345/module2.js
+      css:
+        - styles.css
+    ssr:
+      initialHtmlPath: /ssr
+    rendererFunctionName: startMyFirstMicrofrontend
+    apiProxies:
+      proxy1:
+        url: https://test.com/foo
+        security:
+          - ApiKeyAuth: []
+      proxy2: ws://test2.com/bar
+    config:
+      schema:
+        type: object
+        properties:
+          customerId:
+            type: string
+        required:
+          - customerId
+        additionalProperties: false
+      default:
+        customerId: '1000'
+    messages:
+      ping:
+        publish: true
+        subscribe: true
+        schema:
+          '$id': https://my-company.com/messages/ping
+          type: object
+          properties:
+            ping:
+              const: true
+          required:
+            - ping
+    annotations:
+      MY_COCKPIT_CAPABILITIES:
+        businessEntity: Customer
+        contentType: overview

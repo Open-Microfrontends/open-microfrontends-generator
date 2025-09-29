@@ -1,4 +1,4 @@
-import type { HttpsOpenMicrofrontendsSchemas100 } from './generated/open-microfrontends';
+import type { HttpsOpenMicrofrontendsSchemas100 } from '@open-microfrontends/types/OpenMicrofrontendDescription';
 
 export type OpenMicroFrontendsDef = HttpsOpenMicrofrontendsSchemas100;
 

@@ -1,16 +1,26 @@
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import ejs from 'ejs';
+import prettify from './prettify';
+import { getTemplateFolder } from './getTemplateFolder';
 import type { GeneratorModel } from '../types';
 
-export default async (model: GeneratorModel, ejsTemplate: string): Promise<string> => {
+export default async (model: GeneratorModel, ejsTemplate: string, targetFile: string): Promise<string> => {
   if (!ejsTemplate.endsWith('.ejs')) {
     ejsTemplate += '.ejs';
   }
-  const templateContent = await readFile(resolve(__dirname, '..', '..', 'templates', ejsTemplate), 'utf-8');
-  return ejs.render(templateContent, model, {
+
+  const templateFolder = getTemplateFolder();
+  const templateContent = await readFile(resolve(templateFolder, ejsTemplate), 'utf-8');
+  const sourceCode = ejs.render(templateContent, model, {
     includer: (path) => ({
-      filename: resolve(__dirname, '..', '..', 'templates', `${path}.ejs`)
+      filename: resolve(templateFolder, `${path}.ejs`)
     })
   });
+
+  if (!targetFile.endsWith('.js') && !targetFile.endsWith('.ts')) {
+    return sourceCode;
+  }
+
+  return prettify(sourceCode, dirname(targetFile));
 };

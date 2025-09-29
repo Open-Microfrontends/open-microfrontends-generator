@@ -7,22 +7,6 @@ import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types
 
 // Helper
 
-function addJsScriptTag(url: string, addedElements: Array<HTMLElement>): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const scriptElem = document.createElement('script');
-    scriptElem.src = url;
-    scriptElem.addEventListener('error', (error) => {
-      console.error('[OpenMicrofrontends] Error loading JS resource: ', url, error);
-      reject(error);
-    });
-    scriptElem.addEventListener('load', () => {
-      resolve();
-    });
-    document.head.appendChild(scriptElem);
-    addedElements.push(scriptElem);
-  });
-}
-
 function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
   const linkElem = document.createElement('link');
   linkElem.rel = 'stylesheet';
@@ -39,6 +23,34 @@ function toFullUrl(...parts: Array<string>): string {
     .map((part) => (part.endsWith('/') ? part.slice(0, -1) : part))
     .map((part, idx) => (idx > 0 && part && !part.startsWith('/') ? `/${part}` : part))
     .join('');
+}
+
+declare var System: any;
+
+function installSystemJSImportMap(initialModules: Array<string>, importMap: any) {
+  if (!importMap.imports) {
+    return;
+  }
+  const currentImportMap = System.getImportMap();
+  const newImportMap = { imports: {}, scopes: {} };
+  for (const _import in importMap.imports) {
+    if (!currentImportMap.imports[_import]) {
+      newImportMap.imports[_import] = importMap.imports[_import];
+    } else if (currentImportMap.imports[_import] !== importMap.imports[_import]) {
+      // Conflicting import map entries
+      initialModules.forEach((moduleUrl) => {
+        if (!(moduleUrl in newImportMap.scopes)) {
+          newImportMap.scopes[moduleUrl] = {};
+        }
+        newImportMap.scopes[moduleUrl][_import] = importMap.imports[_import];
+        // Also make sure conflicting entries only load modules from "their" import map
+        newImportMap.scopes[importMap.imports[_import]] = {
+          ...importMap.imports
+        };
+      });
+    }
+  }
+  System.addImportMap(newImportMap);
 }
 
 /* TypeScript type from Schemas */
@@ -104,10 +116,27 @@ export async function startMyFirstMicrofrontend(
 
   const jsUrls = [toFullUrl(serverUrl, '/', 'Microfrontend.js')];
 
-  // Load JS assets consecutively (no modules)
+  // Load initial modules consecutively (SystemJS)
+  if (typeof System === 'undefined') {
+    throw new Error(
+      '[OpenMicrofrontends] Microfrontend "My First Microfrontend" requires SystemJS but is not available!'
+    );
+  }
+  const moduleUrls = [toFullUrl(serverUrl, '/', 'Microfrontend.js')];
+
+  installSystemJSImportMap(moduleUrls, {
+    imports: {
+      module1: 'http://localhost:12345/module1.js',
+      module2: 'http://localhost:12345/module2.js'
+    }
+  });
+
   try {
     for (const jsUrl of jsUrls) {
-      await addJsScriptTag(jsUrl, addedElements);
+      const module = await System.import(jsUrl);
+      if (module) {
+        exportedModules.push(module);
+      }
     }
   } catch (e) {
     console.error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!', e);
@@ -124,9 +153,6 @@ export async function startMyFirstMicrofrontend(
   if (!renderFunction) {
     throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
-
-  console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "My First Microfrontend"');
-  hostElement = hostElement.attachShadow({ mode: 'open' }).getRootNode() as HTMLElement;
 
   const contextWithDefaultConfig = {
     ...context,

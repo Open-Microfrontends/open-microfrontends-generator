@@ -1,4 +1,5 @@
 import { resolve, isAbsolute, extname } from 'path';
+import { readFileSync } from 'fs';
 
 export default (path: string) => {
   if (extname(path) !== '.json') {
@@ -6,5 +7,6 @@ export default (path: string) => {
   }
 
   const fullPath = isAbsolute(path) ? path : resolve(process.cwd(), path);
-  return require(fullPath);
+  const jsonContent = readFileSync(fullPath).toString('utf-8');
+  return JSON.parse(jsonContent);
 };

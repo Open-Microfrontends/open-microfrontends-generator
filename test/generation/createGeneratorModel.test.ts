@@ -3,12 +3,12 @@ import loadYaml from '../../src/utils/loadYaml';
 import loadJson from '../../src/utils/loadJson';
 import createGeneratorModel from '../../src/generation/createGeneratorModel';
 
-const demoSchemaLocation = resolve(__dirname, '..', '_schemas');
+const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptions');
 
 describe('createGeneratorModel', () => {
   it('creates a valid model', async () => {
-    const spec = loadYaml(resolve(demoSchemaLocation, 'full1.yaml'));
-    const model = await createGeneratorModel(spec, {}, demoSchemaLocation);
+    const spec = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
+    const model = await createGeneratorModel(spec, {}, demoDescriptionsLocation);
 
     expect(model.safeMicrofrontendNames).toEqual(['MyFirstMicrofrontend']);
     expect(model.configSchemaTypes[0].ifName).toBe('Microfrontend1Config');
@@ -25,8 +25,8 @@ describe('createGeneratorModel', () => {
   });
 
   it('creates a valid model for external schema references', async () => {
-    const spec = loadJson(resolve(demoSchemaLocation, 'withExternalRefs.json'));
-    const model = await createGeneratorModel(spec, {}, demoSchemaLocation);
+    const spec = loadJson(resolve(demoDescriptionsLocation, 'withExternalRefs.json'));
+    const model = await createGeneratorModel(spec, {}, demoDescriptionsLocation);
 
     expect(model.safeMicrofrontendNames).toEqual(['MyFirstMicrofrontend']);
     expect(model.configSchemaTypes[0].ifName).toBe('Microfrontend1Config');

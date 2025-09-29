@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "outDir": "./dist"
-  },
-  "include": [
-    "src"
-  ]
+  }
 }

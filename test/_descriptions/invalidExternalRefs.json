@@ -1,5 +1,5 @@
 {
-  "$schema": "../../schemas/open-microfrontends.json",
+  "$schema": "../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json",
   "openMicrofrontends": "1.0.0",
   "servers": [
     {
@@ -10,15 +10,12 @@
   "microfrontends": [
     {
       "name": "My First Microfrontend",
-      "resources": {
-        "js": ["app.js"],
-        "css": ["app.css"]
+      "assets": {
+        "js": {
+          "initial": ["app.js"]
+        }
       },
-      "paths": {
-        "resourcesBase": "/",
-        "ssrHtml": "/ssr"
-      },
-      "globalLaunchFunction": "startMyFirstMicrofrontend",
+      "rendererFunctionName": "startMyFirstMicrofrontend",
       "apiProxies": {
         "proxy1": "https://test.com/foo",
         "proxy2": "ws://test2.com/bar"

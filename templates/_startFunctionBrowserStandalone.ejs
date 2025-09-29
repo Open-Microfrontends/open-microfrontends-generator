@@ -1,0 +1,146 @@
+/* Type Parameters */
+
+<% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
+    type Microfrontend<%-i+1 -%>Permissions = {
+    <% spec.microfrontends[i].frontendPermissions.forEach((permission) => { %>
+    readonly '<%-permission.name%>': boolean;
+    <% }) %>
+    };
+<% } else { %>
+    type Microfrontend<%-i+1 %>Permissions = undefined;
+<%  } %>
+
+<% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
+    type Microfrontend<%-i+1 %>MessagesPublish = Record<string, any>;
+    type Microfrontend<%-i+1 %>MessagesSubscribe = Record<string, any>;
+<% } else { %>
+    type Microfrontend<%-i+1 %>MessagesPublish = undefined;
+    type Microfrontend<%-i+1 %>MessagesSubscribe = undefined;
+<%  } %>
+
+/* Type-safe MessageBus slice for the client */
+
+<% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
+    type Microfrontend<%-i+1-%>ClientMessageBus = {
+    <% Object.keys(spec.microfrontends[i].messages).forEach((topic, idx) => { %>
+        <% if (spec.microfrontends[i].messages[topic].subscribe) { %>
+        publish(topic: '<%-topic-%>%>', data: <%-messageSchemaTypes[idx][topic].ifName-%>): void;
+        <% } %>
+        <% if (spec.microfrontends[i].messages[topic].publish) { %>
+        subscribe(topic: '<%-topic-%>%>', cb: (data: <%-messageSchemaTypes[idx][topic].ifName-%>) => void): void;
+        unsubscribe(topic: '<%-topic-%>%>', cb: (data: <%-messageSchemaTypes[idx][topic].ifName-%>) => void): void;
+        <% } %>
+    <% }) %>
+    };
+<% } %>
+
+/* Default config  */
+
+const defaultConfig<%i+1%> = <%-JSON.stringify(spec.microfrontends[i].config.default, null, 2)-%>;
+
+/* Render function type with aligned config and message bus */
+
+type Microfrontend<%-i+1%>ClientContext = OpenMicrofrontendsClientContext<Partial<Microfrontend<%-i+1%>Config>, Microfrontend<%-i+1%>Permissions, undefined, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
+
+/* Start function */
+
+export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, hostElement: HTMLElement, context: Microfrontend<%-i+1%>ClientContext) {
+    const addedElements: Array<HTMLElement> = [];
+    const exportedModules: Array<any> = [];
+
+    <% if (spec.microfrontends[i].assets.css) { %>
+        // Add stylesheets
+        <% for (const cssResource of spec.microfrontends[i].assets.css) { %>
+            addCssLinkTag(toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-cssResource%>'), addedElements);
+        <% } %>
+    <% } %>
+
+    const jsUrls = [
+        <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
+            toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-jsResource%>'),
+        <% } %>
+    ];
+    <% if (!spec.microfrontends[i].assets.js.moduleSystem || spec.microfrontends[i].assets.js.moduleSystem === 'none') { %>
+        // Load JS assets consecutively (no modules)
+        try {
+            for (const jsUrl of jsUrls) {
+                await addJsScriptTag(jsUrl, addedElements);
+            }
+        } catch (e) {
+            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
+        }
+    <% } else if (spec.microfrontends[i].assets.js.moduleSystem === 'ESM') { %>
+        // Load initial modules consecutively (ESM)
+        try {
+            for (const jsUrl of jsUrls) {
+                const module = await import(jsUrl);
+                if (module) {
+                  exportedModules.push(module);
+                }
+            }
+        } catch (e) {
+            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
+        }
+
+    <% } else if (spec.microfrontends[i].assets.js.moduleSystem === 'SystemJS') { %>
+        // Load initial modules consecutively (SystemJS)
+        if (typeof System === 'undefined') {
+            throw new Error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
+        }
+        const moduleUrls = [
+            <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
+                toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-jsResource%>'),
+            <% } %>
+        ];
+        <% if (spec.microfrontends[i].assets.js.importMap) { %>
+            installSystemJSImportMap(moduleUrls, <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>);
+        <% } %>
+        try {
+            for (const jsUrl of jsUrls) {
+                const module = await System.import(jsUrl);
+                if (module) {
+                  exportedModules.push(module);
+                }
+            }
+        } catch (e) {
+            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
+        }
+    <% } %>
+
+    // Start Microfrontend
+    const renderFunction = exportedModules.find(m => '<%-spec.microfrontends[i].rendererFunctionName-%>' in m)?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
+            || exportedModules.find(m => 'default' in m && '<%-spec.microfrontends[i].rendererFunctionName-%>' in m.default)?.default?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
+            || (window as any)['<%-spec.microfrontends[i].rendererFunctionName-%>'];
+    if (!renderFunction) {
+        throw new Error('[OpenMicrofrontends] Render function of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
+    }
+
+    <% if (additionalProperties.shadowDOM === 'true') { %>
+    console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "<%-spec.microfrontends[i].name%>"');
+    hostElement = hostElement.attachShadow({ mode: "open" }).getRootNode() as HTMLElement;
+    <% } %>
+
+    const contextWithDefaultConfig = {
+        ...context,
+        config: {
+            ...defaultConfig<%i+1%>,
+            ...context.config,
+        },
+    };
+    const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
+
+    return {
+        close: async () => {
+            console.info('[OpenMicrofrontends] Closing Microfrontend "<%-spec.microfrontends[i].name%>"');
+            await lifecycleHooks?.onRemove();
+            addedElements.forEach((elem) => elem.remove());
+            hostElement.innerHTML = '';
+        },
+        <% if (spec.microfrontends[i].messages && Object.keys(spec.microfrontends[i].messages).length > 0) { %>
+            messages: context.messageBus as Microfrontend<%-i+1-%>ClientMessageBus,
+        <% } %>
+    };
+};

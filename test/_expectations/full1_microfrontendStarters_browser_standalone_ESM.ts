@@ -7,22 +7,6 @@ import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types
 
 // Helper
 
-function addJsScriptTag(url: string, addedElements: Array<HTMLElement>): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const scriptElem = document.createElement('script');
-    scriptElem.src = url;
-    scriptElem.addEventListener('error', (error) => {
-      console.error('[OpenMicrofrontends] Error loading JS resource: ', url, error);
-      reject(error);
-    });
-    scriptElem.addEventListener('load', () => {
-      resolve();
-    });
-    document.head.appendChild(scriptElem);
-    addedElements.push(scriptElem);
-  });
-}
-
 function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
   const linkElem = document.createElement('link');
   linkElem.rel = 'stylesheet';
@@ -104,10 +88,13 @@ export async function startMyFirstMicrofrontend(
 
   const jsUrls = [toFullUrl(serverUrl, '/', 'Microfrontend.js')];
 
-  // Load JS assets consecutively (no modules)
+  // Load initial modules consecutively (ESM)
   try {
     for (const jsUrl of jsUrls) {
-      await addJsScriptTag(jsUrl, addedElements);
+      const module = await import(jsUrl);
+      if (module) {
+        exportedModules.push(module);
+      }
     }
   } catch (e) {
     console.error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!', e);
@@ -124,9 +111,6 @@ export async function startMyFirstMicrofrontend(
   if (!renderFunction) {
     throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
-
-  console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "My First Microfrontend"');
-  hostElement = hostElement.attachShadow({ mode: 'open' }).getRootNode() as HTMLElement;
 
   const contextWithDefaultConfig = {
     ...context,
