@@ -1,6 +1,6 @@
 import { isAbsolute, resolve } from 'path';
 import { readFile } from 'fs/promises';
-import AJV from 'ajv/dist/2020';
+import AJV from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import type { SecurityRequirement } from '@open-microfrontends/types/OpenMicrofrontendDescription';
 import type { OpenMicroFrontendsDef } from '../types';

@@ -10,7 +10,7 @@ Generates type-safe Microfrontend render functions and host integrations from an
 
 Basic usage:
 
-    omg microfrontends.yaml src/_generated -t renderersPlainJS
+    omg microfrontends.yaml src/_generated -t renderers
 
 Arguments:
  

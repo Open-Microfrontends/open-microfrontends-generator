@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "bin": {
-    "omg": "dist/index.js"
+    "omg": "dist/omg.js"
   },
   "dependencies": {
     "commander": "^14.0.1",
@@ -39,6 +39,7 @@
     "@open-microfrontends/schemas": "file:../open-microfrontends/packages/schemas",
     "cpy-cli": "^6.0.0",
     "typescript": "^5.9.2",
+    "tslib": "^2.8.1",
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.1.2",
     "ts-jest": "^29.4.3",
@@ -53,7 +54,11 @@
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "husky": "^9.1.7",
-    "nock": "^14.0.10"
+    "nock": "^14.0.10",
+    "rollup": "^4.49.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4"
   },
   "jest": {
     "testRegex": "(\\.(test|spec))\\.ts$",
@@ -73,7 +78,7 @@
     "fix:format": "prettier --write src test",
     "fix:lint": "eslint --fix",
     "fix": "npm run fix:format && npm run fix:lint",
-    "build": "tsc",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "prepare": "husky"
   }
 }

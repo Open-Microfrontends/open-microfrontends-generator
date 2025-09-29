@@ -2,9 +2,9 @@ import extraValidationTemplateStartersBrowserStandalone from './validation/extra
 import type { TemplateConfig } from './types';
 
 const config: Record<string, TemplateConfig> = {
-  renderersPlainJS: {
+  renderers: {
     templateFileToTargetFiles: {
-      'renderer.ejs': 'microfrontendRenderers.ts'
+      'renderers.ejs': 'microfrontendRenderers.ts'
     }
   },
   startersBrowserStandalone: {
