@@ -24,7 +24,12 @@ describe('generate', () => {
 
   it('generates browser standalone starter functions', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
-    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone.ts');
+    const targetFile = resolve(
+      import.meta.dirname,
+      '..',
+      '_expectations',
+      'full1_microfrontendStarters_browser_standalone.ts'
+    );
 
     const model = await createGeneratorModel(
       def,
@@ -47,7 +52,12 @@ describe('generate', () => {
 
   it('generates browser standalone starter functions for ESM modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_ESM.yaml'));
-    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_ESM.ts');
+    const targetFile = resolve(
+      import.meta.dirname,
+      '..',
+      '_expectations',
+      'full1_microfrontendStarters_browser_standalone_ESM.ts'
+    );
 
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
     const result = await generate(model, 'startersBrowserStandalone', targetFile);
@@ -64,7 +74,12 @@ describe('generate', () => {
 
   it('generates browser standalone starter functions for SystemJS modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full1_SystemJS.yaml'));
-    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full1_microfrontendStarters_browser_standalone_SystemJS.ts');
+    const targetFile = resolve(
+      import.meta.dirname,
+      '..',
+      '_expectations',
+      'full1_microfrontendStarters_browser_standalone_SystemJS.ts'
+    );
 
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
     const result = await generate(model, 'startersBrowserStandalone', targetFile);
