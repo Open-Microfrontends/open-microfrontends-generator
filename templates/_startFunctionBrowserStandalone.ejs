@@ -68,7 +68,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
             }
         } catch (e) {
             console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
-            return;
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
     <% } else if (spec.microfrontends[i].assets.js.moduleSystem === 'ESM') { %>
         // Load initial modules consecutively (ESM)
@@ -81,14 +81,13 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
             }
         } catch (e) {
             console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
-            return;
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
 
     <% } else if (spec.microfrontends[i].assets.js.moduleSystem === 'SystemJS') { %>
         // Load initial modules consecutively (SystemJS)
         if (typeof System === 'undefined') {
-            console.error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
-            return;
+            throw new Error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
         }
         const moduleUrls = [
             <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
@@ -107,15 +106,16 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
             }
         } catch (e) {
             console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
-            return;
+            throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
     <% } %>
 
     // Start Microfrontend
-    const renderFunction = exportedModules.find(m => '<%-spec.microfrontends[i].rendererFunctionName-%>' in m)?.['<%-spec.microfrontends[i].rendererFunctionName-%>'] || (window as any)['<%-spec.microfrontends[i].rendererFunctionName-%>'];
+    const renderFunction = exportedModules.find(m => '<%-spec.microfrontends[i].rendererFunctionName-%>' in m)?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
+            || exportedModules.find(m => 'default' in m && '<%-spec.microfrontends[i].rendererFunctionName-%>' in m.default)?.default?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
+            || (window as any)['<%-spec.microfrontends[i].rendererFunctionName-%>'];
     if (!renderFunction) {
-        console.error('[OpenMicrofrontends] Render function of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
-        return;
+        throw new Error('[OpenMicrofrontends] Render function of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
     }
 
     <% if (additionalProperties.shadowDOM === 'true') { %>

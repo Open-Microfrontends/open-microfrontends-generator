@@ -98,16 +98,18 @@ export async function startMyFirstMicrofrontend(
     }
   } catch (e) {
     console.error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!', e);
-    return;
+    throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!');
   }
 
   // Start Microfrontend
   const renderFunction =
     exportedModules.find((m) => 'startMyFirstMicrofrontend' in m)?.['startMyFirstMicrofrontend'] ||
+    exportedModules.find((m) => 'default' in m && 'startMyFirstMicrofrontend' in m.default)?.default?.[
+      'startMyFirstMicrofrontend'
+    ] ||
     (window as any)['startMyFirstMicrofrontend'];
   if (!renderFunction) {
-    console.error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
-    return;
+    throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
 
   const contextWithDefaultConfig = {
