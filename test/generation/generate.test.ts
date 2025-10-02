@@ -31,13 +31,7 @@ describe('generate', () => {
       'full1_microfrontendStarters_browser_standalone.ts'
     );
 
-    const model = await createGeneratorModel(
-      def,
-      {
-        shadowDOM: 'true'
-      },
-      demoDescriptionsLocation
-    );
+    const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
     const result = await generate(model, 'startersBrowserStandalone', targetFile);
 
     // await saveFile(targetFile, result);

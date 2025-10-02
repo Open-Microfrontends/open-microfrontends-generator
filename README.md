@@ -90,24 +90,12 @@ const {close, messages} = await startMyFirstMicrofrontend('https://my-microfront
 messages.publish('topic', {});
 ```
 
-Supported additionalProperties:
-
-| Property                    | Description                                                                           |
-|-----------------------------|---------------------------------------------------------------------------------------|
-| shadowDOM                   | Set this to true if the Microfrontend shall be started in a *Shadow DOM* (isolated)   |
-
 ### startersBrowser
 
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend of the host server. 
 This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates to function properly.
 
 TODO
-
-Supported additionalProperties:
-
-| Property                    | Description                                                                           |
-|-----------------------------|---------------------------------------------------------------------------------------|
-| shadowDOM                   | Set this to true if the Microfrontend shall be started in a *Shadow DOM* (isolated)   |
 
 ### hostBackendIntegrationsNodeJs
 

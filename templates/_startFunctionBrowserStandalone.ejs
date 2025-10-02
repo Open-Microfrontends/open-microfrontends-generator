@@ -118,11 +118,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
         throw new Error('[OpenMicrofrontends] Render function of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
     }
 
-    <% if (additionalProperties.shadowDOM === 'true') { %>
-    console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "<%-spec.microfrontends[i].name%>"');
-    hostElement = hostElement.attachShadow({ mode: "open" }).getRootNode() as HTMLElement;
-    <% } %>
-
     const contextWithDefaultConfig = {
         ...context,
         config: {

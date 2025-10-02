@@ -129,9 +129,6 @@ export async function startMyFirstMicrofrontend(
     throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
 
-  console.info('[OpenMicrofrontends] Using Shadow DOM for Microfrontend "My First Microfrontend"');
-  hostElement = hostElement.attachShadow({ mode: 'open' }).getRootNode() as HTMLElement;
-
   const contextWithDefaultConfig = {
     ...context,
     config: {
