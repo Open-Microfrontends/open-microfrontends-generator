@@ -64,6 +64,10 @@ export interface Microfrontend1TopicPing {
   [k: string]: unknown;
 }
 
+/* Asset query timestamp for cache busting */
+
+const assetTimestamp = Math.floor(Date.now() / 10000) * 10;
+
 /* Type Parameters */
 
 type Microfrontend1Permissions = {
@@ -112,9 +116,9 @@ export async function startMyFirstMicrofrontend(
 
   // Add stylesheets
 
-  addCssLinkTag(toFullUrl(serverUrl, '/', 'styles.css'), addedElements);
+  addCssLinkTag(toFullUrl(serverUrl, '/', `styles.css?v=${assetTimestamp}`), addedElements);
 
-  const jsUrls = [toFullUrl(serverUrl, '/', 'Microfrontend.js')];
+  const jsUrls = [toFullUrl(serverUrl, '/', `Microfrontend.js?v=${assetTimestamp}`)];
 
   // Load initial modules consecutively (SystemJS)
   if (typeof System === 'undefined') {
@@ -122,9 +126,8 @@ export async function startMyFirstMicrofrontend(
       '[OpenMicrofrontends] Microfrontend "My First Microfrontend" requires SystemJS but is not available!'
     );
   }
-  const moduleUrls = [toFullUrl(serverUrl, '/', 'Microfrontend.js')];
 
-  installSystemJSImportMap(moduleUrls, {
+  installSystemJSImportMap(jsUrls, {
     imports: {
       module1: 'http://localhost:12345/module1.js',
       module2: 'http://localhost:12345/module2.js'

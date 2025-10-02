@@ -1,3 +1,8 @@
+
+/* Asset query timestamp for cache busting */
+
+const assetTimestamp = Math.floor(Date.now() / 10000) * 10;
+
 /* Type Parameters */
 
 <% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
@@ -51,13 +56,13 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
     <% if (spec.microfrontends[i].assets.css) { %>
         // Add stylesheets
         <% for (const cssResource of spec.microfrontends[i].assets.css) { %>
-            addCssLinkTag(toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-cssResource%>'), addedElements);
+            addCssLinkTag(toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', `<%-cssResource%>?v=${assetTimestamp}`), addedElements);
         <% } %>
     <% } %>
 
     const jsUrls = [
         <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
-            toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-jsResource%>'),
+            toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', `<%-jsResource%>?v=${assetTimestamp}`),
         <% } %>
     ];
     <% if (!spec.microfrontends[i].assets.js.moduleSystem || spec.microfrontends[i].assets.js.moduleSystem === 'none') { %>
@@ -89,13 +94,8 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
         if (typeof System === 'undefined') {
             throw new Error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
         }
-        const moduleUrls = [
-            <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
-                toFullUrl(serverUrl, '<%-spec.microfrontends[i].assets.basePath-%>', '<%-jsResource%>'),
-            <% } %>
-        ];
         <% if (spec.microfrontends[i].assets.js.importMap) { %>
-            installSystemJSImportMap(moduleUrls, <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>);
+            installSystemJSImportMap(jsUrls, <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>);
         <% } %>
         try {
             for (const jsUrl of jsUrls) {

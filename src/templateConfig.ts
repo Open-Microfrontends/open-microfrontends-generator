@@ -13,17 +13,17 @@ const config: Record<string, TemplateConfig> = {
       'startersBrowserStandalone.ejs': 'microfrontendStarters.ts'
     }
   },
-  startersBrowserFull: {
+  startersBrowser: {
     templateFileToTargetFiles: {
       // TODO
     }
   },
-  hostIntegrationsNodeJs: {
+  hostBackendIntegrationsNodeJs: {
     templateFileToTargetFiles: {
       // TODO
     }
   },
-  hostIntegrationsJava: {
+  hostBackendIntegrationsJava: {
     templateFileToTargetFiles: {
       // TODO
     }

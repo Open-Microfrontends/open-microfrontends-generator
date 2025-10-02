@@ -28,13 +28,13 @@ Options:
 
 ## Templates
 
-| Template                                                | Description                                                          |
-|---------------------------------------------------------|----------------------------------------------------------------------|
-| [renderers](#renderers)                                 | Renderer functions for the Microfrontends server                     |
-| [startersBrowserStandalone](#startersBrowserStandalone) | Starters for a plain HTML host                                       |
-| [startersBrowserFull](#startersBrowserFull)             | Full starters on a host with a backend (security, proxying)          |
-| [hostIntegrationsNodeJs](#hostIntegrationsNodeJs)      | Server-side integration code for a Express.js backend                |
-| [hostIntegrationsJava](#hostIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
+| Template                                                        | Description                                                          |
+|-----------------------------------------------------------------|----------------------------------------------------------------------|
+| [renderers](#renderers)                                         | Renderer functions for the Microfrontends server                     |
+| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                                       |
+| [startersBrowser](#startersBrowser)                             | Full starters on a host with a backend (security, proxying)          |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Express.js backend                |
+| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
 
 ### renderers
 
@@ -62,9 +62,12 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 > [!IMPORTANT]
-> This template does not fully support the OpenMicrofrontends spec, so you should only use it for demo/test.
-> In particular it does not support security, API proxy declarations or SSR.
-> Also, the generated starters do not do any cache busting if the version of the Microfrontend changes.
+> This template does not fully support the OpenMicrofrontends spec, in particular it does not support security, API proxy declarations or SSR.
+> So, it is only suitable for Microfrontends that do not need these features.
+
+> [!NOTE]
+> This template uses a very basic cache busting mechanism by just appending the timestamp to every JS and CSS entry.
+> It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.
 
 Usage
 
@@ -93,21 +96,26 @@ Supported additionalProperties:
 |-----------------------------|---------------------------------------------------------------------------------------|
 | shadowDOM                   | Set this to true if the Microfrontend shall be started in a *Shadow DOM* (isolated)   |
 
-### startersBrowserFull
+### startersBrowser
 
-Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend code
-of the host server. 
-This template requires the backend code from one of the *hostIntegrationsXXX* templates to function properly.
+Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend of the host server. 
+This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates to function properly.
 
 TODO
 
-### hostIntegrationsNodeJs
+Supported additionalProperties:
+
+| Property                    | Description                                                                           |
+|-----------------------------|---------------------------------------------------------------------------------------|
+| shadowDOM                   | Set this to true if the Microfrontend shall be started in a *Shadow DOM* (isolated)   |
+
+### hostBackendIntegrationsNodeJs
 
 Generates integration files for Node.js-based Host Application, including server-side code for security, proxying and SSR.
 
 TODO
 
-### hostIntegrationsJava
+### hostBackendIntegrationsJava
 
 Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
 
