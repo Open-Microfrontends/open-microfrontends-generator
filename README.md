@@ -112,3 +112,14 @@ TODO
 Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
 
 TODO
+
+## Contributing
+
+Any contribution is highly welcome!
+
+You can contribute by
+
+* [Requesting](https://github.com/Open-Microfrontends/open-microfrontends-generator/issues) new features
+* [Creating](https://github.com/Open-Microfrontends/open-microfrontends-generator/issues) issues
+* Submitting pull requests
+
