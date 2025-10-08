@@ -41,7 +41,7 @@ type Microfrontend1MessagesSubscribe = {
 
 /* Render Function */
 
-export type Microfrontend1RenderFunction = OpenMicrofrontendsRendererFunction<
+export type MyFirstMicrofrontendRenderFunction = OpenMicrofrontendsRendererFunction<
   Microfrontend1Config,
   Microfrontend1Permissions,
   Microfrontend1ApiProxyPaths,
@@ -49,4 +49,4 @@ export type Microfrontend1RenderFunction = OpenMicrofrontendsRendererFunction<
   Microfrontend1MessagesSubscribe
 >;
 
-export const Microfrontend1RenderFunctionName = 'startMyFirstMicrofrontend';
+export const MyFirstMicrofrontendRenderFunctionName = 'startMyFirstMicrofrontend';

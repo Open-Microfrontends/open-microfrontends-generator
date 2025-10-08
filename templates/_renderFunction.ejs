@@ -46,6 +46,6 @@
 
 /* Render Function */
 
-export type Microfrontend<%-i+1%>RenderFunction = OpenMicrofrontendsRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions, Microfrontend<%-i+1%>ApiProxyPaths, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
+export type <%-safeMicrofrontendNames[i]%>RenderFunction = OpenMicrofrontendsRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions, Microfrontend<%-i+1%>ApiProxyPaths, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
 
-export const Microfrontend<%-i+1%>RenderFunctionName = '<%-spec.microfrontends[i].rendererFunctionName%>';
+export const <%-safeMicrofrontendNames[i]%>RenderFunctionName = '<%-spec.microfrontends[i].rendererFunctionName%>';

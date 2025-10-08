@@ -1,6 +1,6 @@
-import type { HttpsOpenMicrofrontendsSchemas100 } from '@open-microfrontends/types/OpenMicrofrontendDescription';
+import type { HttpsOpenMicrofrontendsOrgSchemas100 } from '@open-microfrontends/types/OpenMicrofrontendDescription';
 
-export type OpenMicroFrontendsDef = HttpsOpenMicrofrontendsSchemas100;
+export type OpenMicroFrontendsDef = HttpsOpenMicrofrontendsOrgSchemas100;
 
 export type GeneratorModelTsTypeRef = {
   readonly ifName: string;

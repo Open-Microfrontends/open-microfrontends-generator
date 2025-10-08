@@ -7,7 +7,7 @@ const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptio
 
 describe('validate', () => {
   it('succeeds with a valid yaml declaration file', async () => {
-    const def = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
 
     const errors = await validate(def, demoDescriptionsLocation);
 

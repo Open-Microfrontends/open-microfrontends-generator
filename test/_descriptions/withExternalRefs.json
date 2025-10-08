@@ -21,10 +21,6 @@
         }
       },
       "rendererFunctionName": "startMyFirstMicrofrontend",
-      "apiProxies": {
-        "proxy1": "https://test.com/foo",
-        "proxy2": "ws://test2.com/bar"
-      },
       "config": {
         "schema": {
           "type": "object",

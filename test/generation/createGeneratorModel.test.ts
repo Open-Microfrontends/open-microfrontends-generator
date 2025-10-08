@@ -7,7 +7,7 @@ const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptio
 
 describe('createGeneratorModel', () => {
   it('creates a valid model', async () => {
-    const spec = loadYaml(resolve(demoDescriptionsLocation, 'full1.yaml'));
+    const spec = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const model = await createGeneratorModel(spec, {}, demoDescriptionsLocation);
 
     expect(model.safeMicrofrontendNames).toEqual(['MyFirstMicrofrontend']);

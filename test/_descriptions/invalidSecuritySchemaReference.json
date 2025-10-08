@@ -46,7 +46,11 @@
       "rendererFunctionName": "startMyFirstMicrofrontend",
       "apiProxies": {
         "proxy1": {
-          "url": "https://test.com/foo",
+          "targets": [
+            {
+              "url": "https://test.com/foo"
+            }
+          ],
           "security": [
             {
               "BasicAuth": [],
@@ -56,8 +60,7 @@
               "ApiKeyAuth": ["foo", "bar"]
             }
           ]
-        },
-        "proxy2": "ws://test2.com/bar"
+        }
       },
       "config": {
         "schema": {

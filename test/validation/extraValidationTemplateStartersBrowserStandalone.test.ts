@@ -16,7 +16,13 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
           },
           rendererFunctionName: 'startMicrofrontend1',
           apiProxies: {
-            foo: 'https://bar.com/x'
+            foo: {
+              targets: [
+                {
+                  url: "'https://bar.com/x'"
+                }
+              ]
+            }
           }
         }
       ]

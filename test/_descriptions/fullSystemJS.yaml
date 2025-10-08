@@ -1,4 +1,4 @@
-$schema: '../../json/open-microfrontends.json'
+$schema: '../../node_modules/@open-microfrontends/schemas/dist/open-microfrontends.json'
 openMicrofrontends: 1.0.0
 info:
   title: OpenMicrofrontends Example
@@ -45,10 +45,17 @@ microfrontends:
     rendererFunctionName: startMyFirstMicrofrontend
     apiProxies:
       proxy1:
-        url: https://test.com/foo
+        description: Proxy for the internal BFF API
+        bffPath: /api
         security:
           - ApiKeyAuth: []
-      proxy2: ws://test2.com/bar
+      proxy2:
+        description: A proxy for an external API
+        targets:
+          - url: https://localhost:1234/api
+            description: Local
+          - url: http://my-api.my-namespace:1234/api
+            description: Test environment
     config:
       schema:
         type: object
