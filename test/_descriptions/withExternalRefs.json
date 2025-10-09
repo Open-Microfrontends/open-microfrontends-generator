@@ -49,8 +49,7 @@
         "MY_COCKPIT_CAPABILITIES_META": {
           "businessEntity": "Customer",
           "contentType": "overview"
-        },
-        "MASHROOM_EXTENSION1": "foo"
+        }
       }
     }
   ]

@@ -32,17 +32,18 @@ Options:
 
 ## Templates
 
-| Template                                                        | Description                                                          |
-|-----------------------------------------------------------------|----------------------------------------------------------------------|
-| [renderers](#renderers)                                         | Renderer functions for the Microfrontends server                     |
-| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                                       |
-| [startersBrowser](#startersBrowser)                             | Full starters on a host with a backend (security, proxying)          |
-| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Express.js backend                |
-| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Spring Boot backend               |
+| Template                                                           | Description                                                  |
+|--------------------------------------------------------------------|--------------------------------------------------------------|
+| [renderers](#renderers)                                            | Client-side renderer functions for the Microfrontends server |
+| [renderersServerSide](#renderersServerSide)                        | Server-side renderer functions for the Microfrontends server |
+| [startersBrowserStandalone](#startersBrowserStandalone)            | Starters for a plain HTML host                               |
+| [startersBrowser](#startersBrowser)                                | Full starters on a host with a backend (security, proxying)  |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)    | Server-side integration code for a Express.js backend        |
+| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)        | Server-side integration code for a Spring Boot backend       |
 
 ### renderers
 
-Generates a *microfrontendRenderers.ts* file that contains render functions that need to be implemented.
+Generates a *microfrontendRenderers.ts* file that contains the client-side render functions that need to be implemented.
 The generated code is plain JavaScript and does depend on any libraries.
 
 Usage:
@@ -61,17 +62,23 @@ onRenderMyFirstMicrofrontend(async (host, context) => {
 });
 ```
 
+### renderersServerSide
+
+Generates a *microfrontendRenderersServerSide.ts* file that contains the server-side render functions that need to be implemented.
+
+TODO
+
 ### startersBrowserStandalone
 
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 > [!IMPORTANT]
-> This template does not fully support the OpenMicrofrontends spec, in particular it does not support security, API proxy declarations or SSR.
-> So, it is only suitable for Microfrontends that do not need these features.
+> This template does not fully support the OpenMicrofrontends spec, in particular it does not support security, API proxies or SSR.
+> So, it is only suitable for Microfrontends that need one of these features.
 
 > [!NOTE]
 > This template uses a very basic cache busting mechanism by just appending the timestamp to every JS and CSS entry.
-> It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.
+> It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.e
 
 Usage
 

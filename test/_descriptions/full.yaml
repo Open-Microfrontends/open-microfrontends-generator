@@ -22,11 +22,6 @@ microfrontends:
       en: My First Microfrontend
       de: Mein erstes Microfrontend
     description: An example microfrontend that shows all the features of the OpenMicrofrontends schema
-    frontendPermissions:
-      - name: showDetails
-        description: The authenticated user is permitted to see details
-      - name: deletePermitted
-        description: The authenticated user is permitted to delete items
     assets:
       basePath: /
       buildManifest: build.yaml
@@ -35,9 +30,14 @@ microfrontends:
           - Microfrontend.js
       css:
         - styles.css
+    rendererFunctionName: startMyFirstMicrofrontend
     ssr:
       initialHtmlPath: /ssr
-    rendererFunctionName: startMyFirstMicrofrontend
+    frontendPermissions:
+      - name: showDetails
+        description: The authenticated user is permitted to see details
+      - name: deletePermitted
+        description: The authenticated user is permitted to delete items
     apiProxies:
       proxy1:
         description: Proxy for the internal BFF API
