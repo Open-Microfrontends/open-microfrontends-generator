@@ -7,13 +7,18 @@ const config: Record<string, TemplateConfig> = {
       'renderers.ejs': 'microfrontendRenderers.ts'
     }
   },
+  renderersServerSide: {
+    templateFileToTargetFiles: {
+      // TODO
+    }
+  },
   startersBrowserStandalone: {
     extraValidation: extraValidationTemplateStartersBrowserStandalone,
     templateFileToTargetFiles: {
       'startersBrowserStandalone.ejs': 'microfrontendStarters.ts'
     }
   },
-  startersBrowser: {
+  starters: {
     templateFileToTargetFiles: {
       // TODO
     }

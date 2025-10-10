@@ -32,34 +32,40 @@ Options:
 
 ## Templates
 
-| Template                                                           | Description                                                  |
-|--------------------------------------------------------------------|--------------------------------------------------------------|
-| [renderers](#renderers)                                            | Client-side renderer functions for the Microfrontends server |
-| [renderersServerSide](#renderersServerSide)                        | Server-side renderer functions for the Microfrontends server |
-| [startersBrowserStandalone](#startersBrowserStandalone)            | Starters for a plain HTML host                               |
-| [startersBrowser](#startersBrowser)                                | Full starters on a host with a backend (security, proxying)  |
-| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)    | Server-side integration code for a Express.js backend        |
-| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)        | Server-side integration code for a Spring Boot backend       |
+| Template                                                        | Description                                                  |
+|-----------------------------------------------------------------|--------------------------------------------------------------|
+| [renderers](#renderers)                                         | Client-side renderer functions for the Microfrontends server |
+| [renderersServerSide](#renderersServerSide)                     | Server-side renderer functions for the Microfrontends server |
+| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                               |
+| [starters](#starters)                                           | Full starters on a host with a backend (security, proxying)  |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Express.js backend        |
+| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Spring Boot backend       |
 
 ### renderers
 
 Generates a *microfrontendRenderers.ts* file that contains the client-side render functions that need to be implemented.
 The generated code is plain JavaScript and does depend on any libraries.
 
-Usage:
+#### Usage
 
 ```ts
-import {onRenderMyFirstMicrofrontend} from './_generated/microfrontendsRenderers';
+import {MyFirstMicrofrontendRenderFunction, MyFirstMicrofrontendRenderFunctionName} from './_generated/microfrontendsRenderers';
 
-onRenderMyFirstMicrofrontend(async (host, context) => {
-    const {config, messageBus} = context;
-    host.innerHTML = '<div>My Microfrontend 1</div>';
-    return {
-        onRemove: () => {
-            // ...
-        }
-    }
-});
+const renderFn: MyFirstMicrofrontendRenderFunction = async (host, context) => {
+  const {config, messageBus} = context;
+  host.innerHTML = '<div>My Microfrontend 1</div>';
+  return {
+    onRemove: () => {
+      // ...
+     }
+  }
+};
+
+export default {
+  [MyFirstMicrofrontendRenderFunctionName]: renderFn,
+};
+// Alternatively:
+// window[MyFirstMicrofrontendRenderFunctionName] = renderFn;
 ```
 
 ### renderersServerSide
@@ -80,7 +86,7 @@ Generates a *microfrontendStarters.ts* file that contains functions to launch th
 > This template uses a very basic cache busting mechanism by just appending the timestamp to every JS and CSS entry.
 > It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.e
 
-Usage
+#### Usage
 
 ```ts
 import {startMyFirstMicrofrontend} from './_generated/microfrontendClients';
@@ -88,7 +94,7 @@ import {startMyFirstMicrofrontend} from './_generated/microfrontendClients';
 const hostElement = document.getElementById('root');
 
 const {close, messages} = await startMyFirstMicrofrontend('https://my-microfrontend-server.com', hostElement, {
-    // id: '1',
+    id: '1',
     // lang: 'en',
     // user,
     config: {
@@ -101,12 +107,29 @@ const {close, messages} = await startMyFirstMicrofrontend('https://my-microfront
 messages.publish('topic', {});
 ```
 
-### startersBrowser
+### starters
 
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend of the host server. 
 This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates to function properly.
 
-TODO
+#### Usage
+
+```ts
+import {startMyFirstMicrofrontend} from './_generated/microfrontendClients';
+
+const hostElement = document.getElementById('root');
+
+const {close, messages} = await startMyFirstMicrofrontend('/path/to/host/backend/integration', hostElement, {
+    id: '1',
+    // lang: 'en',
+    config: {
+      welcomeMessage: 'Microfrontend Demo!',
+    },
+});
+
+// Send a message to the Microfrontend
+messages.publish('topic', {});
+```
 
 ### hostBackendIntegrationsNodeJs
 
@@ -116,7 +139,11 @@ TODO
 
 ### hostBackendIntegrationsJava
 
-Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
+Generates integration files for Java-based Host Application, including server-side code for security and proxying.
+
+> [!NOTE]
+> The main purpose of this template is to demonstrate that a backend integration is possible in arbitrary languages.
+> But it cannot support SSR, and there is no type-safety for Microfrontend inputs like the config.
 
 TODO
 
