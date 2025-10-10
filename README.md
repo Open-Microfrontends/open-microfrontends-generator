@@ -32,14 +32,14 @@ Options:
 
 ## Templates
 
-| Template                                                        | Description                                                  |
-|-----------------------------------------------------------------|--------------------------------------------------------------|
-| [renderers](#renderers)                                         | Client-side renderer functions for the Microfrontends server |
-| [renderersServerSide](#renderersServerSide)                     | Server-side renderer functions for the Microfrontends server |
-| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                               |
-| [starters](#starters)                                           | Full starters on a host with a backend (security, proxying)  |
-| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Express.js backend        |
-| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Spring Boot backend       |
+| Template                                                        | Description                                                                 |
+|-----------------------------------------------------------------|-----------------------------------------------------------------------------|
+| [renderers](#renderers)                                         | Client-side renderer functions for the Microfrontends server                |
+| [renderersServerSide](#renderersServerSide)                     | Server-side renderer functions for the Microfrontends server                |
+| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                                              |
+| [starters](#starters)                                           | Full starters for a host with backend integration (security, proxying, SSR) |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Node.js backend                          |
+| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Java-based backend (no SSR)              |
 
 ### renderers
 
