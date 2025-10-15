@@ -1,0 +1,16 @@
+
+/*
+ * The setup calculated by the Host Application backend
+ */
+type HostBackendMicrofrontendSetup =
+    Pick<OpenMicrofrontendsClientContext<any, any, any, any, any>, 'lang' | 'user' | 'permissions' | 'hostContext'> & {
+    readonly assetBuildTimestampOrVersion?: string;
+    readonly rewrittenImportMaps?: {
+        readonly imports: Record<string, string>;
+    }
+};
+
+const omBasePath = '<%-additionalProperties.omBasePath ?? '/__om__'%>';
+const omAssetsSubPath = '/assets';
+const omProxiesSubPath = '/proxies';
+const omConfigSubPath = '/config';

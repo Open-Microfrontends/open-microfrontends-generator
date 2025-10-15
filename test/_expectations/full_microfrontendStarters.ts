@@ -18,6 +18,22 @@ export interface Microfrontend1TopicPing {
 
 // Helper
 
+function addJsScriptTag(url: string, addedElements: Array<HTMLElement>): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const scriptElem = document.createElement('script');
+    scriptElem.src = url;
+    scriptElem.addEventListener('error', (error) => {
+      console.error('[OpenMicrofrontends] Error loading JS resource: ', url, error);
+      reject(error);
+    });
+    scriptElem.addEventListener('load', () => {
+      resolve();
+    });
+    document.head.appendChild(scriptElem);
+    addedElements.push(scriptElem);
+  });
+}
+
 function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
   const linkElem = document.createElement('link');
   linkElem.rel = 'stylesheet';
@@ -36,45 +52,27 @@ function toFullUrl(...parts: Array<string>): string {
     .join('');
 }
 
-declare var System: any;
+/*
+ * The setup calculated by the Host Application backend
+ */
+type HostBackendMicrofrontendSetup = Pick<
+  OpenMicrofrontendsClientContext<any, any, any, any, any>,
+  'lang' | 'user' | 'permissions' | 'hostContext'
+> & {
+  readonly assetBuildTimestampOrVersion?: string;
+  readonly rewrittenImportMaps?: {
+    readonly imports: Record<string, string>;
+  };
+};
 
-function installSystemJSImportMap(initialModules: Array<string>, importMap: any) {
-  if (!importMap.imports) {
-    return;
-  }
-  const currentImportMap = System.getImportMap();
-  const newImportMap = { imports: {}, scopes: {} };
-  for (const _import in importMap.imports) {
-    if (!currentImportMap.imports[_import]) {
-      newImportMap.imports[_import] = importMap.imports[_import];
-    } else if (currentImportMap.imports[_import] !== importMap.imports[_import]) {
-      // Conflicting import map entries
-      initialModules.forEach((moduleUrl) => {
-        if (!(moduleUrl in newImportMap.scopes)) {
-          newImportMap.scopes[moduleUrl] = {};
-        }
-        newImportMap.scopes[moduleUrl][_import] = importMap.imports[_import];
-        // Also make sure conflicting entries only load modules from "their" import map
-        newImportMap.scopes[importMap.imports[_import]] = {
-          ...importMap.imports
-        };
-      });
-    }
-  }
-  System.addImportMap(newImportMap);
-}
+const omBasePath = '/__open_microfrontends__';
+const omAssetsSubPath = '/assets';
+const omProxiesSubPath = '/proxies';
+const omConfigSubPath = '/config';
 
-/* Asset query timestamp for cache busting */
-
-const assetTimestamp = Math.floor(Date.now() / 10000) * 10;
+const fallbackAssetTimestamp = Math.floor(Date.now() / 10000) * 10;
 
 /* Type Parameters */
-
-type Microfrontend1Permissions = {
-  readonly showDetails: boolean;
-
-  readonly deletePermitted: boolean;
-};
 
 type Microfrontend1MessagesPublish = Record<string, any>;
 type Microfrontend1MessagesSubscribe = Record<string, any>;
@@ -99,50 +97,59 @@ const defaultConfig = {
 type Microfrontend1ClientContext = Omit<
   OpenMicrofrontendsClientContext<
     Partial<Microfrontend1Config>,
-    Microfrontend1Permissions,
+    undefined,
     undefined,
     Microfrontend1MessagesPublish,
     Microfrontend1MessagesSubscribe
   >,
-  'apiProxyPaths' | 'serverSideRendered'
+  'apiProxyPaths' | 'permissions' | 'user'
 >;
+
+/* Microfrontend setup */
+
+const getHostBackendMicrofrontendSetup = async (id: string, name: string): Promise<HostBackendMicrofrontendSetup> => {
+  const preloadedSetup = window[`__om__setup__${name}_${id}`];
+  if (preloadedSetup) {
+    return preloadedSetup;
+  }
+  try {
+    const response = await fetch(`${omBasePath}/${name}${omConfigSubPath}`);
+    return response.json();
+  } catch (e) {
+    console.error(
+      `[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed. Did you add the necessary Host Integration?`,
+      e
+    );
+    throw new Error(`[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed!`);
+  }
+};
 
 /* Start function */
 
-export async function startMyFirstMicrofrontend(
-  serverUrl: string,
-  hostElement: HTMLElement,
-  context: Microfrontend1ClientContext
-) {
+export async function startMyFirstMicrofrontend(hostElement: HTMLElement, context: Microfrontend1ClientContext) {
   const addedElements: Array<HTMLElement> = [];
   const exportedModules: Array<any> = [];
 
+  const assetsPath = `${omBasePath}/MyFirstMicrofrontend${omAssetsSubPath}`;
+  const proxiesPath = `${omBasePath}/MyFirstMicrofrontend${omProxiesSubPath}`;
+  const setup = await getHostBackendMicrofrontendSetup(context.id, 'MyFirstMicrofrontend');
+  const { assetBuildTimestampOrVersion, rewrittenImportMaps, ...serverContext } = setup;
+
   // Add stylesheets
 
-  addCssLinkTag(toFullUrl(serverUrl, '/', `styles.css?v=${assetTimestamp}`), addedElements);
+  addCssLinkTag(
+    toFullUrl(assetsPath, '/', `styles.css?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`),
+    addedElements
+  );
 
-  const jsUrls = [toFullUrl(serverUrl, '/', `Microfrontend.js?v=${assetTimestamp}`)];
+  const jsUrls = [
+    toFullUrl(assetsPath, '/', `Microfrontend.js?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`)
+  ];
 
-  // Load initial modules consecutively (SystemJS)
-  if (typeof System === 'undefined') {
-    throw new Error(
-      '[OpenMicrofrontends] Microfrontend "My First Microfrontend" requires SystemJS but is not available!'
-    );
-  }
-
-  installSystemJSImportMap(jsUrls, {
-    imports: {
-      module1: 'http://localhost:12345/module1.js',
-      module2: 'http://localhost:12345/module2.js'
-    }
-  });
-
+  // Load JS assets consecutively (no modules)
   try {
     for (const jsUrl of jsUrls) {
-      const module = await System.import(jsUrl);
-      if (module) {
-        exportedModules.push(module);
-      }
+      await addJsScriptTag(jsUrl, addedElements);
     }
   } catch (e) {
     console.error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!', e);
@@ -159,8 +166,16 @@ export async function startMyFirstMicrofrontend(
     throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
 
+  const apiProxyPaths = {};
+
+  apiProxyPaths['proxy1'] = `${proxiesPath}/proxy1`;
+
+  apiProxyPaths['proxy2'] = `${proxiesPath}/proxy2`;
+
   const contextWithDefaultConfig = {
+    ...serverContext,
     ...context,
+    apiProxyPaths,
     config: {
       ...defaultConfig,
       ...context.config

@@ -5,6 +5,17 @@
 
 import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
 
+/* TypeScript type from Schemas */
+
+export interface Microfrontend1Config {
+  customerId: string;
+}
+
+export interface Microfrontend1TopicPing {
+  ping: true;
+  [k: string]: unknown;
+}
+
 // Helper
 
 function addJsScriptTag(url: string, addedElements: Array<HTMLElement>): Promise<void> {
@@ -39,17 +50,6 @@ function toFullUrl(...parts: Array<string>): string {
     .map((part) => (part.endsWith('/') ? part.slice(0, -1) : part))
     .map((part, idx) => (idx > 0 && part && !part.startsWith('/') ? `/${part}` : part))
     .join('');
-}
-
-/* TypeScript type from Schemas */
-
-export interface Microfrontend1Config {
-  customerId: string;
-}
-
-export interface Microfrontend1TopicPing {
-  ping: true;
-  [k: string]: unknown;
 }
 
 /* Asset query timestamp for cache busting */
@@ -121,7 +121,6 @@ export async function startMyFirstMicrofrontend(
     throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!');
   }
 
-  // Start Microfrontend
   const renderFunction =
     exportedModules.find((m) => 'startMyFirstMicrofrontend' in m)?.['startMyFirstMicrofrontend'] ||
     exportedModules.find((m) => 'default' in m && 'startMyFirstMicrofrontend' in m.default)?.default?.[
@@ -139,6 +138,8 @@ export async function startMyFirstMicrofrontend(
       ...context.config
     }
   };
+
+  // Render the Microfrontend
   const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
 
   return {

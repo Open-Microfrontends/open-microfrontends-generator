@@ -104,4 +104,24 @@ describe('generate', () => {
       )
     );
   });
+
+  it('generates browser starter functions', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
+    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendStarters.ts');
+
+    const model = await createGeneratorModel(
+      def,
+      {
+        omBasePath: '/__open_microfrontends__'
+      },
+      demoDescriptionsLocation
+    );
+    const result = await generate(model, 'starters', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendStarters.ts'), 'utf-8')
+    );
+  });
 });

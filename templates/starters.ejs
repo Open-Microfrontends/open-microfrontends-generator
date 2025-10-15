@@ -9,6 +9,8 @@ import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types
 
 <%- include('_starterhelpers') %>
 
+<%- include('_hostIntegrationBase') %>
+
 <% for (let i = 0; i < spec.microfrontends.length; i ++) { -%>
-    <%- include('_startFunctionBrowserStandalone', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
+    <%- include('_startFunction', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
 <% } -%>

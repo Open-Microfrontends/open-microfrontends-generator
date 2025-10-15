@@ -1,4 +1,5 @@
 import extraValidationTemplateStartersBrowserStandalone from './validation/extraValidationTemplateStartersBrowserStandalone';
+import extraValidationTemplateStarters from './validation/extraValidationTemplateStarters';
 import type { TemplateConfig } from './types';
 
 const config: Record<string, TemplateConfig> = {
@@ -19,8 +20,9 @@ const config: Record<string, TemplateConfig> = {
     }
   },
   starters: {
+    extraValidation: extraValidationTemplateStarters,
     templateFileToTargetFiles: {
-      // TODO
+      'starters.ejs': 'microfrontendStarters.ts'
     }
   },
   hostBackendIntegrationsNodeJs: {

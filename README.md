@@ -157,7 +157,7 @@ const {close, messages} = await startMyFirstMicrofrontend('https://my-microfront
     config: {
         welcomeMessage: 'Microfrontend Demo!',
     },
-    // messageBus,
+    messageBus,
 });
 
 // Send a message to the Microfrontend
@@ -169,6 +169,12 @@ messages.publish('topic', {});
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend of the host server. 
 This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates to function properly.
 
+#### Additional Properties
+
+| Property      | Description                                                            |
+|---------------|------------------------------------------------------------------------|
+| omBasePath    | The base path of OpenMicrofrontends integrations. Default: /\_\_om\_\_ |
+
 #### Usage
 
 ```ts
@@ -176,12 +182,13 @@ import {startMyFirstMicrofrontend} from './_generated/microfrontendClients';
 
 const hostElement = document.getElementById('root');
 
-const {close, messages} = await startMyFirstMicrofrontend('/path/to/host/backend/integration', hostElement, {
+const {close, messages} = await startMyFirstMicrofrontend(hostElement, {
     id: '1',
-    // lang: 'en',
+    // lang, user, permissions, apiProxyPaths are provided by the backend integration
     config: {
       welcomeMessage: 'Microfrontend Demo!',
     },
+    messageBus,
 });
 
 // Send a message to the Microfrontend
@@ -192,6 +199,14 @@ messages.publish('topic', {});
 
 Generates integration files for Node.js-based Host Application, including server-side code for security, proxying and SSR.
 
+#### Additional Properties
+
+| Property      | Description                                                            |
+|---------------|------------------------------------------------------------------------|
+| omBasePath    | The base path of OpenMicrofrontends integrations. Default: /\_\_om\_\_ |
+
+#### Usage
+
 TODO
 
 ### hostBackendIntegrationsJava
@@ -201,6 +216,14 @@ Generates integration files for Java-based Host Application, including server-si
 > [!NOTE]
 > The main purpose of this template is to demonstrate that a backend integration is possible in arbitrary languages.
 > But there is no type-safety for Microfrontend inputs like the config at the moment.
+
+#### Additional Properties
+
+| Property      | Description                                                             |
+|---------------|-------------------------------------------------------------------------|
+| omBasePath    | The base path of OpenMicrofrontends integrations. Default: /\_\_om\_\_  |
+
+#### Usage
 
 TODO
 
