@@ -39,12 +39,12 @@ Options:
 | [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                                              |
 | [starters](#starters)                                           | Full starters for a host with backend integration (security, proxying, SSR) |
 | [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Node.js backend                          |
-| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Java-based backend (no SSR)              |
+| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Java-based backend                       |
 
 ### renderers
 
 Generates a *microfrontendRenderers.ts* file that contains the client-side render functions that need to be implemented.
-The generated code is plain JavaScript and does depend on any libraries.
+The generated code is plain JavaScript and does not depend on any libraries.
 
 #### Usage
 
@@ -61,18 +61,75 @@ const renderFn: MyFirstMicrofrontendRenderFunction = async (host, context) => {
   }
 };
 
+// If you bundle your code to ESM oder SystemJS
 export default {
   [MyFirstMicrofrontendRenderFunctionName]: renderFn,
 };
-// Alternatively:
+// Or otherwise (this always works)
 // window[MyFirstMicrofrontendRenderFunctionName] = renderFn;
 ```
 
 ### renderersServerSide
 
 Generates a *microfrontendRenderersServerSide.ts* file that contains the server-side render functions that need to be implemented.
+The generated code is plain JavaScript and does not depend on any libraries.
 
-TODO
+#### Usage
+
+1. Implement the server-side render function 
+
+```ts
+// renderMicrofrontend.ts
+
+import type {MyFirstMicrofrontendServerSideRenderFunction} from "../_generated/microfrontendRenderersServerSide";
+import Microfrontend from "../Microfrontend.vue";
+
+const render: MyFirstMicrofrontendServerSideRenderFunction = async (requestBody) => {
+    const { id, config } = requestBody;
+
+    const html = /* render your Microfrontend here */ '';
+
+    return {
+        html,
+    };
+};
+
+export default render;
+
+```
+
+2. Implement the route (depends on the framework you are using, in this example we use Express)
+
+```ts
+// ssrRoute.ts
+
+import type {Request, Response} from 'express';
+import renderMicrofrontend from '../renderMicrofrontend';
+
+export default async (req: Request, res: Response) => {
+    try {
+        const html = await renderMicrofrontend(req.body);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(html);
+    } catch (e: any) {
+        console.error('Server-side rendering failed!', e),
+        res.sendStatus(500);
+    }
+}
+
+```
+
+3. Add the route under the correct path 
+
+```ts
+import {MyFirstMicrofrontendServerSideRenderPath} from '../_generated/microfrontendRenderersServerSide';
+import ssrRoute from './ssrRoute';
+
+const app = express();
+app.use(express.json());
+
+app.post(OpenMicrofrontendsExampleSSRServerSideRenderPath, ssrRoute);
+```
 
 ### startersBrowserStandalone
 
@@ -139,11 +196,11 @@ TODO
 
 ### hostBackendIntegrationsJava
 
-Generates integration files for Java-based Host Application, including server-side code for security and proxying.
+Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
 
 > [!NOTE]
 > The main purpose of this template is to demonstrate that a backend integration is possible in arbitrary languages.
-> But it cannot support SSR, and there is no type-safety for Microfrontend inputs like the config.
+> But there is no type-safety for Microfrontend inputs like the config at the moment.
 
 TODO
 

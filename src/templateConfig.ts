@@ -9,7 +9,7 @@ const config: Record<string, TemplateConfig> = {
   },
   renderersServerSide: {
     templateFileToTargetFiles: {
-      // TODO
+      'renderersServerSide.ejs': 'microfrontendRenderersServerSide.ts'
     }
   },
   startersBrowserStandalone: {

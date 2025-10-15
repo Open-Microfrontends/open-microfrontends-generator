@@ -8,7 +8,7 @@ import saveFile from '../../src/utils/saveFile';
 const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptions');
 
 describe('generate', () => {
-  it('generates plain JS render functions', async () => {
+  it('generates renderer functions', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendRenderers.ts');
 
@@ -22,13 +22,30 @@ describe('generate', () => {
     );
   });
 
+  it('generates server-side renderer functions', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
+    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendRenderersServerSide.ts');
+
+    const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);
+    const result = await generate(model, 'renderersServerSide', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(
+        resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendRenderersServerSide.ts'),
+        'utf-8'
+      )
+    );
+  });
+
   it('generates browser standalone starter functions', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(
       import.meta.dirname,
       '..',
       '_expectations',
-      'full1_microfrontendStarters_browser_standalone.ts'
+      'full_microfrontendStarters_browser_standalone.ts'
     );
 
     const model = await createGeneratorModel(def, {}, demoDescriptionsLocation);

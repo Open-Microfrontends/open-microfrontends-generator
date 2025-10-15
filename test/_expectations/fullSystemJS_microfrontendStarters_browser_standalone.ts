@@ -96,12 +96,15 @@ const defaultConfig = {
 
 /* Render function type with aligned config and message bus */
 
-type Microfrontend1ClientContext = OpenMicrofrontendsClientContext<
-  Partial<Microfrontend1Config>,
-  Microfrontend1Permissions,
-  undefined,
-  Microfrontend1MessagesPublish,
-  Microfrontend1MessagesSubscribe
+type Microfrontend1ClientContext = Omit<
+  OpenMicrofrontendsClientContext<
+    Partial<Microfrontend1Config>,
+    Microfrontend1Permissions,
+    undefined,
+    Microfrontend1MessagesPublish,
+    Microfrontend1MessagesSubscribe
+  >,
+  'apiProxyPaths' | 'serverSideRendered'
 >;
 
 /* Start function */

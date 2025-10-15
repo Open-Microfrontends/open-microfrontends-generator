@@ -46,7 +46,7 @@ microfrontends:
     apiProxies:
       proxy1:
         description: Proxy for the internal BFF API
-        bffPath: /api
+        path: /api
         security:
           - ApiKeyAuth: []
       proxy2:

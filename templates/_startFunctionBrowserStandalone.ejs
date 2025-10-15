@@ -45,7 +45,9 @@ const defaultConfig<%i+1%> = <%-JSON.stringify(spec.microfrontends[i].config.def
 
 /* Render function type with aligned config and message bus */
 
-type Microfrontend<%-i+1%>ClientContext = OpenMicrofrontendsClientContext<Partial<Microfrontend<%-i+1%>Config>, Microfrontend<%-i+1%>Permissions, undefined, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
+type Microfrontend<%-i+1%>ClientContext = Omit<
+    OpenMicrofrontendsClientContext<Partial<Microfrontend<%-i+1%>Config>, Microfrontend<%-i+1%>Permissions, undefined, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>,
+'apiProxyPaths' | 'serverSideRendered'>;
 
 /* Start function */
 

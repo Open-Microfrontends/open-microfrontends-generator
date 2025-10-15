@@ -1,0 +1,21 @@
+
+
+/* --- Microfrontend <%- i+1 -%> --- */
+
+/* Type Parameters */
+
+<% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
+    type Microfrontend<%-i+1 -%>Permissions = {
+    <% spec.microfrontends[i].frontendPermissions.forEach((permission) => { %>
+    readonly '<%-permission.name%>': boolean;
+    <% }) %>
+    };
+<% } else { %>
+    type Microfrontend<%-i+1 %>Permissions = undefined;
+<%  } %>
+
+/* Render Function */
+
+export type <%-safeMicrofrontendNames[i]%>ServerSideRenderFunction = OpenMicrofrontendsServerSideRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions>;
+
+export const <%-safeMicrofrontendNames[i]%>ServerSideRenderPath = '<%-spec.microfrontends[i].ssr.initialHtmlPath%>';
