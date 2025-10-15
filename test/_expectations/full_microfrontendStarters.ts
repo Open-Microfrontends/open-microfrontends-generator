@@ -114,7 +114,7 @@ const getHostBackendMicrofrontendSetup = async (id: string, name: string): Promi
   }
   try {
     const response = await fetch(`${omBasePath}/${name}${omConfigSubPath}`);
-    return response.json();
+    return await response.json();
   } catch (e) {
     console.error(
       `[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed. Did you add the necessary Host Integration?`,

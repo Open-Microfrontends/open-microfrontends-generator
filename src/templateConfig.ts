@@ -27,12 +27,12 @@ const config: Record<string, TemplateConfig> = {
   },
   hostBackendIntegrationsNodeJs: {
     templateFileToTargetFiles: {
-      // TODO
+      'hostBackendIntegrationsNodeJs.ejs': 'microfrontendHostIntegrations.ts'
     }
   },
   hostBackendIntegrationsJava: {
     templateFileToTargetFiles: {
-      // TODO
+      'hostBackendIntegrationsJava.ejs': 'microfrontendHostIntegrations.ts'
     }
   }
 };
