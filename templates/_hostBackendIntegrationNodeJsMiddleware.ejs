@@ -1,0 +1,268 @@
+
+/* Type Parameters */
+
+<% if (spec.microfrontends[i].userPermissions && spec.microfrontends[i].userPermissions.permissions.length > 0) { %>
+    export type Microfrontend<%-i+1 -%>Permissions = {
+        <% spec.microfrontends[i].userPermissions.permissions.forEach((permission) => { %>
+            readonly '<%-permission.name%>': boolean;
+        <% }); %>
+    };
+<% } else { %>
+    export type Microfrontend<%-i+1 -%>Permissions = undefined;
+<%  } %>
+
+export interface <%-safeMicrofrontendNames[i]-%>BaseSetup {
+    microfrontendBaseUrl: string;
+    microfrontendRequestTimeoutSec?: number;
+    getUser(req: IncomingMessage): Promise<HostBackendMicrofrontendSetup['user'] | null>;
+    getLang?(req: IncomingMessage): Promise<string | null>;
+    getHostContext?: HostBackendMicrofrontendSetup['hostContext'];
+    rewriteImportMaps?(importMaps: ImportMap): ImportMap;
+    <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
+        apiProxyTimeoutSec?: number;
+        <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+            <% if (!spec.microfrontends[i].apiProxies[proxyId].path) { %>
+                /*
+                 *  Target URL of the API Proxy <%-proxyId%>
+                 */
+                apiProxy<%-helpers.capitalize(proxyId)%>Url: string;
+            <% } %>
+            <% if (spec.microfrontends[i].apiProxies[proxyId].security) { %>
+                /*
+                 *  Security Headers for a request to the API Proxy <%-proxyId%>.
+                 *  Schemes: <%-JSON.stringify(spec.microfrontends[i].apiProxies[proxyId].security)%>
+                 */
+                apiProxyRequest<%-helpers.capitalize(proxyId)%>GetSecurityHeaders(req: IncomingMessage): Promise<Record<string, string>>;
+            <% } %>
+        <% }); %>
+    <% } %>
+    <% if (spec.microfrontends[i].userPermissions) { %>
+        <% if (!spec.microfrontends[i].userPermissions.provided) { %>
+            /*
+             *  Calculate the permissions for the current user
+             */
+            userPermissionsCalculate(req: IncomingMessage): Promise<Microfrontend<%-i+1 -%>Permissions>;
+        <% } %>
+        <% if (spec.microfrontends[i].userPermissions.provided?.security) { %>
+            /*
+             *  Security Headers for a user permissions request to the Microfrontend
+             *  Schemes: <%-JSON.stringify(spec.microfrontends[i].userPermissions.provided.security)%>
+            */
+            userPermissionsRequestGetSecurityHeaders(req: IncomingMessage): Promise<Record<string, string>>;
+        <% } %>
+    <% } %>
+    <% if (spec.microfrontends[i].ssr) { %>
+        microfrontendSSRTimeoutSec?: number;
+        <% if (spec.microfrontends[i].ssr?.security) { %>
+            /*
+             *  Security Headers for an SSR request to the Microfrontend
+             *  Schemes: <%-JSON.stringify(spec.microfrontends[i].ssr.security)%>
+             */
+            ssrGetSecurityHeaders(req: IncomingMessage): Promise<Record<string, string>>;
+        <% } %>
+    <% } %>
+
+    <% if (spec.microfrontends[i].assets.buildManifestPath) { %>
+        /*
+         * Add build manifest to a cache (should not be cached more than 5min)
+         */
+        buildTimestampOrVersionCachePut(tsOrVersion: string): Promise<void>;
+        /*
+         * Get the build manifest from a cache
+         */
+        buildTimestampOrVersionCacheGet(): Promise<string | null>;
+    <% } %>
+    <% if (spec.microfrontends[i].userPermissions?.provided) { %>
+        /*
+         * Add the user permissions for the current user to a cache
+         */
+        userPermissionsCachePut?(key: string, userPermissions: object): Promise<void>;
+        /*
+         * Get the user permissions for the current user from a cache
+         */
+        userPermissionsCacheGet?(key: string): Promise<object | null>;
+    <% } %>
+    <% if (spec.microfrontends[i].ssr) { %>
+        /*
+         * Add the SSR result to a cache
+         * IMPORTANT: It might be necessary to add the user's name/id to the cache key if the render result depends on the authenticated user!
+         */
+        ssrCachePut?(key: string, userName: string | undefined, result: object): Promise<void>;
+        /*
+         * Get the SSR result from a cache
+         */
+        ssrCacheGet?(key: string, userName: string | undefined): Promise<object | null>;
+    <% } %>
+    /*
+     *  Custom logger
+     */
+    logger?: Logger;
+}
+
+const get<%-safeMicrofrontendNames[i]-%>Permissions = async (req: IncomingMessage, username: string | undefined, baseSetup: <%-safeMicrofrontendNames[i]-%>BaseSetup): Promise<HostBackendMicrofrontendSetup['permissions']> => {
+    <% if (spec.microfrontends[i].userPermissions) { %>
+        <% if (spec.microfrontends[i].userPermissions.provided) { %>
+            let cacheKey;
+            if (username) {
+                cacheKey = `__om_user_permissions__${username}`;
+                var permissionsFromCache = await baseSetup.userPermissionsCacheGet?.(cacheKey);
+                if (permissionsFromCache) {
+                    return permissionsFromCache;
+                }
+            }
+
+            <% if (spec.microfrontends[i].userPermissions.provided.security) { %>
+                const extraHeaders = await baseSetup.userPermissionsRequestGetSecurityHeaders(req);
+            <% } else { %>
+                const extraHeaders = {};
+            <% } %>
+            const res = await getWithTimeoutAndExtraHeaders('<%-spec.microfrontends[i].userPermissions.provided.path%>', baseSetup.microfrontendBaseUrl, baseSetup.microfrontendRequestTimeoutSec ?? DEFAULT_MICROFRONTEND_REQUEST_TIMEOUT_SEC, extraHeaders);
+            if (!res.ok) {
+                throw new Error(`[OpenMicrofrontends] Error while requesting permissions from <%-spec.microfrontends[i].userPermissions.provided.path%>: ${res.statusText}`);
+            }
+            const permissions = await res.json();
+
+            if (cacheKey) {
+                await baseSetup.userPermissionsCachePut?.(cacheKey, permissions);
+            }
+
+            return permissions;
+        <% } else { %>
+            return await baseSetup.userPermissionsCalculate(req);
+        <% } %>
+    <% } else { %>
+        return undefined;
+    <% } %>
+}
+
+const get<%-safeMicrofrontendNames[i]-%>BuildTimestampOrVersion = async (baseSetup: <%-safeMicrofrontendNames[i]-%>BaseSetup, logger: Logger): Promise<string | undefined> => {
+    <% if (spec.microfrontends[i].assets.buildManifestPath) { %>
+        const buildTimestampOrVersionFromCache = await baseSetup.buildTimestampOrVersionCacheGet();
+        if (buildTimestampOrVersionFromCache) {
+            return buildTimestampOrVersionFromCache;
+        }
+        const res = await getWithTimeoutAndExtraHeaders('<%-spec.microfrontends[i].assets.buildManifestPath%>', baseSetup.microfrontendBaseUrl, baseSetup.microfrontendRequestTimeoutSec ?? DEFAULT_MICROFRONTEND_REQUEST_TIMEOUT_SEC, {});
+        if (!res.ok) {
+            logger.warn(`[OpenMicrofrontends] Error while fetching build manifest from <%-spec.microfrontends[i].assets.buildManifestPath%>: ${res.statusText}`);
+            return undefined;
+        }
+        const buildManifest = await res.json();
+        const buildTimestampOrVersion = buildManifest.timestamp || buildManifest.version;
+        if (!buildTimestampOrVersion) {
+            logger.warn('[OpenMicrofrontends] No build timestamp or version found in build manifest:', buildManifest);
+        } else {
+            await baseSetup.buildTimestampOrVersionCachePut(buildTimestampOrVersion);
+        }
+        return buildTimestampOrVersion;
+    <% } else { %>
+        return undefined;
+    <% } %>
+}
+
+const get<%-safeMicrofrontendNames[i]-%>Setup = async (req: IncomingMessage, baseSetup: <%-safeMicrofrontendNames[i]-%>BaseSetup, logger: Logger): Promise<HostBackendMicrofrontendSetup> => {
+    const user = await baseSetup.getUser(req);
+    return {
+        lang: await baseSetup.getLang?.(req),
+        user,
+        permissions: await get<%-safeMicrofrontendNames[i]-%>Permissions(req, user?.username, baseSetup),
+        assetBuildTimestampOrVersion: await get<%-safeMicrofrontendNames[i]-%>BuildTimestampOrVersion(baseSetup, logger),
+        hostContext: baseSetup.getHostContext,
+        <% if (spec.microfrontends[i].assets.js.importMap) { %>
+            rewrittenImportMaps: baseSetup.rewriteImportMaps?.(<%-JSON.stringify(spec.microfrontends[i].assets.js.importMap)%>),
+        <% } %>
+    };
+}
+
+export const <%-helpers.uncapitalize(safeMicrofrontendNames[i])-%>HostIntegrationMiddleware = (baseSetup: <%-safeMicrofrontendNames[i]-%>BaseSetup) => {
+    const logger = baseSetup.logger || console;
+    const proxy = createProxyServer({
+        changeOrigin: true,
+        ignorePath: true,
+        followRedirects: false,
+    });
+    proxy.on('error', (err, req, res) => {
+        logger.error(`[OpenMicrofrontends] Proxy error for Microfrontend <%-safeMicrofrontendNames[i]-%>`, err);
+        (res as ServerResponse).statusCode = 500;
+        res.end();
+    });
+
+    return async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => {
+        // Required by the SSR render function
+        (req as any)['__om_base_setup_<%-safeMicrofrontendNames[i]-%>__'] = baseSetup;
+
+        let url = req.url;
+        if (!url.startsWith(`${omBasePath}/<%-safeMicrofrontendNames[i]-%>`)) {
+            next();
+            return;
+        }
+
+        url = url.replace(`${omBasePath}/<%-safeMicrofrontendNames[i]-%>`, '');
+        logger.debug('[OpenMicrofrontends] Processing request for Microfrontend <%-safeMicrofrontendNames[i]-%>:', url);
+
+        if (req.method === 'GET' && url === omSetupSubPath) {
+            try {
+                const config = await get<%-safeMicrofrontendNames[i]-%>Setup(req, baseSetup, logger);
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(config));
+                return;
+            } catch (e) {
+                logger.error('[OpenMicrofrontends] Error while processing config request for Microfrontend <%-safeMicrofrontendNames[i]-%>', e);
+                res.statusCode = 500;
+                res.end();
+                return;
+            }
+        }
+
+        if (req.method === 'GET' && url.startsWith(omAssetsSubPath)) {
+            const targetAssetPath = toFullUrl(baseSetup.microfrontendBaseUrl, '<%-spec.microfrontends[i].assets.basePath ?? '/'%>', url.replace(omAssetsSubPath, ''));
+            try {
+                proxy.web(req, res, {
+                    target: targetAssetPath,
+                    timeout: (baseSetup.microfrontendRequestTimeoutSec ?? DEFAULT_MICROFRONTEND_REQUEST_TIMEOUT_SEC) * 1000,
+                });
+                return;
+            } catch (e) {
+                logger.error(`[OpenMicrofrontends] Error while fetching asset ${targetAssetPath} for Microfrontend <%-safeMicrofrontendNames[i]-%>`, e);
+                res.statusCode = 500;
+                res.end();
+                return;
+            }
+        }
+
+        <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
+            if (url.startsWith(omProxiesSubPath)) {
+                let proxyUrl = url.replace(omProxiesSubPath, '');
+                <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+                    if (proxyUrl.startsWith('/<%-proxyId%>')) {
+                        proxyUrl = proxyUrl.replace('/<%-proxyId%>', '');
+                        <% if (spec.microfrontends[i].apiProxies[proxyId].security) { -%>
+                            const securityHeaders = await baseSetup.apiProxyRequest<%-helpers.capitalize(proxyId)%>GetSecurityHeaders(req);
+                        <% } else { -%>
+                            const securityHeaders = {};
+                        <% } -%>
+                        <% if (spec.microfrontends[i].apiProxies[proxyId].path) { -%>
+                            const proxyTargetPath = toFullUrl(baseSetup.microfrontendBaseUrl, '<%-spec.microfrontends[i].apiProxies[proxyId].path%>', proxyUrl);
+                        <% } else { -%>
+                            const proxyTargetPath = toFullUrl(baseSetup.apiProxy<%-helpers.capitalize(proxyId)%>Url, proxyUrl);
+                        <% } %>
+                        try {
+                            proxy.web(req, res, {
+                                target: proxyTargetPath,
+                                headers: securityHeaders,
+                                timeout: (baseSetup.apiProxyTimeoutSec ?? DEFAULT_API_PROXY_TIMEOUT_SEC) * 1000,
+                            });
+                            return;
+                        } catch (e) {
+                            logger.error(`[OpenMicrofrontends] Error while forwarding call to proxy '<%-proxyId%>' for Microfrontend <%-safeMicrofrontendNames[i]-%>. Target: ${req.method} ${proxyTargetPath}`, e);
+                            res.statusCode = 500;
+                            res.end();
+                            return;
+                        }
+                    }
+                <% }); %>
+            }
+        <% } %>
+
+        next();
+    }
+}

@@ -31,7 +31,7 @@ const loadExternalSchema = async (uri: string, defLocation: string): Promise<any
 
 const validateSubSchema = async (schema: any, defLocation: string): Promise<string | null> => {
   const ajv = new AJV({
-    loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation)
+    loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation),
   });
   addFormats(ajv);
   try {
@@ -45,7 +45,7 @@ const validateSubSchema = async (schema: any, defLocation: string): Promise<stri
 const validateSchemaCompliance = async (schema: any, data: any, defLocation: string): Promise<string | null> => {
   const ajv = new AJV({
     strictTypes: false,
-    loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation)
+    loadSchema: async (uri: string) => loadExternalSchema(uri, defLocation),
   });
   addFormats(ajv);
 
@@ -131,11 +131,27 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
       for (const apiProxyName in microfrontend.apiProxies) {
         const apiProxy = microfrontend.apiProxies[apiProxyName];
         if (typeof apiProxy === 'object' && apiProxy.security) {
-          const result = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, apiProxy.security);
-          if (result) {
-            return result;
+          const error = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, apiProxy.security);
+          if (error) {
+            return error;
           }
         }
+      }
+    }
+    if (microfrontend.ssr?.security) {
+      const error = validateSecurityRequirements(microfrontend.name, knownSecuritySchemes, microfrontend.ssr.security);
+      if (error) {
+        return error;
+      }
+    }
+    if (microfrontend.userPermissions?.provided?.security) {
+      const error = validateSecurityRequirements(
+        microfrontend.name,
+        knownSecuritySchemes,
+        microfrontend.userPermissions.provided.security
+      );
+      if (error) {
+        return error;
       }
     }
   }

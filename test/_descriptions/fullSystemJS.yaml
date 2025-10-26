@@ -24,7 +24,7 @@ microfrontends:
     description: An example microfrontend that shows all the features of the OpenMicrofrontends schema
     assets:
       basePath: /
-      buildManifest: build.yaml
+      buildManifestPath: /build.yaml
       js:
         initial:
           - Microfrontend.js
@@ -37,12 +37,19 @@ microfrontends:
         - styles.css
     rendererFunctionName: startMyFirstMicrofrontend
     ssr:
-      initialHtmlPath: /ssr
-    frontendPermissions:
-      - name: showDetails
-        description: The authenticated user is permitted to see details
-      - name: deletePermitted
-        description: The authenticated user is permitted to delete items
+      path: /ssr
+      security:
+        - ApiKeyAuth: []
+    userPermissions:
+      permissions:
+        - name: showDetails
+          description: The authenticated user is permitted to see details
+        - name: deletePermitted
+          description: The authenticated user is permitted to delete items
+      provided:
+        path: /permissions
+        security:
+          - ApiKeyAuth: []
     apiProxies:
       proxy1:
         description: Proxy for the internal BFF API

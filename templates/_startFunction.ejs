@@ -45,7 +45,7 @@ const getHostBackendMicrofrontendSetup = async (id: string, name: string): Promi
         return preloadedSetup;
     }
     try {
-        const response = await fetch(`${omBasePath}/${name}${omConfigSubPath}`);
+        const response = await fetch(`${omBasePath}/${name}${omSetupSubPath}`);
         return await response.json();
     } catch (e) {
         console.error(`[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed. Did you add the necessary Host Integration?`, e);
@@ -58,22 +58,28 @@ const getHostBackendMicrofrontendSetup = async (id: string, name: string): Promi
 export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElement, context: Microfrontend<%-i+1%>ClientContext) {
     const addedElements: Array<HTMLElement> = [];
     const exportedModules: Array<any> = [];
-
     const assetsPath = `${omBasePath}/<%-safeMicrofrontendNames[i]-%>${omAssetsSubPath}`;
     const proxiesPath = `${omBasePath}/<%-safeMicrofrontendNames[i]-%>${omProxiesSubPath}`;
     const setup = await getHostBackendMicrofrontendSetup(context.id, '<%-safeMicrofrontendNames[i]-%>');
     const {assetBuildTimestampOrVersion, rewrittenImportMaps, ...serverContext} = setup;
+    const serverSideRendered = !!window[`__om_ssr_<%-safeMicrofrontendNames[i]-%>_${context.id}__`];
+
+    if (serverSideRendered) {
+        console.info('[OpenMicrofrontends] Found server-side rendered Microfrontend "<%-spec.microfrontends[i].name%>"');
+    }
 
     <% if (spec.microfrontends[i].assets.css) { %>
-        // Add stylesheets
-        <% for (const cssResource of spec.microfrontends[i].assets.css) { %>
-            addCssLinkTag(toFullUrl(assetsPath, '<%-spec.microfrontends[i].assets.basePath-%>', `<%-cssResource%>?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`), addedElements);
-        <% } %>
+        if (!serverSideRendered) {
+            // Add stylesheets
+            <% for (const cssResource of spec.microfrontends[i].assets.css) { %>
+                addCssLinkTag(toFullUrl(assetsPath, `<%-cssResource%>?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`), addedElements);
+            <% } %>
+        }
     <% } %>
 
     const jsUrls = [
         <% for (const jsResource of spec.microfrontends[i].assets.js.initial) { %>
-            toFullUrl(assetsPath, '<%-spec.microfrontends[i].assets.basePath-%>', `<%-jsResource%>?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`),
+            toFullUrl(assetsPath, `<%-jsResource%>?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`),
         <% } %>
     ];
     <% if (!spec.microfrontends[i].assets.js.moduleSystem || spec.microfrontends[i].assets.js.moduleSystem === 'none') { %>
@@ -83,7 +89,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
                 await addJsScriptTag(jsUrl, addedElements);
             }
         } catch (e) {
-            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
             throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
     <% } else if (spec.microfrontends[i].assets.js.moduleSystem === 'ESM') { %>
@@ -96,7 +101,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
                 }
             }
         } catch (e) {
-            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
             throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
 
@@ -105,9 +109,22 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
         if (typeof System === 'undefined') {
             throw new Error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
         }
-        <% if (spec.microfrontends[i].assets.js.importMap) { %>
-            installSystemJSImportMap(jsUrls, <%-JSON.stringify(rewrittenImportMaps ?? spec.microfrontends[i].assets.js.importMap, null, 2)%>);
-        <% } %>
+
+        const initialModuleMapping = {};
+        jsUrls.forEach((jsUrl) => {
+            const moduleWithoutQuery = jsUrl.split('?')[0];
+            initialModuleMapping[moduleWithoutQuery] = jsUrl;
+        });
+        const finalImportMap = {
+            imports: {
+                ...initialModuleMapping,
+                <% if (spec.microfrontends[i].assets.js.importMap?.imports) { -%>
+                    ...rewrittenImportMaps?.imports ?? <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap.imports, null, 2)%>
+                <% } %>
+            },
+        };
+        installSystemJSImportMap(jsUrls, finalImportMap);
+
         try {
             for (const jsUrl of jsUrls) {
                 const module = await System.import(jsUrl);
@@ -116,7 +133,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
                 }
             }
         } catch (e) {
-            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
             throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
     <% } %>
@@ -139,6 +155,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
         ...serverContext,
         ...context,
         apiProxyPaths,
+        serverSideRendered,
         config: {
             ...defaultConfig<%i+1%>,
             ...context.config,
@@ -146,6 +163,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
     };
 
     // Render the Microfrontend
+    console.info('[OpenMicrofrontends] Starting Microfrontend "<%-spec.microfrontends[i].name%>"');
     const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
 
     return {

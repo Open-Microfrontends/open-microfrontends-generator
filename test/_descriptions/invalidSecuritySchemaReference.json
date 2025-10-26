@@ -30,14 +30,16 @@
         "de": "Mein erstes Microfrontend"
       },
       "description": "test",
-      "frontendPermissions": [
-        {
-          "name": "perm1"
-        },
-        {
-          "name": "perm2"
-        }
-      ],
+      "userPermissions": {
+        "permissions": [
+          {
+            "name": "perm1"
+          },
+          {
+            "name": "perm2"
+          }
+        ]
+      },
       "assets": {
         "js": {
           "initial": ["app.js"]

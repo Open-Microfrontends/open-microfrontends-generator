@@ -37,17 +37,27 @@ function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
   addedElements.push(linkElem);
 }
 
-/* Asset query timestamp for cache busting */
+/*
+ * The setup calculated by the Host Application backend
+ */
+type HostBackendMicrofrontendSetup = Pick<
+  OpenMicrofrontendsClientContext<any, any, any, any, any>,
+  'lang' | 'user' | 'permissions' | 'hostContext'
+> & {
+  readonly assetBuildTimestampOrVersion?: string;
+  readonly rewrittenImportMaps?: {
+    readonly imports: Record<string, string>;
+  };
+};
 
-const assetTimestamp = Math.floor(Date.now() / 10000) * 10;
+const omBasePath = '/__open_microfrontends__';
+const omAssetsSubPath = '/assets';
+const omProxiesSubPath = '/proxies';
+const omSetupSubPath = '/setup';
+
+const fallbackAssetTimestamp = Math.floor(Date.now() / 10000) * 10;
 
 /* Type Parameters */
-
-type Microfrontend1Permissions = {
-  readonly showDetails: boolean;
-
-  readonly deletePermitted: boolean;
-};
 
 type Microfrontend1MessagesPublish = Record<string, any>;
 type Microfrontend1MessagesSubscribe = Record<string, any>;
@@ -72,29 +82,60 @@ const defaultConfig = {
 type Microfrontend1ClientContext = Omit<
   OpenMicrofrontendsClientContext<
     Partial<Microfrontend1Config>,
-    Microfrontend1Permissions,
+    undefined,
     undefined,
     Microfrontend1MessagesPublish,
     Microfrontend1MessagesSubscribe
   >,
-  'apiProxyPaths' | 'serverSideRendered'
+  'apiProxyPaths' | 'permissions' | 'user'
 >;
+
+/* Microfrontend setup */
+
+const getHostBackendMicrofrontendSetup = async (id: string, name: string): Promise<HostBackendMicrofrontendSetup> => {
+  const preloadedSetup = window[`__om__setup__${name}_${id}`];
+  if (preloadedSetup) {
+    return preloadedSetup;
+  }
+  try {
+    const response = await fetch(`${omBasePath}/${name}${omSetupSubPath}`);
+    return await response.json();
+  } catch (e) {
+    console.error(
+      `[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed. Did you add the necessary Host Integration?`,
+      e
+    );
+    throw new Error(`[OpenMicrofrontends] Loading setup of Microfrontend ${name} failed!`);
+  }
+};
 
 /* Start function */
 
-export async function startMyFirstMicrofrontend(
-  serverUrl: string,
-  hostElement: HTMLElement,
-  context: Microfrontend1ClientContext
-) {
+export async function startMyFirstMicrofrontend(hostElement: HTMLElement, context: Microfrontend1ClientContext) {
   const addedElements: Array<HTMLElement> = [];
   const exportedModules: Array<any> = [];
+  const assetsPath = `${omBasePath}/MyFirstMicrofrontend${omAssetsSubPath}`;
+  const proxiesPath = `${omBasePath}/MyFirstMicrofrontend${omProxiesSubPath}`;
+  const setup = await getHostBackendMicrofrontendSetup(context.id, 'MyFirstMicrofrontend');
+  const { assetBuildTimestampOrVersion, rewrittenImportMaps, ...serverContext } = setup;
+  const serverSideRendered = !!window[`__om_ssr_MyFirstMicrofrontend_${context.id}__`];
 
-  // Add stylesheets
+  if (serverSideRendered) {
+    console.info('[OpenMicrofrontends] Found server-side rendered Microfrontend "My First Microfrontend"');
+  }
 
-  addCssLinkTag(toFullUrl(serverUrl, '/', `styles.css?v=${assetTimestamp}`), addedElements);
+  if (!serverSideRendered) {
+    // Add stylesheets
 
-  const jsUrls = [toFullUrl(serverUrl, '/', `Microfrontend.js?v=${assetTimestamp}`)];
+    addCssLinkTag(
+      toFullUrl(assetsPath, `styles.css?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`),
+      addedElements
+    );
+  }
+
+  const jsUrls = [
+    toFullUrl(assetsPath, `Microfrontend.js?v=${assetBuildTimestampOrVersion ?? fallbackAssetTimestamp}`),
+  ];
 
   // Load initial modules consecutively (ESM)
   try {
@@ -118,8 +159,17 @@ export async function startMyFirstMicrofrontend(
     throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
   }
 
+  const apiProxyPaths = {};
+
+  apiProxyPaths['proxy1'] = `${proxiesPath}/proxy1`;
+
+  apiProxyPaths['proxy2'] = `${proxiesPath}/proxy2`;
+
   const contextWithDefaultConfig = {
+    ...serverContext,
     ...context,
+    apiProxyPaths,
+    serverSideRendered,
     config: {
       ...defaultConfig,
       ...context.config,

@@ -1,0 +1,59 @@
+
+<% if (spec.microfrontends[i].ssr) { %>
+    type SSRContext = OpenMicrofrontendsServerContext<Partial<Microfrontend<%-i+1%>Config>, Microfrontend<%-i+1 -%>Permissions>;
+    type SSRResponse = {
+        readonly contentHtml: string;
+        readonly headHtml: string;
+    }
+
+    export const <%-helpers.uncapitalize(safeMicrofrontendNames[i])%>ServerSideRender = async (req: IncomingMessage, context: SSRContext): Promise<SSRResponse> => {
+        const baseSetup = (req as any)['__om_base_setup_<%-safeMicrofrontendNames[i]-%>__'] as <%-safeMicrofrontendNames[i]-%>BaseSetup | undefined;
+        if (!baseSetup) {
+            throw new Error('[OpenMicrofrontends] Not setup found. Did you forget to register the generated middleware?');
+        }
+
+        const logger = baseSetup.logger || console;
+        const defaultConfig = <%-JSON.stringify(spec.microfrontends[i].config.default, null, 2)-%>;
+        const contextWithDefaultConfig = {
+            ...context,
+            config: {
+                ...defaultConfig,
+                ...context.config
+            }
+        }
+
+        <% if (spec.microfrontends[i].ssr.security) { -%>
+            const securityHeaders = await baseSetup.ssrGetSecurityHeaders(req);
+        <% } else { -%>
+            const securityHeaders = {};
+        <% } -%>
+
+        const response = await postWithTimeoutAndExtraHeaders('<%-spec.microfrontends[i].ssr.path%>', baseSetup.microfrontendBaseUrl, contextWithDefaultConfig, baseSetup.microfrontendSSRTimeoutSec ?? DEFAULT_SSR_TIMEOUT_SEC, securityHeaders);
+        if (!response.ok) {
+            throw new Error(`[OpenMicrofrontends] SSR request failed with status ${response.status}`);
+        }
+
+        const {html, injectHeadScript} = await response.json();
+        <% if (spec.microfrontends[i].assets.css) { %>
+            const assetsPath = `${omBasePath}/<%-safeMicrofrontendNames[i]-%>${omAssetsSubPath}`;
+            const fallbackAssetTimestamp = Math.floor(Date.now() / 10000) * 10;
+            const assetBuildTimestampOrVersion = await get<%-safeMicrofrontendNames[i]-%>BuildTimestampOrVersion(baseSetup, logger);
+        <% } %>
+
+        const headHtml = `
+            <% if (spec.microfrontends[i].assets.css) { %>
+                <!-- Add stylesheets to the head, so the pre-rendered HTML is already styled -->
+                <% for (const cssResource of spec.microfrontends[i].assets.css) { %>
+                    <link href="${assetsPath}/<%-cssResource%>?v=${assetBuildTimestampOrVersion ??fallbackAssetTimestamp}" rel="stylesheet" />
+                <% } %>
+            <% } %>
+            <script>window['__om_ssr_<%-safeMicrofrontendNames[i]-%>_${context.id}__'] = true;</script>
+            ${injectHeadScript ? `<script>${injectHeadScript}</script>` : ''}
+        `;
+
+        return {
+            contentHtml: html,
+            headHtml
+        };
+    }
+<% } %>

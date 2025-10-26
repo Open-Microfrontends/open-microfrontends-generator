@@ -11,21 +11,21 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
           assets: {
             basePath: '/',
             js: {
-              initial: ['index.js']
-            }
+              initial: ['index.js'],
+            },
           },
           rendererFunctionName: 'startMicrofrontend1',
           apiProxies: {
             foo: {
               targets: [
                 {
-                  url: "'https://bar.com/x'"
-                }
-              ]
-            }
-          }
-        }
-      ]
+                  url: "'https://bar.com/x'",
+                },
+              ],
+            },
+          },
+        },
+      ],
     };
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
@@ -42,20 +42,20 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
           assets: {
             basePath: '/',
             js: {
-              initial: ['index.js']
-            }
+              initial: ['index.js'],
+            },
           },
           rendererFunctionName: 'startMicrofrontend1',
           ssr: {
-            initialHtmlPath: '/ssr'
-          }
-        }
-      ]
+            path: '/ssr',
+          },
+        },
+      ],
     };
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
 
-    expect(errors).toBe('SSR route (paths.ssrHtml) found the declaration, which is not supported!');
+    expect(errors).toBe('SSR route (ssr.path) found the declaration, which is not supported!');
   });
 
   it('fails if the importMaps are declared for module type ESM', async () => {
@@ -71,19 +71,21 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
               moduleSystem: 'ESM',
               importMap: {
                 imports: {
-                  foo: 'https://cdn.com/foo.js'
-                }
-              }
-            }
+                  foo: 'https://cdn.com/foo.js',
+                },
+              },
+            },
           },
-          rendererFunctionName: 'startMicrofrontend1'
-        }
-      ]
+          rendererFunctionName: 'startMicrofrontend1',
+        },
+      ],
     };
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);
 
-    expect(errors).toBe('ImportMaps for moduleSystem ESM found the declaration, which is not supported!');
+    expect(errors).toBe(
+      'ImportMaps for moduleSystem ESM found the declaration, which is not supported. See: https://open-microfrontends.org/implementation-hints/microfrontends'
+    );
   });
 
   it('succeeds with a declaration without security, API proxies or SSR routes', async () => {
@@ -95,12 +97,12 @@ describe('extraValidationTemplateStartersBrowserStandalone', () => {
           assets: {
             basePath: '/',
             js: {
-              initial: ['index.js']
-            }
+              initial: ['index.js'],
+            },
           },
-          rendererFunctionName: 'startMicrofrontend1'
-        }
-      ]
+          rendererFunctionName: 'startMicrofrontend1',
+        },
+      ],
     };
 
     const errors = extraValidationTemplateStartersBrowserStandalone(def);

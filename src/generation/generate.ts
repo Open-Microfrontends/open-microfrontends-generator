@@ -14,8 +14,8 @@ export default async (model: GeneratorModel, ejsTemplate: string, targetFile: st
   const templateContent = await readFile(resolve(templateFolder, ejsTemplate), 'utf-8');
   const sourceCode = ejs.render(templateContent, model, {
     includer: (path) => ({
-      filename: resolve(templateFolder, `${path}.ejs`)
-    })
+      filename: resolve(templateFolder, `${path}.ejs`),
+    }),
   });
 
   if (!targetFile.endsWith('.js') && !targetFile.endsWith('.ts')) {

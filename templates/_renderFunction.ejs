@@ -4,14 +4,14 @@
 
 /* Type Parameters */
 
-<% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
-    type Microfrontend<%-i+1 -%>Permissions = {
-    <% spec.microfrontends[i].frontendPermissions.forEach((permission) => { %>
+<% if (spec.microfrontends[i].userPermissions && spec.microfrontends[i].userPermissions.permissions.length > 0) { %>
+    export type Microfrontend<%-i+1 -%>Permissions = {
+    <% spec.microfrontends[i].userPermissions.permissions.forEach((permission) => { %>
     readonly '<%-permission.name%>': boolean;
     <% }) %>
     };
 <% } else { %>
-    type Microfrontend<%-i+1 %>Permissions = undefined;
+    export type Microfrontend<%-i+1 %>Permissions = undefined;
 <%  } %>
 
 <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
@@ -49,3 +49,14 @@
 export type <%-safeMicrofrontendNames[i]%>RenderFunction = OpenMicrofrontendsRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions, Microfrontend<%-i+1%>ApiProxyPaths, Microfrontend<%-i+1%>MessagesPublish, Microfrontend<%-i+1%>MessagesSubscribe>;
 
 export const <%-safeMicrofrontendNames[i]%>RenderFunctionName = '<%-spec.microfrontends[i].rendererFunctionName%>';
+
+/* Path constants */
+
+export const <%-safeMicrofrontendNames[i]%>AssetsBasePath = '<%-spec.microfrontends[i].assets.basePath ?? '/'%>';
+<% if (spec.microfrontends[i].assets.buildManifestPath) { %>
+    export const <%-safeMicrofrontendNames[i]%>BuildManifestPath = '<%-spec.microfrontends[i].assets.buildManifestPath%>';
+<%  } %>
+<% if (spec.microfrontends[i].userPermissions?.provided) { %>
+    export const <%-safeMicrofrontendNames[i]%>UserPermissionsPath = '<%-spec.microfrontends[i].userPermissions.provided.path%>';
+<%  } %>
+

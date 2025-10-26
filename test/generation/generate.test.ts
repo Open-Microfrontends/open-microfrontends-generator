@@ -112,7 +112,7 @@ describe('generate', () => {
     const model = await createGeneratorModel(
       def,
       {
-        omBasePath: '/__open_microfrontends__'
+        omBasePath: '/__open_microfrontends__',
       },
       demoDescriptionsLocation
     );
@@ -122,6 +122,101 @@ describe('generate', () => {
 
     expect(result).toBe(
       readFileSync(resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendStarters.ts'), 'utf-8')
+    );
+  });
+
+  it('generates browser starter functions for ESM modules', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'fullESM.yaml'));
+    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'fullESM_microfrontendStarters.ts');
+
+    const model = await createGeneratorModel(
+      def,
+      {
+        omBasePath: '/__open_microfrontends__',
+      },
+      demoDescriptionsLocation
+    );
+    const result = await generate(model, 'starters', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(resolve(import.meta.dirname, '..', '_expectations', 'fullESM_microfrontendStarters.ts'), 'utf-8')
+    );
+  });
+
+  it('generates browser starter functions for SystemJS modules', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'fullSystemJS.yaml'));
+    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'fullSystemJS_microfrontendStarters.ts');
+
+    const model = await createGeneratorModel(
+      def,
+      {
+        omBasePath: '/__open_microfrontends__',
+      },
+      demoDescriptionsLocation
+    );
+    const result = await generate(model, 'starters', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(
+        resolve(import.meta.dirname, '..', '_expectations', 'fullSystemJS_microfrontendStarters.ts'),
+        'utf-8'
+      )
+    );
+  });
+
+  it('Node.js host backend integrations', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
+    const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_hostBackendIntegrationsNodeJs.ts');
+
+    const model = await createGeneratorModel(
+      def,
+      {
+        omBasePath: '/__open_microfrontends__',
+      },
+      demoDescriptionsLocation
+    );
+    const result = await generate(model, 'hostBackendIntegrationsNodeJs', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(
+        resolve(import.meta.dirname, '..', '_expectations', 'full_hostBackendIntegrationsNodeJs.ts'),
+        'utf-8'
+      )
+    );
+  });
+
+  it('Java host backend integrations', async () => {
+    const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
+    const targetFile = resolve(
+      import.meta.dirname,
+      '..',
+      '_expectations',
+      'full_hostBackendIntegrationsJavaServlet.java'
+    );
+
+    const model = await createGeneratorModel(
+      def,
+      {
+        omBasePath: '/__open_microfrontends__',
+        packageName: 'org.openmicrofrontends.demo',
+      },
+      demoDescriptionsLocation
+    );
+    const result = await generate(model, 'hostBackendIntegrationsJavaServlet', targetFile);
+
+    // await saveFile(targetFile, result);
+
+    expect(result).toBe(
+      readFileSync(
+        resolve(import.meta.dirname, '..', '_expectations', 'full_hostBackendIntegrationsJavaServlet.java'),
+        'utf-8'
+      )
     );
   });
 });

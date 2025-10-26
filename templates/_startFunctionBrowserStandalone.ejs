@@ -5,9 +5,9 @@ const assetTimestamp = Math.floor(Date.now() / 10000) * 10;
 
 /* Type Parameters */
 
-<% if (spec.microfrontends[i].frontendPermissions && spec.microfrontends[i].frontendPermissions.length > 0) { %>
+<% if (spec.microfrontends[i].userPermissions && spec.microfrontends[i].userPermissions.permissions.length > 0) { %>
     type Microfrontend<%-i+1 -%>Permissions = {
-    <% spec.microfrontends[i].frontendPermissions.forEach((permission) => { %>
+    <% spec.microfrontends[i].userPermissions.permissions.forEach((permission) => { %>
     readonly '<%-permission.name%>': boolean;
     <% }) %>
     };
@@ -87,7 +87,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
                 }
             }
         } catch (e) {
-            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
             throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
 
@@ -96,9 +95,22 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
         if (typeof System === 'undefined') {
             throw new Error('[OpenMicrofrontends] Microfrontend "<%-spec.microfrontends[i].name%>" requires SystemJS but is not available!');
         }
-        <% if (spec.microfrontends[i].assets.js.importMap) { %>
-            installSystemJSImportMap(jsUrls, <%-JSON.stringify(spec.microfrontends[i].assets.js.importMap, null, 2)%>);
-        <% } %>
+
+        const initialModuleMapping = {};
+        jsUrls.forEach((jsUrl) => {
+            const moduleWithoutQuery = jsUrl.split('?')[0];
+            initialModuleMapping[moduleWithoutQuery] = jsUrl;
+        });
+        const finalImportMap = {
+            imports: {
+                ...initialModuleMapping,
+                <% if (spec.microfrontends[i].assets.js.importMap?.imports) { %>
+                    ...<%-JSON.stringify(spec.microfrontends[i].assets.js.importMap.imports, null, 2)%>
+                <% } %>
+            },
+        };
+        installSystemJSImportMap(jsUrls, finalImportMap);
+
         try {
             for (const jsUrl of jsUrls) {
                 const module = await System.import(jsUrl);
@@ -107,7 +119,6 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
                 }
             }
         } catch (e) {
-            console.error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!', e);
             throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "<%-spec.microfrontends[i].name%>" failed!');
         }
     <% } %>
@@ -128,6 +139,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(serverUrl: string, ho
     };
 
     // Render the Microfrontend
+    console.info('[OpenMicrofrontends] Starting Microfrontend "<%-spec.microfrontends[i].name%>"');
     const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
 
     return {

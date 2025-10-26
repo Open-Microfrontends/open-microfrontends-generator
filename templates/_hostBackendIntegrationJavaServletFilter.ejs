@@ -1,0 +1,321 @@
+
+public static class <%-safeMicrofrontendNames[i]-%>HostIntegrationFilter implements Filter {
+
+    public interface MicrofrontendBaseSetup {
+        String getMicrofrontendBaseUrl();
+        default int getMicrofrontendRequestTimeoutSec() {
+            return 5;
+        }
+        default int getMicrofrontendAssetsAndProxyTimeout() {
+            return 60;
+        }
+        default User getUser(HttpServletRequest req) {
+            return null;
+        }
+        default String getLang(HttpServletRequest req) {
+            return null;
+        }
+        default Map<String, String> getHostContext() {
+            return null;
+        }
+        <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
+            <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+                <% if (!spec.microfrontends[i].apiProxies[proxyId].path) { %>
+                    /*
+                    *  Target URL of the API Proxy <%-proxyId%>
+                    */
+                    String getApiProxy<%-helpers.capitalize(proxyId)%>Url();
+                <% } %>
+                <% if (spec.microfrontends[i].apiProxies[proxyId].security) { %>
+                    /*
+                    *  Security Headers for a request to the API Proxy <%-proxyId%>.
+                    *  Schemes: <%-JSON.stringify(spec.microfrontends[i].apiProxies[proxyId].security)%>
+                    */
+                    Map<String, String> getApiProxyRequest<%-helpers.capitalize(proxyId)%>GetSecurityHeaders(HttpServletRequest req);
+                <% } %>
+            <% }); %>
+        <% } %>
+        <% if (spec.microfrontends[i].userPermissions) { %>
+            <% if (!spec.microfrontends[i].userPermissions.provided) { %>
+                /*
+                *  Calculate the permissions for the current user
+                */
+                Map<String, Boolean> calculateUserPermissions(HttpServletRequest req);
+            <% } %>
+            <% if (spec.microfrontends[i].userPermissions.provided?.security) { %>
+                /*
+                *  Security Headers for a user permissions request to the Microfrontend
+                *  Schemes: <%-JSON.stringify(spec.microfrontends[i].userPermissions.provided.security)%>
+                */
+                Map<String, String> getUserPermissionsRequestSecurityHeaders(HttpServletRequest req);
+            <% } %>
+        <% } %>
+        <% if (spec.microfrontends[i].assets.buildManifestPath) { %>
+            /*
+            * Add build manifest to a cache (should not be cached more than 5min)
+            */
+            void buildTimestampOrVersionCachePut(String tsOrVersion);
+            /*
+            * Get the build manifest from a cache
+            */
+            String buildTimestampOrVersionCacheGet();
+        <% } %>
+        <% if (spec.microfrontends[i].userPermissions?.provided) { %>
+            /*
+            * Add the user permissions for the current user to a cache
+            */
+            default void userPermissionsCachePut(String key, Map<String, Boolean> userPermissions) {
+            }
+            /*
+            * Get the user permissions for the current user from a cache
+            */
+            default Map<String, Boolean> userPermissionsCacheGet(String key) {
+                return null;
+            }
+         <% } %>
+    }
+
+
+    private static final String ATTR_EXTRA_HEADERS = <%-safeMicrofrontendNames[i]-%>HostIntegrationFilter.class + ".extraHeaders";
+
+    private final MicrofrontendBaseSetup baseSetup;
+    private final HttpClient httpClient;
+    private final InternalProxyServlet proxyServlet;
+
+    public <%-safeMicrofrontendNames[i]-%>HostIntegrationFilter(MicrofrontendBaseSetup baseSetup) {
+        this.baseSetup = baseSetup;
+        this.httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(baseSetup.getMicrofrontendRequestTimeoutSec()))
+                .build();
+        this.proxyServlet = new InternalProxyServlet();
+    }
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        var httpReq = (HttpServletRequest) req;
+        var httpRes = (HttpServletResponse) res;
+
+        var url = httpReq.getRequestURI();
+        if (!url.startsWith(OM_BASE_PATH + "/<%-safeMicrofrontendNames[i]-%>")) {
+            chain.doFilter(req, res);
+            return;
+        }
+
+        url = url.replace(OM_BASE_PATH + "/<%-safeMicrofrontendNames[i]-%>", "");
+        logger.debug("[OpenMicrofrontends] Processing request for Microfrontend <%-safeMicrofrontendNames[i]-%>: {}", url);
+
+        if (httpReq.getMethod().equals("GET") && url.equals(OM_SETUP_SUB_PATH)) {
+            try {
+                var setup = getSetup(httpReq);
+                res.setContentType("application/json");
+                res.getWriter().write(objectMapper.writeValueAsString(setup));
+                return;
+            } catch (Exception e) {
+                logger.error("[OpenMicrofrontends] Error while processing config request for Microfrontend <%-safeMicrofrontendNames[i]-%>", e);
+                if (!httpRes.isCommitted()) {
+                    httpRes.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+
+        if (httpReq.getMethod().equals("GET") && url.startsWith(OM_ASSETS_SUB_PATH)) {
+            var targetAssetPath = toFullUrl(baseSetup.getMicrofrontendBaseUrl(), "<%-spec.microfrontends[i].assets.basePath ?? '/'%>", url.substring(OM_ASSETS_SUB_PATH.length()));
+            try {
+                proxyServlet.proxy(httpReq, httpRes, targetAssetPath, null);
+                return;
+            } catch (Exception e) {
+                logger.error("[OpenMicrofrontends] Error while fetching asset " + targetAssetPath + " for Microfrontend <%-safeMicrofrontendNames[i]-%>", e);
+                if (!httpRes.isCommitted()) {
+                    httpRes.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+                return;
+            }
+        }
+
+        <% if (spec.microfrontends[i].apiProxies && Object.keys(spec.microfrontends[i].apiProxies).length > 0) { %>
+            if (url.startsWith(OM_PROXIES_SUB_PATH)) {
+                var proxyUrl = url.substring(OM_PROXIES_SUB_PATH.length());
+                <% Object.keys(spec.microfrontends[i].apiProxies).forEach((proxyId) => { %>
+                    if (proxyUrl.startsWith("/<%-proxyId%>")) {
+                        proxyUrl = proxyUrl.substring("/<%-proxyId%>".length());
+                        <% if (spec.microfrontends[i].apiProxies[proxyId].security) { -%>
+                            var securityHeaders = baseSetup.getApiProxyRequest<%-helpers.capitalize(proxyId)%>GetSecurityHeaders(httpReq);
+                        <% } else { -%>
+                            Map<String, String> securityHeaders = null;
+                        <% } -%>
+                        <% if (spec.microfrontends[i].apiProxies[proxyId].path) { -%>
+                            var proxyTargetPath = toFullUrl(baseSetup.getMicrofrontendBaseUrl(), "<%-spec.microfrontends[i].apiProxies[proxyId].path%>", proxyUrl);
+                        <% } else { -%>
+                            var proxyTargetPath = toFullUrl(baseSetup.getApiProxy<%-helpers.capitalize(proxyId)%>Url(), proxyUrl);
+                        <% } %>
+                        try {
+                            proxyServlet.proxy(httpReq, httpRes, proxyTargetPath, securityHeaders);
+                            return;
+                        } catch (Exception e) {
+                            logger.error("[OpenMicrofrontends] Error while forwarding call to proxy '<%-proxyId%>' for Microfrontend <%-safeMicrofrontendNames[i]-%>. Target:" + httpReq.getMethod() + " " + proxyTargetPath, e);
+                            if (!httpRes.isCommitted()) {
+                                httpRes.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            }
+                            return;
+                        }
+                    }
+                <% }); %>
+            }
+        <% } %>
+
+        chain.doFilter(req, res);
+    }
+
+    private String fetchWithExtraHeaders(String url, String baseUrl, Map<String, String> headers) throws IOException, InterruptedException {
+        var fullUrl = toFullUrl(baseUrl, url);
+        var requestBuilder = HttpRequest.newBuilder()
+            .uri(URI.create(fullUrl))
+            .GET();
+
+        headers.forEach(requestBuilder::header);
+
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString()).body();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Boolean> getPermissions(HttpServletRequest req, String username) throws IOException, InterruptedException {
+        <% if (spec.microfrontends[i].userPermissions) { -%>
+            <% if (spec.microfrontends[i].userPermissions.provided) { %>
+                String cacheKey = null;
+                if (username != null) {
+                    cacheKey = "__om_user_permissions__" + username;
+                    var permissionsFromCache = baseSetup.userPermissionsCacheGet(cacheKey);
+                    if (permissionsFromCache != null) {
+                        return permissionsFromCache;
+                    }
+                }
+
+                <% if (spec.microfrontends[i].userPermissions.provided.security) { %>
+                    var extraHeaders = baseSetup.getUserPermissionsRequestSecurityHeaders(req);
+                <% } else { %>
+                    var extraHeaders = Map.of();
+                <% } %>
+                var res = fetchWithExtraHeaders("<%-spec.microfrontends[i].userPermissions.provided.path%>", baseSetup.getMicrofrontendBaseUrl(), extraHeaders);
+                var permissions = (Map<String, Boolean>) objectMapper.readValue(res, Map.class);
+
+                if (cacheKey != null) {
+                    baseSetup.userPermissionsCachePut(cacheKey, permissions);
+                }
+
+                return permissions;
+            <% } else { %>
+                return baseSetup.calculateUserPermissions(req);
+            <% } %>
+        <% } else { %>
+            return null;
+        <% } %>
+    }
+
+    private String getBuildTimestampOrVersion() throws IOException, InterruptedException {
+        <% if (spec.microfrontends[i].assets.buildManifestPath) { %>
+            var buildTimestampOrVersionFromCache = baseSetup.buildTimestampOrVersionCacheGet();
+            if (buildTimestampOrVersionFromCache != null) {
+                return buildTimestampOrVersionFromCache;
+            }
+            var res = fetchWithExtraHeaders("<%-spec.microfrontends[i].assets.buildManifestPath%>", baseSetup.getMicrofrontendBaseUrl(), Map.of());
+            var manifest = objectMapper.readValue(res, Map.class);
+
+            String buildTimestampOrVersion = (String) manifest.get("timestamp");
+            if (buildTimestampOrVersion == null) {
+                buildTimestampOrVersion = (String) manifest.get("version");
+            }
+            if (buildTimestampOrVersion == null) {
+                logger.warn("[OpenMicrofrontends] No build timestamp or version found in build manifest: {}", manifest);
+            } else {
+                baseSetup.buildTimestampOrVersionCachePut(buildTimestampOrVersion);
+            }
+            return buildTimestampOrVersion;
+        <% } else { %>
+            return null;
+        <% } %>
+    }
+
+    private Map<String, Object> getSetup(HttpServletRequest req) throws Exception {
+        var user = baseSetup.getUser(req);
+        var setup = new HashMap<String, Object>();
+        setup.put("user", user);
+        setup.put("lang", baseSetup.getLang(req));
+        setup.put("permissions", getPermissions(req, user != null ? user.username : null));
+        setup.put("assetBuildTimestampOrVersion", getBuildTimestampOrVersion());
+        setup.put("hostContext", baseSetup.getHostContext());
+        return setup;
+    }
+
+    private class InternalProxyServlet extends ProxyServlet {
+
+        InternalProxyServlet() {
+            var initParams = Map.of(
+                    "http.socket.timeout", "3000",
+                    "http.read.timeout", "" + baseSetup.getMicrofrontendAssetsAndProxyTimeout() * 1000,
+                    "targetUri", "http://localhost:8080/dummy"
+            );
+            var config = new ServletConfig() {
+                @Override
+                public String getServletName() {
+                    return "InternalProxyServlet";
+                }
+                @Override
+                public ServletContext getServletContext() {
+                    return null;
+                }
+                @Override
+                public String getInitParameter(String name) {
+                    return initParams.get(name);
+                }
+                @Override
+                public Enumeration<String> getInitParameterNames() {
+                    return null;
+                }
+            };
+            try {
+                this.init(config);
+            } catch (ServletException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        void proxy(HttpServletRequest req, HttpServletResponse res, String targetURL, Map<String, String> extraHeaders) throws IOException {
+            var pathIdx = targetURL.indexOf("/", 10);
+            var host = pathIdx != -1 ? targetURL.substring(0, pathIdx) : targetURL;
+            req.setAttribute(ATTR_TARGET_URI, targetURL);
+            req.setAttribute(ATTR_TARGET_HOST, HttpHost.create(host));
+            req.setAttribute(ATTR_EXTRA_HEADERS, extraHeaders);
+            this.service(req, res);
+        }
+
+        @Override
+        protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            try {
+                super.service(req, resp);
+            } catch (Exception e) {
+                logger.error("[OpenMicrofrontends] Error during proxying for Microfrontend <%-safeMicrofrontendNames[i]-%>. Request URL: {}", req.getRequestURL(), e);
+                if (!resp.isCommitted()) {
+                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Proxying failed");
+                }
+            }
+        }
+
+        @Override
+        protected String rewriteUrlFromRequest(HttpServletRequest req) {
+            // We ignore the incoming path
+            return (String) req.getAttribute(ATTR_TARGET_URI);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        protected void copyRequestHeaders(HttpServletRequest servletRequest, org.apache.http.HttpRequest proxyRequest) {
+            super.copyRequestHeaders(servletRequest, proxyRequest);
+            // Add extra headers
+            var extraHeaders = (Map<String, String>) servletRequest.getAttribute(ATTR_EXTRA_HEADERS);
+            if (extraHeaders != null) {
+                extraHeaders.forEach(proxyRequest::addHeader);
+            }
+        }
+    }
+}

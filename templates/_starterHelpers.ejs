@@ -1,6 +1,8 @@
 
 // Helper
 
+<%- include('_urlHelper') %>
+
 <% if (spec.microfrontends.find(m => !m.assets.js.moduleSystem || m.assets.js.moduleSystem === 'none')) { %>
 function addJsScriptTag(url: string, addedElements: Array<HTMLElement>): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -28,13 +30,6 @@ function addCssLinkTag(url: string, addedElements: Array<HTMLElement>): void {
     });
     document.head.appendChild(linkElem);
     addedElements.push(linkElem);
-}
-
-function toFullUrl(...parts: Array<string>): string {
-    return parts
-        .map((part) => part.endsWith('/') ? part.slice(0, -1) : part)
-        .map((part, idx) => idx > 0 && part && !part.startsWith('/') ? `/${part}` : part)
-        .join('');
 }
 
 <% if (spec.microfrontends.find(m => m.assets.js.moduleSystem === 'SystemJS')) { %>

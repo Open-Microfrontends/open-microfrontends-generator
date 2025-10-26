@@ -13,6 +13,10 @@ export type GeneratorModel = {
   readonly configSchemaTypes: Array<GeneratorModelTsTypeRef>;
   readonly messageSchemaTypes: Array<Record<string, GeneratorModelTsTypeRef>>;
   readonly additionalProperties: Record<string, string>;
+  readonly helpers: {
+    capitalize(str: string): string;
+    uncapitalize(str: string): string;
+  };
 };
 
 export type TemplateExtraValidation = (def: OpenMicroFrontendsDef) => string | null;

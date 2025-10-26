@@ -3,6 +3,6 @@ export const startMyFirstMicrofrontend = () => {
   return {
     onRemove: async () => {
       window.__removed2__ = true;
-    }
+    },
   };
 };

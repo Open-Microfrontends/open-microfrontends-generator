@@ -10,9 +10,38 @@ Generates type-safe Microfrontend render functions and host integrations from an
 > This generator does currently not support *importMaps* for ES modules, since the Browser support is incomplete (see https://bugzilla.mozilla.org/show_bug.cgi?id=1916277).
 > For the moment we recommend using *SystemJS* in conjunction with *importMaps*.
 
+## Requirements
+
+### CLI
+
+ * Node.js >= 20 
+
+### Generated TypeScript code
+
+ * Node.js >= 20
+ * devDependencies
+   * @open-microfrontends/types
+ * Some Templates might require additional dependencies, see below
+
+### Generated Java code
+
+ * Java >= 17
+ * Some Templates might require additional runtime dependencies, see below
+
 ## Usage
 
-Basic usage:
+Add to your *package.json*:
+
+```json
+{
+  "devDependencies": {
+    "@open-microfrontends/types": "^1.0.0",
+    "@open-microfrontends/open-microfrontends-generator": "^1.0.0"
+  }
+}
+```
+
+Then run the generator:
 
     omg microfrontends.yaml src/_generated -t renderers
 
@@ -32,14 +61,14 @@ Options:
 
 ## Templates
 
-| Template                                                        | Description                                                                 |
-|-----------------------------------------------------------------|-----------------------------------------------------------------------------|
-| [renderers](#renderers)                                         | Client-side renderer functions for the Microfrontends server                |
-| [renderersServerSide](#renderersServerSide)                     | Server-side renderer functions for the Microfrontends server                |
-| [startersBrowserStandalone](#startersBrowserStandalone)         | Starters for a plain HTML host                                              |
-| [starters](#starters)                                           | Full starters for a host with backend integration (security, proxying, SSR) |
-| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs) | Server-side integration code for a Node.js backend                          |
-| [hostBackendIntegrationsJava](#hostBackendIntegrationsJava)     | Server-side integration code for a Java-based backend                       |
+| Template                                                                  | Description                                                                 |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| [renderers](#renderers)                                                   | Client-side renderer functions for the Microfrontends server                |
+| [renderersServerSide](#renderersServerSide)                               | Server-side renderer functions for the Microfrontends server                |
+| [startersBrowserStandalone](#startersBrowserStandalone)                   | Starters for a plain HTML host                                              |
+| [starters](#starters)                                                     | Full starters for a host with backend integration (security, proxying, SSR) |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)           | Server-side integration code for a Node.js backend                          |
+| [hostBackendIntegrationsJavaServlet](#hostBackendIntegrationsJavaServlet) | Server-side integration code for a Java-based backend                       |
 
 ### renderers
 
@@ -141,7 +170,7 @@ Generates a *microfrontendStarters.ts* file that contains functions to launch th
 
 > [!NOTE]
 > This template uses a very basic cache busting mechanism by just appending the timestamp to every JS and CSS entry.
-> It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.e
+> It sets the last digit of the timestamp seconds to 0, so the browser will cache the files for 10 seconds at max.
 
 #### Usage
 
@@ -197,7 +226,13 @@ messages.publish('topic', {});
 
 ### hostBackendIntegrationsNodeJs
 
-Generates integration files for Node.js-based Host Application, including server-side code for security, proxying and SSR.
+Generates a *microfrontendHostIntegrations.ts* file that contains backend integrations for Node.js-based Host Applications, 
+including server-side code for security, proxying and SSR.
+It creates a *middleware* per *Microfrontend* that can be integrated into any backend framework (like Express, Fastify, etc.);
+
+#### Extra Runtime Dependencies
+
+ * [http-proxy-3](https://www.npmjs.com/package/http-proxy-3)
 
 #### Additional Properties
 
@@ -207,25 +242,143 @@ Generates integration files for Node.js-based Host Application, including server
 
 #### Usage
 
-TODO
+First, implement the generated *\<Micfrontend-Name\>BaseSetup* interface generated for each *Microfrontend*:
 
-### hostBackendIntegrationsJava
+```typescript
+import {MyMicrofrontendBaseSetup} from './_generated/microfrontendHostIntegrations';
 
-Generates integration files for Java-based Host Application, including server-side code for security, proxying and SSR.
+export default class MyMicrofrontendBaseSetupImpl implements MyMicrofrontendBaseSetup {
+  get microfrontendBaseUrl() {
+    return 'http://localhost:7830'
+  };
+
+  async getUser(req: IncomingMessage)  {
+    // TODO
+    return null;
+  }
+
+  // Other generated methods
+}
+```
+
+Then, add the generated *middleware*. For example, with Express:
+
+```typescript
+import {myMicrofrontendHostIntegrationMiddleware} from './_generated/microfrontendHostIntegrations';
+
+const app = express();
+
+// ...
+
+app.use(myMicrofrontendHostIntegrationMiddleware(
+  new MyMicrofrontendBaseSetupImpl()
+));
+```
+
+After this, you can start the *Microfrontend* with the functions generated by the [starters](#starters) template.
+
+##### Server-Side Rendering
+
+If the *Microfrontend* supports SSR you can pre-render and add the HTML to the page. With *Express* this could look like this:
+
+```typescript
+import {myMicrofrontendServerSideRender} from './_generated/microfrontendHostIntegrations';
+
+try {
+  const {contentHtml, headHtml} = await openMicrofrontendsExampleSSRServerSideRender(req, {
+    ...microfrontend1,
+  });
+  return res.render('index', {
+    microfrontend1ContentHtml: contentHtml,
+    microfrontend1HeadHtml: headHtml,
+  });
+} catch (e) {
+  // TODO
+}
+```
+
+And in the template:
+
+```ejs
+<html>
+    <head>
+        <%-microfrontend1HeadHtml%>
+    </head>
+    <body>
+        <h1>Microfrontend Application Host</h1>
+        <!-- Important: There should be no whitespace between the div and pre-rendered content -->
+        <div id="root"><%-microfrontend1ContentHtml%></div>
+        <!-- Script that starts the Microfrontend -->
+        <script src="main.js"></script>
+    </body>
+</html>
+```
+
+### hostBackendIntegrationsJavaServlet
+
+Generates a *OpenMicrofrontendHostIntegrations.java* file that contains backend integrations for Java Servlet-based Host Applications, 
+including server-side code for security and proxying.
+It creates a *Filter* per *Microfrontend* that can be integrated into any backend framework that supports Java Servlets (like Spring Boot, etc.);
 
 > [!NOTE]
 > The main purpose of this template is to demonstrate that a backend integration is possible in arbitrary languages.
-> But there is no type-safety for Microfrontend inputs like the config at the moment.
+> It is not fully type-safe, and SSR is not supported (at the moment).
+
+#### Extra Runtime Dependencies
+
+ * [SLF4J](https://www.slf4j.org/)
+ * [Jackson Databind](https://github.com/FasterXML/jackson-databind)
+ * [HTTP Proxy Servlet](https://github.com/mitre/HTTP-Proxy-Servlet) 2.x
+ * [Apache HttpComponents](https://hc.apache.org)
 
 #### Additional Properties
 
-| Property      | Description                                                             |
-|---------------|-------------------------------------------------------------------------|
-| omBasePath    | The base path of OpenMicrofrontends integrations. Default: /\_\_om\_\_  |
+| Property     | Description                                                            |
+|--------------|------------------------------------------------------------------------|
+| omBasePath   | The base path of OpenMicrofrontends integrations. Default: /\_\_om\_\_ |
+| packageName  | The Java package (default: *_generated*)                               |
 
 #### Usage
 
-TODO
+First, implement the generated *\<Micfrontend-Name\>BaseSetup* interface generated for each *Microfrontend*:
+
+```java
+import _generated.OpenMicrofrontendHostIntegrations;
+
+public class MyMicrofrontendBaseSetupImpl implements OpenMicrofrontendHostIntegrations.MyMicrofrontendHostIntegrationFilter.MicrofrontendBaseSetup {
+    @Override
+    public String getMicrofrontendBaseUrl() {
+        return "http://localhost:7830";
+    }
+
+    @Override
+    public OpenMicrofrontendHostIntegrations.User getUser(HttpServletRequest req) {
+        // TODO
+        return null;
+    }
+
+  // Other generated methods
+}
+```
+
+Then, add the generated *Servlet Filter*. For example, with Spring Boot:
+
+```java
+import _generated.OpenMicrofrontendHostIntegrations;
+
+@SpringBootApplication
+public class HostIntegrationDemoApplication {
+
+    // ...
+
+    @Bean
+    public Filter createMyMicrofrontendFilter() {
+        return new OpenMicrofrontendHostIntegrations.MyMicrofrontendHostIntegrationFilter(new MyMicrofrontendBaseSetupImpl());
+    }
+}
+```
+
+After this, you can start the *Microfrontend* with the functions generated by the [starters](#starters) template.
 
 ## Contributing
 

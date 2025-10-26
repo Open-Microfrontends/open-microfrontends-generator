@@ -1,0 +1,9 @@
+
+function toFullUrl(...parts: Array<string>): string {
+    return parts
+        .filter((part, idx) => part && part.trim() && (idx === 0 || part !== '/'))
+        .map((part) => part.endsWith('/') ? part.slice(0, -1) : part)
+        .map((part, idx) => idx > 0 && part.startsWith('/') ? part.substring(1) : part)
+        .join('/');
+}
+
