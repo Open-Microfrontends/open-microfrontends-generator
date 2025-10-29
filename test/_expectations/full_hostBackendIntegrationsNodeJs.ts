@@ -366,6 +366,10 @@ export const myFirstMicrofrontendHostIntegrationMiddleware = (baseSetup: MyFirst
   };
 };
 
+export const myFirstMicrofrontendAnnotations = {
+  MY_COCKPIT_CAPABILITIES: { businessEntity: 'Customer', contentType: 'overview' },
+};
+
 type SSRContext = OpenMicrofrontendsServerContext<Partial<Microfrontend1Config>, Microfrontend1Permissions>;
 type SSRResponse = {
   readonly contentHtml: string;

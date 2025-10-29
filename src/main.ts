@@ -11,13 +11,13 @@ import loadJson from './utils/loadJson';
 import loadYaml from './utils/loadYaml';
 
 export default async (
-  specFile: string,
+  descriptionFile: string,
   outFolder = DEFAULT_OUT_FOLDER,
   templates = DEFAULT_TEMPLATE,
   additionalProperties?: string | undefined,
   validationOnly = false
 ) => {
-  const microfrontendSpecPath = isAbsolute(specFile) ? specFile : resolve(process.cwd(), specFile);
+  const microfrontendSpecPath = isAbsolute(descriptionFile) ? descriptionFile : resolve(process.cwd(), descriptionFile);
   const microfrontendSpecLocation = dirname(microfrontendSpecPath);
   let microfrontendSpec;
   const absoluteOutFolder = isAbsolute(outFolder) ? outFolder : resolve(process.cwd(), outFolder);

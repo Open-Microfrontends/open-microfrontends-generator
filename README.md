@@ -41,13 +41,13 @@ Add to your *package.json*:
 }
 ```
 
-Then run the generator:
+Then run the generator like this:
 
     omg microfrontends.yaml src/_generated -t renderers
 
 Arguments:
  
- * *specFile*: The OpenMicrofrontends spec (yaml/json)
+ * *descriptionFile*: The OpenMicrofrontends description (yaml/json)
  * *outFolder*: The target folder for generated code
 
 Options:
@@ -61,14 +61,14 @@ Options:
 
 ## Templates
 
-| Template                                                                  | Description                                                                 |
-|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| [renderers](#renderers)                                                   | Client-side renderer functions for the Microfrontends server                |
-| [renderersServerSide](#renderersServerSide)                               | Server-side renderer functions for the Microfrontends server                |
-| [startersBrowserStandalone](#startersBrowserStandalone)                   | Starters for a plain HTML host                                              |
-| [starters](#starters)                                                     | Full starters for a host with backend integration (security, proxying, SSR) |
-| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)           | Server-side integration code for a Node.js backend                          |
-| [hostBackendIntegrationsJavaServlet](#hostBackendIntegrationsJavaServlet) | Server-side integration code for a Java-based backend                       |
+| Template                                                                  | Description                                                                             |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| [renderers](#renderers)                                                   | Client-side renderer functions for the Microfrontends server                            |
+| [renderersServerSide](#renderersServerSide)                               | Server-side renderer functions for the Microfrontends server                            |
+| [startersBrowserStandalone](#startersBrowserStandalone)                   | Starters for a plain HTML Application Host                                              |
+| [starters](#starters)                                                     | Full starters for a Application Host with backend integration (security, proxying, SSR) |
+| [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)           | Application Host backend integrations for a Node.js backend                             |
+| [hostBackendIntegrationsJavaServlet](#hostBackendIntegrationsJavaServlet) | Application Host backend integrations for a Java-based backend                          |
 
 ### renderers
 
@@ -76,6 +76,8 @@ Generates a *microfrontendRenderers.ts* file that contains the client-side rende
 The generated code is plain JavaScript and does not depend on any libraries.
 
 #### Usage
+
+Add this to the index file of your *Microfrontend*:
 
 ```ts
 import {MyFirstMicrofrontendRenderFunction, MyFirstMicrofrontendRenderFunctionName} from './_generated/microfrontendsRenderers';
@@ -96,6 +98,18 @@ export default {
 };
 // Or otherwise (this always works)
 // window[MyFirstMicrofrontendRenderFunctionName] = renderFn;
+```
+
+This template also creates useful constants for paths that can be used in the *Microfrontend* server like this:
+
+```ts
+import {MyMicrofrontendAssetsBasePath} from '../_generated/microfrontendRenderers';
+
+const app = express();
+
+// ...
+
+app.use(MyMicrofrontendAssetsBasePath, express.static(resolve(serverDir, 'public')));
 ```
 
 ### renderersServerSide
@@ -127,7 +141,7 @@ export default render;
 
 ```
 
-2. Implement the route (depends on the framework you are using, in this example we use Express)
+2. Implement the route (depends on the framework you are using, in this example we use *Express*)
 
 ```ts
 // ssrRoute.ts
@@ -165,8 +179,8 @@ app.post(OpenMicrofrontendsExampleSSRServerSideRenderPath, ssrRoute);
 Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends on an arbitrary HTML page. 
 
 > [!IMPORTANT]
-> This template does not fully support the OpenMicrofrontends spec, in particular it does not support security, API proxies or SSR.
-> So, it is only suitable for Microfrontends that need one of these features.
+> This template does not fully support the *OpenMicrofrontends* spec, in particular it does not support security, API proxies or SSR.
+> So, it is only suitable for *Microfrontends* that need any of those features.
 
 > [!NOTE]
 > This template uses a very basic cache busting mechanism by just appending the timestamp to every JS and CSS entry.
@@ -195,8 +209,8 @@ messages.publish('topic', {});
 
 ### starters
 
-Generates a *microfrontendStarters.ts* file that contains functions to launch the Microfrontends in the frontend of the host server. 
-This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates to function properly.
+Generates a *microfrontendStarters.ts* file that contains functions to launch the *Microfrontends* in the frontend of the Application Host. 
+This template requires the backend code from one of the *hostBackendIntegrationsXXX* templates (below) to function properly.
 
 #### Additional Properties
 
@@ -226,8 +240,8 @@ messages.publish('topic', {});
 
 ### hostBackendIntegrationsNodeJs
 
-Generates a *microfrontendHostIntegrations.ts* file that contains backend integrations for Node.js-based Host Applications, 
-including server-side code for security, proxying and SSR.
+Generates a *microfrontendHostIntegrations.ts* file that contains backend integrations for *Node.js*-based Host Applications, including security, proxying and SSR.
+
 It creates a *middleware* per *Microfrontend* that can be integrated into any backend framework (like Express, Fastify, etc.);
 
 #### Extra Runtime Dependencies
@@ -314,10 +328,15 @@ And in the template:
 </html>
 ```
 
+##### Annotations 
+
+The template also generates a constant with the *Annotations* in the *Microfrontend* description (if any).
+It can be used in the Application Host logic.
+
 ### hostBackendIntegrationsJavaServlet
 
-Generates a *OpenMicrofrontendHostIntegrations.java* file that contains backend integrations for Java Servlet-based Host Applications, 
-including server-side code for security and proxying.
+Generates an *OpenMicrofrontendHostIntegrations.java* file that contains backend integrations for Java Servlet-based Host Applications, including security and proxying.
+
 It creates a *Filter* per *Microfrontend* that can be integrated into any backend framework that supports Java Servlets (like Spring Boot, etc.);
 
 > [!NOTE]
