@@ -41,14 +41,18 @@ Add to your *package.json*:
 }
 ```
 
-Then run the generator like this:
+To generate code base on some template run:
 
     omg microfrontends.yaml src/_generated -t renderers
+
+If you just want to validate your description file:
+
+    omg microfrontends.yaml --validationOnly
 
 Arguments:
  
  * *descriptionFile*: The OpenMicrofrontends description (yaml/json)
- * *outFolder*: The target folder for generated code
+ * *outFolder*: The target folder for generated code (not required for --validationOnly)
 
 Options:
 
