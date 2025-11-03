@@ -127,7 +127,10 @@ export default async (def: OpenMicroFrontendsDef, defLocation: string): Promise<
     }
 
     // Check if importMap is possible
-    if (microfrontend.assets.js.importMap && !(microfrontend.assets.js.moduleSystem === 'SystemJS' || microfrontend.assets.js.moduleSystem === 'ESM')) {
+    if (
+      microfrontend.assets.js.importMap &&
+      !(microfrontend.assets.js.moduleSystem === 'SystemJS' || microfrontend.assets.js.moduleSystem === 'ESM')
+    ) {
       return `importMaps require moduleSystem ESM or SystemJS!`;
     }
 
