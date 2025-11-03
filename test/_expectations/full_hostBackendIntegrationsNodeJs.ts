@@ -215,24 +215,29 @@ const getMyFirstMicrofrontendBuildTimestampOrVersion = async (
   if (buildTimestampOrVersionFromCache) {
     return buildTimestampOrVersionFromCache;
   }
-  const res = await getWithTimeoutAndExtraHeaders(
-    '/build.yaml',
-    baseSetup.microfrontendBaseUrl,
-    baseSetup.microfrontendRequestTimeoutSec ?? DEFAULT_MICROFRONTEND_REQUEST_TIMEOUT_SEC,
-    {}
-  );
-  if (!res.ok) {
-    logger.warn(`[OpenMicrofrontends] Error while fetching build manifest from /build.yaml: ${res.statusText}`);
-    return undefined;
+  try {
+    const res = await getWithTimeoutAndExtraHeaders(
+      '/build.yaml',
+      baseSetup.microfrontendBaseUrl,
+      baseSetup.microfrontendRequestTimeoutSec ?? DEFAULT_MICROFRONTEND_REQUEST_TIMEOUT_SEC,
+      {}
+    );
+    if (!res.ok) {
+      logger.warn(`[OpenMicrofrontends] Error while fetching build manifest from /build.yaml: ${res.statusText}`);
+      return undefined;
+    }
+    const buildManifest = await res.json();
+    const buildTimestampOrVersion = buildManifest.timestamp || buildManifest.version;
+    if (!buildTimestampOrVersion) {
+      logger.warn('[OpenMicrofrontends] No build timestamp or version found in build manifest:', buildManifest);
+    } else {
+      await baseSetup.buildTimestampOrVersionCachePut(buildTimestampOrVersion);
+    }
+    return buildTimestampOrVersion;
+  } catch (e) {
+    logger.warn('[OpenMicrofrontends] Error while fetching build manifest from /build.yaml!', e);
   }
-  const buildManifest = await res.json();
-  const buildTimestampOrVersion = buildManifest.timestamp || buildManifest.version;
-  if (!buildTimestampOrVersion) {
-    logger.warn('[OpenMicrofrontends] No build timestamp or version found in build manifest:', buildManifest);
-  } else {
-    await baseSetup.buildTimestampOrVersionCachePut(buildTimestampOrVersion);
-  }
-  return buildTimestampOrVersion;
+  return undefined;
 };
 
 const getMyFirstMicrofrontendSetup = async (
