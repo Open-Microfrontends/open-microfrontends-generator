@@ -17,7 +17,7 @@ const validation: TemplateExtraValidation = (def) => {
     if (microfrontend.assets.js.moduleSystem === 'SystemJS') {
       console.warn(
         colors.yellow(
-          `OMG: Microfrontend '${microfrontend.name}' uses SystemJS, make sure the Application Host provides the SystemJS loader!`
+          `OMG: Microfrontend '${microfrontend.name}' uses SystemJS, make sure the Host Frontend provides the SystemJS loader!`
         )
       );
     }
