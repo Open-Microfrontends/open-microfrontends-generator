@@ -56,9 +56,12 @@ function installSystemJSImportMap(initialModules: Array<string>, importMap: any)
         }
         newImportMap.scopes[moduleUrl][_import] = importMap.imports[_import];
         // Also make sure conflicting entries only load modules from "their" import map
-        newImportMap.scopes[importMap.imports[_import]] = {
-          ...importMap.imports,
-        };
+        newImportMap.scopes[importMap.imports[_import]] = {};
+        for (const _import2 in importMap.imports) {
+          if (_import2 !== _import && !initialModules.find((m) => importMap.imports[_import2] === m)) {
+            newImportMap.scopes[importMap.imports[_import]][_import2] = importMap.imports[_import2];
+          }
+        }
       });
     }
   }
@@ -199,13 +202,13 @@ export async function startMyFirstMicrofrontend(hostElement: HTMLElement, contex
     throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!');
   }
 
-  const renderFunction =
+  const rendererFunction =
     exportedModules.find((m) => 'startMyFirstMicrofrontend' in m)?.['startMyFirstMicrofrontend'] ||
     exportedModules.find((m) => 'default' in m && 'startMyFirstMicrofrontend' in m.default)?.default?.[
       'startMyFirstMicrofrontend'
     ] ||
     (window as any)['startMyFirstMicrofrontend'];
-  if (!renderFunction) {
+  if (!rendererFunction) {
     throw new Error('[OpenMicrofrontends] Renderer of Microfrontend "My First Microfrontend" not found!');
   }
 
@@ -228,7 +231,7 @@ export async function startMyFirstMicrofrontend(hostElement: HTMLElement, contex
 
   // Render the Microfrontend
   console.info('[OpenMicrofrontends] Starting Microfrontend "My First Microfrontend"');
-  const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
+  const lifecycleHooks = await rendererFunction(hostElement, contextWithDefaultConfig);
 
   return {
     close: async () => {

@@ -108,13 +108,13 @@ export async function startMyFirstMicrofrontend(
     throw new Error('[OpenMicrofrontends] Loading assets of Microfrontend "My First Microfrontend" failed!');
   }
 
-  const renderFunction =
+  const rendererFunction =
     exportedModules.find((m) => 'startMyFirstMicrofrontend' in m)?.['startMyFirstMicrofrontend'] ||
     exportedModules.find((m) => 'default' in m && 'startMyFirstMicrofrontend' in m.default)?.default?.[
       'startMyFirstMicrofrontend'
     ] ||
     (window as any)['startMyFirstMicrofrontend'];
-  if (!renderFunction) {
+  if (!rendererFunction) {
     throw new Error('[OpenMicrofrontends] Renderer of Microfrontend "My First Microfrontend" not found!');
   }
 
@@ -128,7 +128,7 @@ export async function startMyFirstMicrofrontend(
 
   // Render the Microfrontend
   console.info('[OpenMicrofrontends] Starting Microfrontend "My First Microfrontend"');
-  const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
+  const lifecycleHooks = await rendererFunction(hostElement, contextWithDefaultConfig);
 
   return {
     close: async () => {

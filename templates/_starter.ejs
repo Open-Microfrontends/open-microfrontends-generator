@@ -137,10 +137,10 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
         }
     <% } %>
 
-    const renderFunction = exportedModules.find(m => '<%-spec.microfrontends[i].rendererFunctionName-%>' in m)?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
+    const rendererFunction = exportedModules.find(m => '<%-spec.microfrontends[i].rendererFunctionName-%>' in m)?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
             || exportedModules.find(m => 'default' in m && '<%-spec.microfrontends[i].rendererFunctionName-%>' in m.default)?.default?.['<%-spec.microfrontends[i].rendererFunctionName-%>']
             || (window as any)['<%-spec.microfrontends[i].rendererFunctionName-%>'];
-    if (!renderFunction) {
+    if (!rendererFunction) {
         throw new Error('[OpenMicrofrontends] Renderer of Microfrontend "<%-spec.microfrontends[i].name%>" not found!');
     }
 
@@ -164,7 +164,7 @@ export async function start<%-safeMicrofrontendNames[i]-%>(hostElement: HTMLElem
 
     // Render the Microfrontend
     console.info('[OpenMicrofrontends] Starting Microfrontend "<%-spec.microfrontends[i].name%>"');
-    const lifecycleHooks = await renderFunction(hostElement, contextWithDefaultConfig);
+    const lifecycleHooks = await rendererFunction(hostElement, contextWithDefaultConfig);
 
     return {
         close: async () => {
