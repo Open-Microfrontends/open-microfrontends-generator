@@ -5,9 +5,9 @@
 
 import { createProxyServer } from 'http-proxy-3';
 import type { ServerResponse, IncomingMessage } from 'node:http';
-import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
+import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRenderer';
 
-import type { OpenMicrofrontendsServerContext } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRendererFunction';
+import type { OpenMicrofrontendsServerContext } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRenderer';
 
 interface Logger {
   debug(msg: string, ...args: any[]): void;
@@ -269,7 +269,7 @@ export const myFirstMicrofrontendHostIntegrationMiddleware = (baseSetup: MyFirst
   });
 
   return async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => {
-    // Required by the SSR render function
+    // Required by the SSR Renderer
     (req as any)['__om_base_setup_MyFirstMicrofrontend__'] = baseSetup;
 
     let url = req.url;
@@ -381,7 +381,7 @@ type SSRResponse = {
   readonly headHtml: string;
 };
 
-export const myFirstMicrofrontendServerSideRender = async (
+export const myFirstMicrofrontendServerSideRenderer = async (
   req: IncomingMessage,
   context: SSRContext
 ): Promise<SSRResponse> => {

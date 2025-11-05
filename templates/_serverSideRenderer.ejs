@@ -14,10 +14,10 @@
     type Microfrontend<%-i+1 %>Permissions = undefined;
 <%  } %>
 
-/* Render Function */
+/* Renderer */
 
-export type <%-safeMicrofrontendNames[i]%>ServerSideRenderFunction = OpenMicrofrontendsServerSideRendererFunction<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions>;
+export type <%-safeMicrofrontendNames[i]%>ServerSideRenderer = OpenMicrofrontendsServerSideRenderer<Microfrontend<%-i+1%>Config, Microfrontend<%-i+1%>Permissions>;
 
 /* Path constants */
 
-export const <%-safeMicrofrontendNames[i]%>ServerSideRenderPath = '<%-spec.microfrontends[i].ssr.path%>';
+export const <%-safeMicrofrontendNames[i]%>ServerSideRendererPath = '<%-spec.microfrontends[i].ssr.path%>';

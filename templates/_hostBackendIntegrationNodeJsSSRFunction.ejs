@@ -6,7 +6,7 @@
         readonly headHtml: string;
     }
 
-    export const <%-helpers.uncapitalize(safeMicrofrontendNames[i])%>ServerSideRender = async (req: IncomingMessage, context: SSRContext): Promise<SSRResponse> => {
+    export const <%-helpers.uncapitalize(safeMicrofrontendNames[i])%>ServerSideRenderer = async (req: IncomingMessage, context: SSRContext): Promise<SSRResponse> => {
         const baseSetup = (req as any)['__om_base_setup_<%-safeMicrofrontendNames[i]-%>__'] as <%-safeMicrofrontendNames[i]-%>BaseSetup | undefined;
         if (!baseSetup) {
             throw new Error('[OpenMicrofrontends] Not setup found. Did you forget to register the generated middleware?');

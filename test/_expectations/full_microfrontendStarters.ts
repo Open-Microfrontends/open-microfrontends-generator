@@ -3,7 +3,7 @@
  * DO NOT MODIFY!
  */
 
-import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
+import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRenderer';
 
 /* TypeScript type from Schemas */
 
@@ -93,7 +93,7 @@ const defaultConfig = {
   customerId: '1000',
 };
 
-/* Render function type with aligned config and message bus */
+/* Renderer context type with aligned config and message bus */
 
 type Microfrontend1ClientContext = Omit<
   OpenMicrofrontendsClientContext<
@@ -169,7 +169,7 @@ export async function startMyFirstMicrofrontend(hostElement: HTMLElement, contex
     ] ||
     (window as any)['startMyFirstMicrofrontend'];
   if (!renderFunction) {
-    throw new Error('[OpenMicrofrontends] Render function of Microfrontend "My First Microfrontend" not found!');
+    throw new Error('[OpenMicrofrontends] Renderer of Microfrontend "My First Microfrontend" not found!');
   }
 
   const apiProxyPaths = {};

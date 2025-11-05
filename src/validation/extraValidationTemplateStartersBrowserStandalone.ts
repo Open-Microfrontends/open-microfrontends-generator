@@ -9,7 +9,7 @@ const validation: TemplateExtraValidation = (def) => {
       }
       console.warn(
         colors.yellow(
-          `OMG: Microfrontend '${microfrontend.name}' uses ES modules (ESM). If you use code splitting, make sure your index module only contains the renderer function and nothing more, because importing the index module from other modules will not be possible. See: https://open-microfrontends.org/implementation-hints/microfrontends`
+          `OMG: Microfrontend '${microfrontend.name}' uses ES modules (ESM). If you use code splitting, make sure your index module only contains the Renderer and nothing more, because importing the index module from other modules will not be possible. See: https://open-microfrontends.org/implementation-hints/microfrontends`
         )
       );
     }

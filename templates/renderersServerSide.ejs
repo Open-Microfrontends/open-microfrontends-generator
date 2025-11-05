@@ -3,11 +3,11 @@
 * DO NOT MODIFY!
 */
 
-import type { OpenMicrofrontendsServerSideRendererFunction } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRendererFunction';
+import type { OpenMicrofrontendsServerSideRenderer } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRenderer';
 
 <%- include('_schemaTypes') %>
 
 <% for (let i = 0; i < spec.microfrontends.length; i ++) { %>
-    <%- include('_serverSideRenderFunction', {i, spec, safeMicrofrontendNames}) %>
+    <%- include('_serverSideRenderer', {i, spec, safeMicrofrontendNames}) %>
 <% } -%>
 

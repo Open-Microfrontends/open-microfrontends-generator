@@ -192,7 +192,7 @@ export const <%-helpers.uncapitalize(safeMicrofrontendNames[i])-%>HostIntegratio
     });
 
     return async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => {
-        // Required by the SSR render function
+        // Required by the SSR Renderer
         (req as any)['__om_base_setup_<%-safeMicrofrontendNames[i]-%>__'] = baseSetup;
 
         let url = req.url;

@@ -3,7 +3,7 @@
  * DO NOT MODIFY!
  */
 
-import type { OpenMicrofrontendsServerSideRendererFunction } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRendererFunction';
+import type { OpenMicrofrontendsServerSideRenderer } from '@open-microfrontends/types/OpenMicrofrontendsServerSideRenderer';
 
 /* TypeScript type from Schemas */
 
@@ -26,13 +26,13 @@ type Microfrontend1Permissions = {
   readonly deletePermitted: boolean;
 };
 
-/* Render Function */
+/* Renderer */
 
-export type MyFirstMicrofrontendServerSideRenderFunction = OpenMicrofrontendsServerSideRendererFunction<
+export type MyFirstMicrofrontendServerSideRenderer = OpenMicrofrontendsServerSideRenderer<
   Microfrontend1Config,
   Microfrontend1Permissions
 >;
 
 /* Path constants */
 
-export const MyFirstMicrofrontendServerSideRenderPath = '/ssr';
+export const MyFirstMicrofrontendServerSideRendererPath = '/ssr';

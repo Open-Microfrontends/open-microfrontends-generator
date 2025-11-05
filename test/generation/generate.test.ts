@@ -8,7 +8,7 @@ import saveFile from '../../src/utils/saveFile';
 const demoDescriptionsLocation = resolve(import.meta.dirname, '..', '_descriptions');
 
 describe('generate', () => {
-  it('generates renderer functions', async () => {
+  it('generates Renderers', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendRenderers.ts');
 
@@ -22,7 +22,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates server-side renderer functions', async () => {
+  it('generates server-side Renderers', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendRenderersServerSide.ts');
 
@@ -39,7 +39,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser standalone starter functions', async () => {
+  it('generates browser standalone Starter', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(
       import.meta.dirname,
@@ -61,7 +61,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser standalone starter functions for ESM modules', async () => {
+  it('generates browser standalone Starter for ESM modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'fullESM.yaml'));
     const targetFile = resolve(
       import.meta.dirname,
@@ -83,7 +83,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser standalone starter functions for SystemJS modules', async () => {
+  it('generates browser standalone Starter for SystemJS modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'fullSystemJS.yaml'));
     const targetFile = resolve(
       import.meta.dirname,
@@ -105,7 +105,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser starter functions', async () => {
+  it('generates browser Starter', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'full.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'full_microfrontendStarters.ts');
 
@@ -125,7 +125,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser starter functions for ESM modules', async () => {
+  it('generates browser Starter for ESM modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'fullESM.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'fullESM_microfrontendStarters.ts');
 
@@ -145,7 +145,7 @@ describe('generate', () => {
     );
   });
 
-  it('generates browser starter functions for SystemJS modules', async () => {
+  it('generates browser Starter for SystemJS modules', async () => {
     const def = loadYaml(resolve(demoDescriptionsLocation, 'fullSystemJS.yaml'));
     const targetFile = resolve(import.meta.dirname, '..', '_expectations', 'fullSystemJS_microfrontendStarters.ts');
 

@@ -3,10 +3,10 @@
 * DO NOT MODIFY!
 */
 
-import type { OpenMicrofrontendsRendererFunction } from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
+import type { OpenMicrofrontendsRenderer } from '@open-microfrontends/types/OpenMicrofrontendsRenderer';
 
 <%- include('_schemaTypes') %>
 
 <% for (let i = 0; i < spec.microfrontends.length; i ++) { %>
-    <%- include('_renderFunction', {i, spec, safeMicrofrontendNames}) %>
+    <%- include('_renderer', {i, spec, safeMicrofrontendNames}) %>
 <% } -%>

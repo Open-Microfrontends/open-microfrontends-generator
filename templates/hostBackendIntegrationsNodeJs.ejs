@@ -5,9 +5,9 @@
 
 import {createProxyServer} from 'http-proxy-3';
 import type {ServerResponse, IncomingMessage} from 'node:http';
-import type {OpenMicrofrontendsClientContext} from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
+import type {OpenMicrofrontendsClientContext} from '@open-microfrontends/types/OpenMicrofrontendsRenderer';
 <% if (spec.microfrontends.find((m) => m.ssr)) { %>
-    import type {OpenMicrofrontendsServerContext} from '@open-microfrontends/types/OpenMicrofrontendsServerSideRendererFunction';
+    import type {OpenMicrofrontendsServerContext} from '@open-microfrontends/types/OpenMicrofrontendsServerSideRenderer';
 <% } %>
 
 interface Logger {

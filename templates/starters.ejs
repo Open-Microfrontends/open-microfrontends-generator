@@ -3,7 +3,7 @@
 * DO NOT MODIFY!
 */
 
-import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRendererFunction';
+import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types/OpenMicrofrontendsRenderer';
 
 <%- include('_schemaTypes') %>
 
@@ -12,5 +12,5 @@ import type { OpenMicrofrontendsClientContext } from '@open-microfrontends/types
 <%- include('_hostBackendIntegrationTypeScriptBase') %>
 
 <% for (let i = 0; i < spec.microfrontends.length; i ++) { -%>
-    <%- include('_startFunction', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
+    <%- include('_starter', {i, spec, safeMicrofrontendNames, additionalProperties}) %>
 <% } -%>

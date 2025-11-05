@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub CI](https://github.com/open-microfrontends/open-microfrontends-generator/actions/workflows/ci_build.yml/badge.svg)](https://github.com/open-microfrontends/open-microfrontends-generator/actions/workflows/ci_build.yml)
 
-Generates type-safe Microfrontend render functions and host integrations from an [OpenMicrofrontends](https://www.open-microfrontends.org) description.
+Generates type-safe Microfrontend Renderers, Starters and Host Integrations from an [OpenMicrofrontends](https://www.open-microfrontends.org) description.
 
 > [!NOTE]
 > This generator does currently not support *importMaps* for ES modules, since the Browser support is incomplete (see https://bugzilla.mozilla.org/show_bug.cgi?id=1916277).
@@ -67,16 +67,16 @@ Options:
 
 | Template                                                                  | Description                                                                             |
 |---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| [renderers](#renderers)                                                   | Client-side renderer functions for the Microfrontends server                            |
-| [renderersServerSide](#renderersServerSide)                               | Server-side renderer functions for the Microfrontends server                            |
+| [renderers](#renderers)                                                   | Client-side Renderers for the Microfrontends server                                     |
+| [renderersServerSide](#renderersServerSide)                               | Server-side Renderers for the Microfrontends server                                     |
 | [startersBrowserStandalone](#startersBrowserStandalone)                   | Starters for a plain HTML Host Application                                              |
-| [starters](#starters)                                                     | Full starters for a Host Application with backend integration (security, proxying, SSR) |
+| [starters](#starters)                                                     | Full Starters for a Host Application with backend integration (security, proxying, SSR) |
 | [hostBackendIntegrationsNodeJs](#hostBackendIntegrationsNodeJs)           | Host Application backend integrations for a Node.js backend                             |
 | [hostBackendIntegrationsJavaServlet](#hostBackendIntegrationsJavaServlet) | Host Application backend integrations for a Java-based backend                          |
 
 ### renderers
 
-Generates a *microfrontendRenderers.ts* file that contains the client-side render functions that need to be implemented.
+Generates a *microfrontendRenderers.ts* file that contains the client-side Renderers that need to be implemented.
 The generated code is plain JavaScript and does not depend on any libraries.
 
 #### Usage
@@ -84,9 +84,9 @@ The generated code is plain JavaScript and does not depend on any libraries.
 Add this to the index file of your *Microfrontend*:
 
 ```ts
-import {MyFirstMicrofrontendRenderFunction, MyFirstMicrofrontendRenderFunctionName} from './_generated/microfrontendsRenderers';
+import {MyFirstMicrofrontendRenderer, MyFirstMicrofrontendRendererFunctionName} from './_generated/microfrontendsRenderers';
 
-const renderFn: MyFirstMicrofrontendRenderFunction = async (host, context) => {
+const rendererFn: MyFirstMicrofrontendRenderer = async (host, context) => {
   const {config, messageBus} = context;
   host.innerHTML = '<div>My Microfrontend 1</div>';
   return {
@@ -98,10 +98,10 @@ const renderFn: MyFirstMicrofrontendRenderFunction = async (host, context) => {
 
 // If you bundle your code to ESM oder SystemJS
 export default {
-  [MyFirstMicrofrontendRenderFunctionName]: renderFn,
+  [MyFirstMicrofrontendRendererFunctionName]: rendererFn,
 };
 // Or otherwise (this always works)
-// window[MyFirstMicrofrontendRenderFunctionName] = renderFn;
+// window[MyFirstMicrofrontendRendererFunctionName] = rendererFn;
 ```
 
 This template also creates useful constants for paths that can be used in the *Microfrontend* server like this:
@@ -118,20 +118,20 @@ app.use(MyMicrofrontendAssetsBasePath, express.static(resolve(serverDir, 'public
 
 ### renderersServerSide
 
-Generates a *microfrontendRenderersServerSide.ts* file that contains the server-side render functions that need to be implemented.
+Generates a *microfrontendRenderersServerSide.ts* file that contains the server-side Renderers that need to be implemented.
 The generated code is plain JavaScript and does not depend on any libraries.
 
 #### Usage
 
-1. Implement the server-side render function 
+1. Implement the server-side Renderer 
 
 ```ts
 // renderMicrofrontend.ts
 
-import type {MyFirstMicrofrontendServerSideRenderFunction} from "../_generated/microfrontendRenderersServerSide";
+import type {MyFirstMicrofrontendServerSideRenderer} from "../_generated/microfrontendRenderersServerSide";
 import Microfrontend from "../Microfrontend.vue";
 
-const render: MyFirstMicrofrontendServerSideRenderFunction = async (requestBody) => {
+const renderer: MyFirstMicrofrontendServerSideRenderer = async (requestBody) => {
     const { id, config } = requestBody;
 
     const html = /* render your Microfrontend here */ '';
@@ -141,7 +141,7 @@ const render: MyFirstMicrofrontendServerSideRenderFunction = async (requestBody)
     };
 };
 
-export default render;
+export default renderer;
 
 ```
 
@@ -155,9 +155,8 @@ import renderMicrofrontend from '../renderMicrofrontend';
 
 export default async (req: Request, res: Response) => {
     try {
-        const html = await renderMicrofrontend(req.body);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(html);
+        const response = await renderMicrofrontend(req.body);
+        res.json(response);
     } catch (e: any) {
         console.error('Server-side rendering failed!', e),
         res.sendStatus(500);
@@ -169,13 +168,13 @@ export default async (req: Request, res: Response) => {
 3. Add the route under the correct path 
 
 ```ts
-import {MyFirstMicrofrontendServerSideRenderPath} from '../_generated/microfrontendRenderersServerSide';
+import {MyFirstMicrofrontendServerSideRendererPath} from '../_generated/microfrontendRenderersServerSide';
 import ssrRoute from './ssrRoute';
 
 const app = express();
 app.use(express.json());
 
-app.post(OpenMicrofrontendsExampleSSRServerSideRenderPath, ssrRoute);
+app.post(MyFirstMicrofrontendServerSideRendererPath, ssrRoute);
 ```
 
 ### startersBrowserStandalone
@@ -302,17 +301,23 @@ If the *Microfrontend* supports SSR you can pre-render and add the HTML to the p
 ```typescript
 import {myMicrofrontendServerSideRender} from './_generated/microfrontendHostIntegrations';
 
-try {
-  const {contentHtml, headHtml} = await openMicrofrontendsExampleSSRServerSideRender(req, {
-    ...microfrontend1,
-  });
-  return res.render('index', {
-    microfrontend1ContentHtml: contentHtml,
-    microfrontend1HeadHtml: headHtml,
-  });
-} catch (e) {
-  // TODO
-}
+app.get('index', async (req, res) => {
+  try {
+    const {contentHtml, headHtml} = await myMicrofrontendServerSideRender(req, {
+      id: '1',
+      // lang, user, permissions
+      config: {
+        welcomeMessage: 'Microfrontend Demo!',
+      },
+    });
+    return res.render('index', {
+      microfrontend1ContentHtml: contentHtml,
+      microfrontend1HeadHtml: headHtml,
+    });
+  } catch (e) {
+    // TODO
+  }
+});
 ```
 
 And in the template:
