@@ -5,7 +5,7 @@
   "homepage": "https://www.open-microfrontends.org",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-microfrontends/open-microfrontends-generator.git"
+    "url": "git+https://github.com/Open-Microfrontends/open-microfrontends-generator.git"
   },
   "files": [
     "dist",
