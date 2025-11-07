@@ -36,7 +36,7 @@ Add to your *package.json*:
 {
   "devDependencies": {
     "@open-microfrontends/types": "^1.0.0",
-    "@open-microfrontends/open-microfrontends-generator": "^1.0.0"
+    "@open-microfrontends/generator": "^1.0.0"
   }
 }
 ```
